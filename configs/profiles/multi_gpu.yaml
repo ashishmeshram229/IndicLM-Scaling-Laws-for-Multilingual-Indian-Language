@@ -1,0 +1,12 @@
+profile: multi_gpu
+device: cuda
+mixed_precision: bf16
+strategy: ddp   # ddp | fsdp
+max_model_params: 500_000_000  # per-experiment; scale with FSDP for larger
+max_seq_len: 2048
+micro_batch_size: 16
+gradient_accumulation_steps: 2
+num_workers: 8
+notes: >
+  Architecturally supported (DDP/FSDP launch paths); validate on the
+  target machine before trusting throughput numbers from this profile.

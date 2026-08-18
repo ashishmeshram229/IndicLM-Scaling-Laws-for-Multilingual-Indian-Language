@@ -1,0 +1,32 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+.env
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Data & artifacts (never commit large/binary research artifacts)
+data/raw/
+data/processed/
+data/shards/
+*.bin
+*.safetensors
+*.pt
+*.ckpt
+
+# Experiment outputs
+experiments/manifests/*.json
+experiments/reports/*
+!experiments/reports/.gitkeep
+checkpoints/
+wandb/
+mlruns/
+
+# OS
+.DS_Store

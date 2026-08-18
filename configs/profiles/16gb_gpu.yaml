@@ -1,0 +1,8 @@
+profile: 16gb_gpu
+device: cuda
+mixed_precision: bf16
+max_model_params: 250_000_000
+max_seq_len: 2048
+micro_batch_size: 16
+gradient_accumulation_steps: 4
+num_workers: 8

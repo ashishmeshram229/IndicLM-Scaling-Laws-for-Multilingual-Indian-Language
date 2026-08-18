@@ -1,0 +1,9 @@
+# Resource profile: single consumer GPU with ~8GB VRAM (e.g. RTX 3060/4060).
+profile: 8gb_gpu
+device: cuda
+mixed_precision: bf16
+max_model_params: 100_000_000
+max_seq_len: 1024
+micro_batch_size: 8
+gradient_accumulation_steps: 8
+num_workers: 4

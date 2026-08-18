@@ -1,0 +1,14 @@
+profile: cluster
+device: cuda
+mixed_precision: bf16
+strategy: fsdp
+launcher: slurm
+max_model_params: null   # bounded by allocated nodes, not this file
+max_seq_len: 4096
+micro_batch_size: 16
+gradient_accumulation_steps: 1
+num_workers: 16
+notes: >
+  Design target only in this milestone. Do not report cluster throughput
+  or scale claims until an actual Slurm run has been executed and logged
+  in experiments/manifests/.

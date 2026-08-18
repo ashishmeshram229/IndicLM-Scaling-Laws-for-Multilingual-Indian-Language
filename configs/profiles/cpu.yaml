@@ -1,0 +1,16 @@
+# Resource profile: CPU-only development machine.
+# Used to validate the full pipeline end-to-end (data -> tokenizer -> tiny
+# model -> train -> eval) without claiming any scale this hardware can't
+# support. See docs/reproducibility.md for what "tested" vs "supported" means.
+
+profile: cpu
+device: cpu
+mixed_precision: null        # no bf16/fp16 benefit without GPU
+max_model_params: 5_000_000  # a "tiny" model, sized for correctness testing only
+max_seq_len: 256
+micro_batch_size: 4
+gradient_accumulation_steps: 4
+num_workers: 2
+notes: >
+  Intended for smoke tests, unit/integration tests, and CI. Not intended
+  to produce scientifically meaningful scaling-law results by itself.
