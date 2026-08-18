@@ -1,0 +1,47 @@
+{
+  "experiment_id": "EXP-004",
+  "git_commit": "unknown (not a git repository or git unavailable)",
+  "config_hash": "f954ed9f599ce181",
+  "config": {
+    "variants": [
+      "bpe",
+      "unigram"
+    ],
+    "hypothesis": "Does tokenizer efficiency (tokens/char, compression) predict actual model quality (validation perplexity) when model architecture and token budget are held constant? Compares BPE vs Unigram SentencePiece tokenizers trained on the same corpus (see data/tokenizer_v1 and data/tokenizer_unigram benchmark_report.json for the efficiency numbers being correlated against)."
+  },
+  "dataset_version": "v1",
+  "tokenizer_version": "v1",
+  "seed": 0,
+  "hardware": {
+    "device_type": "cpu",
+    "num_gpus": 0,
+    "gpu_names": [],
+    "gpu_memory_gb": [],
+    "cpu_count": 2,
+    "total_ram_gb": 7.84,
+    "recommended_profile": "cpu"
+  },
+  "software_versions": {
+    "python": "3.11.15",
+    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cpu"
+  },
+  "created_at": 1787074352.1585722,
+  "training_tokens": null,
+  "final_train_loss": null,
+  "final_val_loss": null,
+  "evaluation_metrics": {
+    "bpe": {
+      "final_val_loss": 6.606203,
+      "overall_perplexity": 733.2537,
+      "macro_avg_perplexity": 733.596
+    },
+    "unigram": {
+      "final_val_loss": 6.500119,
+      "overall_perplexity": 660.7111,
+      "macro_avg_perplexity": 661.3335
+    }
+  },
+  "checkpoint_path": null,
+  "notes": ""
+}

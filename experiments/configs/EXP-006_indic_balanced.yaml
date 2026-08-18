@@ -1,0 +1,43 @@
+experiment_id: EXP-006
+hypothesis: >
+  An Indic-balanced static mixture (equal weight across the nine Indic
+  languages, small residual share for English) will improve macro-average
+  Indic perplexity relative to the English-heavy mixture (EXP-005) at the
+  same total token budget, at some cost to English perplexity.
+next_experiment: "Compare macro-average Indic perplexity against EXP-005 and EXP-007 via `indiclm experiment compare`."
+seed: 0
+data:
+  shards_dir: data/processed
+  tokenizer_path: data/tokenizer_v1/indiclm_tokenizer.model
+  seq_len: 64
+  total_tokens: 20000
+  val_fraction: 0.1
+  dataset_version: v1
+  tokenizer_version: bpe_v1
+  manual_weights:
+    eng: 0.10
+    hin: 0.10
+    mar: 0.10
+    ben: 0.10
+    tam: 0.10
+    tel: 0.10
+    kan: 0.10
+    mal: 0.10
+    guj: 0.10
+    pan: 0.10
+model:
+  d_model: 64
+  n_layers: 2
+  n_heads: 4
+  n_kv_heads: 2
+  dropout: 0.0
+training:
+  max_steps: 60
+  micro_batch_size: 4
+  gradient_accumulation_steps: 2
+  learning_rate: 0.0003
+  warmup_steps: 10
+  eval_every: 15
+  checkpoint_every: 60
+  log_every: 15
+  device: cpu

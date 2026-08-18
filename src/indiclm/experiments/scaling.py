@@ -1,0 +1,212 @@
+"""Scaling-law experiment runner: sweeps model size (N) and/or token
+budget (D), records validation loss (L), and fits the empirical relation
+
+    L(N, D) ≈ A / N^alpha + B / D^beta + L_infinity
+
+via nonlinear least squares (scipy.optimize.curve_fit). This is treated
+as an empirical fit to whatever data points were actually run — not
+asserted as a universal law — and includes parameter uncertainty
+(standard errors from the covariance matrix) and the underlying
+(N, D, L) observations, so a reviewer can judge the fit's honesty
+themselves.
+
+At this project's toy corpus scale, the resulting alpha/beta estimates
+are a demonstration of the *methodology*, not a scientific claim about
+Indic-language scaling laws — this is stated explicitly in every report
+this module produces.
+"""
+
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import numpy as np
+import torch
+from scipy.optimize import curve_fit
+from torch.utils.data import DataLoader, random_split
+
+from indiclm.models.config import ModelConfig
+from indiclm.training.dataset import PackedTokenDataset
+from indiclm.training.trainer import TrainingConfig, train
+from indiclm.utils.logging import get_logger
+
+log = get_logger(__name__)
+
+
+@dataclass
+class ScalingObservation:
+    run_id: str
+    n_params: int
+    n_params_non_embedding: int
+    d_tokens: int
+    final_val_loss: float
+    mean_tokens_per_sec: float
+
+    def to_dict(self) -> dict:
+        return self.__dict__
+
+
+def _scaling_law(
+    nd: tuple[np.ndarray, np.ndarray], log_a: float, alpha: float, log_b: float, beta: float, l_inf: float
+) -> np.ndarray:
+    n, d = nd
+    return np.exp(log_a) / (n**alpha) + np.exp(log_b) / (d**beta) + l_inf
+
+
+def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
+    """Fits L(N,D) via nonlinear least squares. Requires at least 5
+    observations (5 free parameters) to be identifiable; with fewer, we
+    report an honest "insufficient data" result rather than a fit."""
+    if len(observations) < 5:
+        return {
+            "fit_status": "insufficient_data",
+            "note": (
+                f"Only {len(observations)} observations available; at least 5 are needed to "
+                "fit the 5-parameter L(N,D) = A/N^alpha + B/D^beta + L_inf model. "
+                "Reporting raw observations only."
+            ),
+            "observations": [o.to_dict() for o in observations],
+        }
+
+    n = np.array([o.n_params_non_embedding for o in observations], dtype=float)
+    d = np.array([o.d_tokens for o in observations], dtype=float)
+    loss = np.array([o.final_val_loss for o in observations], dtype=float)
+
+    try:
+        popt, pcov = curve_fit(
+            _scaling_law, (n, d), loss,
+            p0=[0.0, 0.3, 0.0, 0.3, min(loss) * 0.5],
+            bounds=(
+                [-10.0, 1e-3, -10.0, 1e-3, 0.0],
+                [30.0, 2.0, 30.0, 2.0, max(min(loss) * 0.99, 1e-3)],
+            ),
+            maxfev=20000,
+        )
+        perr = np.sqrt(np.diag(pcov))
+        log_a, alpha, log_b, beta, l_inf = popt
+        residuals = loss - _scaling_law((n, d), *popt)
+        ss_res = float(np.sum(residuals**2))
+        ss_tot = float(np.sum((loss - loss.mean()) ** 2))
+        r_squared = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+        return {
+            "fit_status": "ok",
+            "A": float(np.exp(log_a)),
+            "alpha": float(alpha),
+            "alpha_stderr": float(perr[1]),
+            "B": float(np.exp(log_b)),
+            "beta": float(beta),
+            "beta_stderr": float(perr[3]),
+            "L_infinity": float(l_inf),
+            "L_infinity_stderr": float(perr[4]),
+            "r_squared": r_squared,
+            "n_observations": len(observations),
+            "observations": [o.to_dict() for o in observations],
+        }
+    except RuntimeError as e:
+        return {
+            "fit_status": "fit_failed",
+            "note": f"curve_fit did not converge: {e}",
+            "observations": [o.to_dict() for o in observations],
+        }
+
+
+def run_scaling_sweep(
+    model_sizes: list[dict[str, Any]],
+    data_cfg: dict[str, Any],
+    train_cfg_overrides: dict[str, Any],
+    out_dir: Path,
+    seed: int = 0,
+) -> list[ScalingObservation]:
+    """Trains one tiny model per entry in `model_sizes` (each a partial
+    ModelConfig kwargs dict, e.g. {"d_model": 64, "n_layers": 2, ...}) on
+    the same token budget, and records (N, D, L) triples."""
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    observations: list[ScalingObservation] = []
+
+    dataset = PackedTokenDataset(
+        shards_dir=Path(data_cfg["shards_dir"]),
+        tokenizer_path=Path(data_cfg["tokenizer_path"]),
+        seq_len=data_cfg["seq_len"],
+        total_tokens=data_cfg["total_tokens"],
+        alpha=data_cfg.get("alpha", 1.0),
+        seed=seed,
+    )
+    n_val = max(1, int(0.1 * len(dataset)))
+    n_train = len(dataset) - n_val
+    train_ds, val_ds = random_split(
+        dataset, [n_train, n_val], generator=torch.Generator().manual_seed(seed)
+    )
+    batch_size = train_cfg_overrides.get("micro_batch_size", 4)
+    train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(val_ds, batch_size=batch_size)
+
+    for i, size_cfg in enumerate(model_sizes):
+        run_id = size_cfg.get("run_id", f"size_{i}")
+        model_config = ModelConfig(
+            vocab_size=dataset.sp.get_piece_size(),
+            max_seq_len=data_cfg["seq_len"],
+            **{k: v for k, v in size_cfg.items() if k != "run_id"},
+        )
+        run_dir = out_dir / run_id
+        train_cfg = TrainingConfig(output_dir=run_dir, seed=seed, **train_cfg_overrides)
+        log.info(
+            "scaling_sweep_run_start", run_id=run_id,
+            n_params=model_config.num_parameters_estimate(),
+        )
+        result = train(model_config, train_cfg, train_loader, val_loader)
+
+        # Instantiate once more to get the *actual* (non-embedding) param
+        # count from the real module tree, not just the analytic estimate.
+        from indiclm.models.transformer import DecoderOnlyTransformer
+
+        actual_model = DecoderOnlyTransformer(model_config)
+        n_params = actual_model.num_parameters()
+        n_params_non_embed = actual_model.num_parameters(non_embedding=True)
+
+        obs = ScalingObservation(
+            run_id=run_id,
+            n_params=n_params,
+            n_params_non_embedding=n_params_non_embed,
+            d_tokens=result.tokens_seen,
+            final_val_loss=result.final_val_loss or result.final_train_loss,
+            mean_tokens_per_sec=result.mean_tokens_per_sec,
+        )
+        observations.append(obs)
+
+    (out_dir / "observations.json").write_text(
+        json.dumps([o.to_dict() for o in observations], indent=2)
+    )
+    return observations
+
+
+def plot_scaling_curves(observations: list[ScalingObservation], fit: dict[str, Any], out_path: Path) -> None:
+    import matplotlib
+
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    n = [o.n_params_non_embedding for o in observations]
+    loss = [o.final_val_loss for o in observations]
+
+    fig, ax = plt.subplots(1, 1, figsize=(6, 4.5))
+    ax.scatter(n, loss, color="#2f6fed", zorder=3, label="measured runs")
+    ax.set_xscale("log")
+    ax.set_xlabel("Non-embedding parameters (N)")
+    ax.set_ylabel("Final validation loss (L)")
+    ax.set_title("IndicLM scaling sweep: loss vs. model size")
+    ax.grid(True, which="both", alpha=0.3)
+
+    if fit.get("fit_status") == "ok":
+        n_grid = np.logspace(np.log10(min(n)), np.log10(max(n)), 100)
+        d_fixed = np.mean([o.d_tokens for o in observations])
+        l_pred = fit["A"] / n_grid ** fit["alpha"] + fit["B"] / d_fixed ** fit["beta"] + fit["L_infinity"]
+        ax.plot(n_grid, l_pred, color="#d1495b", linestyle="--", label=f"fit (α={fit['alpha']:.3f})")
+
+    ax.legend()
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)

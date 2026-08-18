@@ -1,0 +1,128 @@
+{
+  "experiment_id": "EXP-004__bpe",
+  "git_commit": "unknown (not a git repository or git unavailable)",
+  "config_hash": "442e0fa98ba759cf",
+  "config": {
+    "experiment_id": "EXP-004__bpe",
+    "data": {
+      "shards_dir": "data/processed",
+      "tokenizer_path": "data/tokenizer_v1/indiclm_tokenizer.model",
+      "seq_len": 64,
+      "total_tokens": 20000,
+      "alpha": 0.7,
+      "dataset_version": "v1",
+      "tokenizer_version": "bpe"
+    },
+    "model": {
+      "d_model": 64,
+      "n_layers": 2,
+      "n_heads": 4,
+      "n_kv_heads": 2,
+      "dropout": 0.0
+    },
+    "training": {
+      "max_steps": 60,
+      "micro_batch_size": 4,
+      "gradient_accumulation_steps": 2,
+      "learning_rate": 0.0003,
+      "warmup_steps": 10,
+      "eval_every": 15,
+      "checkpoint_every": 60,
+      "log_every": 15,
+      "device": "cpu"
+    }
+  },
+  "dataset_version": "v1",
+  "tokenizer_version": "bpe",
+  "seed": 0,
+  "hardware": {
+    "device_type": "cpu",
+    "num_gpus": 0,
+    "gpu_names": [],
+    "gpu_memory_gb": [],
+    "cpu_count": 2,
+    "total_ram_gb": 7.84,
+    "recommended_profile": "cpu"
+  },
+  "software_versions": {
+    "python": "3.11.15",
+    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cpu"
+  },
+  "created_at": 1787074349.4962604,
+  "training_tokens": 30528,
+  "final_train_loss": 6.599850416183472,
+  "final_val_loss": 6.606203,
+  "evaluation_metrics": {
+    "overall_loss": 6.597492,
+    "overall_perplexity": 733.2537,
+    "macro_avg_perplexity": 733.596,
+    "weighted_avg_perplexity": 733.596,
+    "per_language": {
+      "ben": {
+        "language": "ben",
+        "loss": 6.597795,
+        "perplexity": 733.476,
+        "tokens_evaluated": 2944
+      },
+      "eng": {
+        "language": "eng",
+        "loss": 6.665875,
+        "perplexity": 785.1504,
+        "tokens_evaluated": 2944
+      },
+      "guj": {
+        "language": "guj",
+        "loss": 6.553451,
+        "perplexity": 701.6613,
+        "tokens_evaluated": 2944
+      },
+      "hin": {
+        "language": "hin",
+        "loss": 6.578663,
+        "perplexity": 719.5765,
+        "tokens_evaluated": 2944
+      },
+      "kan": {
+        "language": "kan",
+        "loss": 6.617557,
+        "perplexity": 748.1154,
+        "tokens_evaluated": 2944
+      },
+      "mal": {
+        "language": "mal",
+        "loss": 6.608365,
+        "perplexity": 741.2699,
+        "tokens_evaluated": 2944
+      },
+      "mar": {
+        "language": "mar",
+        "loss": 6.574229,
+        "perplexity": 716.3928,
+        "tokens_evaluated": 2944
+      },
+      "pan": {
+        "language": "pan",
+        "loss": 6.583597,
+        "perplexity": 723.1357,
+        "tokens_evaluated": 2944
+      },
+      "tam": {
+        "language": "tam",
+        "loss": 6.620453,
+        "perplexity": 750.2846,
+        "tokens_evaluated": 2944
+      },
+      "tel": {
+        "language": "tel",
+        "loss": 6.574933,
+        "perplexity": 716.8976,
+        "tokens_evaluated": 2944
+      }
+    },
+    "checkpoint": "experiments/manifests/EXP-004__bpe/checkpoints/final.pt",
+    "tokenizer": "data/tokenizer_v1/indiclm_tokenizer.model"
+  },
+  "checkpoint_path": "experiments/manifests/EXP-004__bpe/checkpoints/final.pt",
+  "notes": ""
+}

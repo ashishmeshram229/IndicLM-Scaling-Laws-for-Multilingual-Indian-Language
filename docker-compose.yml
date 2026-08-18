@@ -1,0 +1,35 @@
+services:
+  # Development / training container. CPU by default; add a `deploy.resources`
+  # GPU reservation block (Compose v2, requires nvidia-container-toolkit) if
+  # running on a CUDA host — not enabled by default since this repo has not
+  # validated GPU execution (see docs/architecture.md).
+  indiclm:
+    build: .
+    image: indiclm:latest
+    volumes:
+      - ./data:/app/data
+      - ./experiments:/app/experiments
+    environment:
+      - INDICLM_DEVICE=cpu
+      - INDICLM_LOG_LEVEL=INFO
+    command: ["doctor"]
+
+  # Inference service: separate command/entrypoint from training, per the
+  # project's requirement that serving code not depend on the training loop.
+  inference:
+    build: .
+    image: indiclm:latest
+    volumes:
+      - ./data:/app/data
+      - ./experiments:/app/experiments
+    ports:
+      - "8000:8000"
+    entrypoint: ["indiclm"]
+    command:
+      [
+        "serve",
+        "--checkpoint", "experiments/manifests/EXP-003/checkpoints/final.pt",
+        "--tokenizer", "data/tokenizer_v1/indiclm_tokenizer.model",
+        "--host", "0.0.0.0",
+        "--port", "8000",
+      ]

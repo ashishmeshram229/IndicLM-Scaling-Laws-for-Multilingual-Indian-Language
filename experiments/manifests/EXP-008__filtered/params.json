@@ -1,0 +1,33 @@
+{
+  "model": {
+    "d_model": 64,
+    "n_layers": 2,
+    "n_heads": 4,
+    "n_kv_heads": 2,
+    "dropout": 0.0,
+    "vocab_size": 948,
+    "max_seq_len": 64
+  },
+  "training": {
+    "max_steps": 60,
+    "micro_batch_size": 4,
+    "gradient_accumulation_steps": 2,
+    "learning_rate": 0.0003,
+    "warmup_steps": 10,
+    "eval_every": 15,
+    "checkpoint_every": 60,
+    "log_every": 15,
+    "device": "cpu",
+    "output_dir": "experiments/manifests/EXP-008__filtered",
+    "seed": 0
+  },
+  "data": {
+    "shards_dir": "data/processed_filtered",
+    "tokenizer_path": "data/tokenizer_v1/indiclm_tokenizer.model",
+    "seq_len": 64,
+    "total_tokens": 20000,
+    "alpha": 0.7,
+    "dataset_version": "filtered",
+    "tokenizer_version": "bpe_v1"
+  }
+}

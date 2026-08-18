@@ -1,0 +1,34 @@
+{
+  "experiment_id": "EXP-002",
+  "git_commit": "unknown (not a git repository or git unavailable)",
+  "config_hash": "2cae2a6e4a3af059",
+  "config": {
+    "model_size": "n_small",
+    "token_budget": 24000,
+    "source_sweep": "EXP-012"
+  },
+  "dataset_version": "v1",
+  "tokenizer_version": "bpe_v1",
+  "seed": 0,
+  "hardware": {
+    "device_type": "cpu",
+    "num_gpus": 0,
+    "gpu_names": [],
+    "gpu_memory_gb": [],
+    "cpu_count": 2,
+    "total_ram_gb": 7.84,
+    "recommended_profile": "cpu"
+  },
+  "software_versions": {
+    "python": "3.11.15",
+    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cpu"
+  },
+  "created_at": 1787074300.5909278,
+  "training_tokens": 23872,
+  "final_train_loss": null,
+  "final_val_loss": 6.739266,
+  "evaluation_metrics": {},
+  "checkpoint_path": null,
+  "notes": ""
+}

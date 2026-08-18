@@ -1,0 +1,53 @@
+{
+  "experiment_id": "EXP-008",
+  "git_commit": "unknown (not a git repository or git unavailable)",
+  "config_hash": "7c473b20a8ae28c4",
+  "config": {
+    "variants": [
+      "raw",
+      "filtered",
+      "filtered_dedup"
+    ],
+    "hypothesis": "Does quality filtering (raw -> filtered) and/or deduplication (filtered -> filtered_dedup) improve validation loss at a fixed token budget and fixed model size? (Q7, Q8)"
+  },
+  "dataset_version": "v1",
+  "tokenizer_version": "v1",
+  "seed": 0,
+  "hardware": {
+    "device_type": "cpu",
+    "num_gpus": 0,
+    "gpu_names": [],
+    "gpu_memory_gb": [],
+    "cpu_count": 2,
+    "total_ram_gb": 7.84,
+    "recommended_profile": "cpu"
+  },
+  "software_versions": {
+    "python": "3.11.15",
+    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cpu"
+  },
+  "created_at": 1787074363.520717,
+  "training_tokens": null,
+  "final_train_loss": null,
+  "final_val_loss": null,
+  "evaluation_metrics": {
+    "raw": {
+      "final_val_loss": 6.609044,
+      "overall_perplexity": 734.025,
+      "macro_avg_perplexity": 734.2832
+    },
+    "filtered": {
+      "final_val_loss": 6.609044,
+      "overall_perplexity": 734.025,
+      "macro_avg_perplexity": 734.2832
+    },
+    "filtered_dedup": {
+      "final_val_loss": 6.606203,
+      "overall_perplexity": 733.2537,
+      "macro_avg_perplexity": 733.596
+    }
+  },
+  "checkpoint_path": null,
+  "notes": ""
+}
