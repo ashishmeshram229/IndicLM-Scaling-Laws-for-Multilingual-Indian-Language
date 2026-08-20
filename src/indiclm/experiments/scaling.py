@@ -50,7 +50,7 @@ class ScalingObservation:
 
 
 def _scaling_law(
-    nd: tuple[np.ndarray, np.ndarray], log_a: float, alpha: float, log_b: float, beta: float, l_inf: float
+    nd: tuple[np.ndarray, np.ndarray], log_a: float, alpha: float, log_b: float, beta: float, l_inf: float, /
 ) -> np.ndarray:
     n, d = nd
     return np.exp(log_a) / (n**alpha) + np.exp(log_b) / (d**beta) + l_inf
@@ -76,8 +76,11 @@ def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
     loss = np.array([o.final_val_loss for o in observations], dtype=float)
 
     try:
+        # scipy-stubs models curve_fit's xdata as a single 1-D array; it
+        # doesn't capture the (also-supported, and used here) multi-dimensional
+        # xdata case of a tuple of arrays, so this is a stub gap, not a bug.
         popt, pcov = curve_fit(
-            _scaling_law, (n, d), loss,
+            _scaling_law, (n, d), loss,  # type: ignore[arg-type]
             p0=[0.0, 0.3, 0.0, 0.3, min(loss) * 0.5],
             bounds=(
                 [-10.0, 1e-3, -10.0, 1e-3, 0.0],

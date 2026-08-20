@@ -13,7 +13,12 @@ import typer
 from rich.console import Console
 
 from indiclm.experiments.manifest import build_manifest, write_manifest
-from indiclm.experiments.scaling import fit_scaling_law, plot_scaling_curves, run_scaling_sweep
+from indiclm.experiments.scaling import (
+    ScalingObservation,
+    fit_scaling_law,
+    plot_scaling_curves,
+    run_scaling_sweep,
+)
 from indiclm.utils.logging import configure_logging
 
 app = typer.Typer(help="Model-size x token-budget scaling sweep (EXP-001/002/003/012).")
@@ -49,7 +54,7 @@ def scaling_sweep(
         "seq_len": seq_len, "total_tokens": 20000, "alpha": 0.7,
     }
 
-    all_observations = []
+    all_observations: list[ScalingObservation] = []
     for d_tokens_target in target_token_budgets:
         max_steps = max(1, round(d_tokens_target / tokens_per_step))
         obs = run_scaling_sweep(
@@ -83,18 +88,18 @@ def scaling_sweep(
     # sweep run for provenance.
     baseline_map = {"EXP-001": "n_tiny", "EXP-002": "n_small", "EXP-003": "n_medium"}
     for exp_id, run_id in baseline_map.items():
-        obs = next(
+        matched_run: ScalingObservation | None = next(
             (o for o in all_observations if o.run_id == f"{run_id}_d{max(target_token_budgets)}"), None
         )
-        if obs is None:
+        if matched_run is None:
             continue
         m = build_manifest(
             experiment_id=exp_id,
             config={"model_size": run_id, "token_budget": max(target_token_budgets), "source_sweep": "EXP-012"},
             dataset_version="v1", tokenizer_version="bpe_v1", seed=0,
         )
-        m.training_tokens = obs.d_tokens
-        m.final_val_loss = obs.final_val_loss
+        m.training_tokens = matched_run.d_tokens
+        m.final_val_loss = matched_run.final_val_loss
         write_manifest(m, out_dir.parent / exp_id)
 
     console.print(f"[green]Scaling sweep complete.[/green] Fit status: {fit.get('fit_status')}")

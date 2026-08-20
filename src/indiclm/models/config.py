@@ -44,6 +44,12 @@ class ModelConfig:
     def num_parameters_estimate(self) -> int:
         """Analytic non-embedding + embedding parameter count, used to pick
         model sizes for scaling experiments without instantiating the model."""
+        # __post_init__ always resolves these from None to a concrete int;
+        # the asserts document that invariant for mypy (n_kv_heads/d_ff are
+        # still declared `int | None` since None is a valid *constructor*
+        # input) and fail loudly if that invariant is ever broken.
+        assert self.n_kv_heads is not None
+        assert self.d_ff is not None
         emb = self.vocab_size * self.d_model
         attn_per_layer = (
             self.d_model * self.d_model  # q_proj

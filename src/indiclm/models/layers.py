@@ -8,6 +8,8 @@ architecture rather than import one.
 
 from __future__ import annotations
 
+import typing
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -77,6 +79,10 @@ class CausalSelfAttention(nn.Module):
 
         rope_freqs = precompute_rope_freqs(self.head_dim, max_seq_len, rope_theta)
         self.register_buffer("rope_freqs", rope_freqs, persistent=False)
+        # nn.Module's __getattr__ stub types buffers as `Tensor | Module`; this
+        # buffer is always a Tensor. The cast documents that for mypy without
+        # changing runtime behavior.
+        self.rope_freqs: torch.Tensor = typing.cast(torch.Tensor, self.rope_freqs)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         b, t, _ = x.shape

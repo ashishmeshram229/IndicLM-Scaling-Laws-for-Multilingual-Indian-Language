@@ -39,16 +39,16 @@ class ExactDeduplicator:
     """Marks exact duplicates via a hash of whitespace/case-normalized text."""
 
     def process(self, docs: list[Document]) -> list[Document]:
-        seen: dict[str, str] = {}
+        seen: dict[str, int] = {}
         cluster_id = 0
         for doc in docs:
             h = _normalized_hash(doc.text)
             if h in seen:
                 doc.is_duplicate = True
-                doc.dedup_cluster = seen[h]  # type: ignore[assignment]
+                doc.dedup_cluster = seen[h]
             else:
-                seen[h] = str(cluster_id)
-                doc.dedup_cluster = cluster_id  # type: ignore[assignment]
+                seen[h] = cluster_id
+                doc.dedup_cluster = cluster_id
                 cluster_id += 1
         return docs
 
@@ -72,10 +72,10 @@ class MinHashNearDeduplicator:
             m = MinHash(num_perm=self.num_perm)
             for sh in shingles:
                 m.update(sh.encode("utf-8"))
-            matches = lsh.query(m)
+            matches: list[str] = lsh.query(m)
             if matches:
                 doc.is_near_duplicate = True
-                doc.dedup_cluster = matches[0]  # type: ignore[assignment]
+                doc.dedup_cluster = matches[0]
             else:
                 lsh.insert(doc.document_id, m)
                 sketches[doc.document_id] = m

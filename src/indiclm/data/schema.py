@@ -28,7 +28,10 @@ class Document:
     document_id: str = ""
     quality_score: float | None = None
     quality_reasons: list[str] = field(default_factory=list)
-    dedup_cluster: int | None = None
+    # Exact-dup clusters are keyed by a sequential int index; near-dup
+    # clusters are keyed by the document_id of the first-seen match (see
+    # MinHashNearDeduplicator) — hence the union rather than int-only.
+    dedup_cluster: int | str | None = None
     is_duplicate: bool = False
     is_near_duplicate: bool = False
     contamination_status: str = "not_checked"  # not_checked | clean | flagged

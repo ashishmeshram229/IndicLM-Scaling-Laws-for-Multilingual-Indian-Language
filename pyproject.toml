@@ -26,6 +26,10 @@ dependencies = [
     "datasketch>=1.6",
     "fastapi>=0.110",
     "uvicorn>=0.29",
+    "pyyaml>=6.0",
+    "scipy>=1.12",
+    "matplotlib>=3.8",
+    "psutil>=5.9",
 ]
 
 [project.optional-dependencies]
@@ -35,6 +39,8 @@ dev = [
     "ruff>=0.4",
     "mypy>=1.9",
     "pre-commit>=3.7",
+    "types-PyYAML>=6.0",
+    "scipy-stubs>=1.12; python_version >= '3.10'",
 ]
 tracking = ["mlflow>=2.12"]
 
@@ -50,6 +56,30 @@ python_version = "3.11"
 warn_unused_ignores = true
 warn_return_any = true
 disallow_untyped_defs = true
+
+# torch/numpy's type stubs are deliberately loose around Tensor/ndarray
+# return types (e.g. nn.Module.__call__, np.polyfit), so warn_return_any
+# fires on correct code in tensor-heavy modules. Kept strict everywhere
+# else (CLI, data pipeline, experiment bookkeeping) where it catches real
+# bugs, per docs/reproducibility.md's "no fabricated guarantees" stance:
+# we relax the rule explicitly and narrowly rather than globally.
+[[tool.mypy.overrides]]
+module = [
+    "indiclm.models.*",
+    "indiclm.training.trainer",
+    "indiclm.training.checkpoint",
+    "indiclm.experiments.scaling",
+    "indiclm.experiments.manifest",
+    "indiclm.utils.logging",
+]
+warn_return_any = false
+
+# Third-party libraries with no published type stubs. `mlflow` is an
+# optional extra (see `tracking` in [project.optional-dependencies]) that
+# isn't installed by default, so it's expected to be unresolvable here.
+[[tool.mypy.overrides]]
+module = ["datasketch.*", "mlflow.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
