@@ -12,6 +12,8 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
+from indiclm.experiments.dashboard import generate_dashboard
+
 app = typer.Typer(help="Generate the aggregated research report from run experiments.")
 console = Console()
 
@@ -63,3 +65,16 @@ def generate(
     body = "\n".join(sections)
     Path(out_path).write_text(body, encoding="utf-8")
     console.print(f"[green]Report generated:[/green] {out_path}")
+
+
+@app.command()
+def dashboard(
+    experiments_root: Path = typer.Option(Path("experiments/manifests")),
+    data_dir: Path = typer.Option(Path("data")),
+    out_path: Path = typer.Option(Path("docs/dashboard.html")),
+) -> None:
+    """Generate the static HTML research dashboard (dataset, tokenizer,
+    per-experiment results, ablations, scaling) from whatever artifacts
+    are currently on disk under `experiments/manifests/` and `data/`."""
+    path = generate_dashboard(experiments_root=experiments_root, data_dir=data_dir, out_path=out_path)
+    console.print(f"[green]Dashboard generated:[/green] {path}")
