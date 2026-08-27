@@ -13,7 +13,6 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
-from typing import Optional
 
 import sentencepiece as spm
 import torch
@@ -68,7 +67,7 @@ class GenerateRequest(BaseModel):
     prompt: str = Field(..., min_length=1, max_length=4000)
     max_new_tokens: int = Field(32, ge=1, le=256)
     temperature: float = Field(1.0, gt=0.0, le=2.0)
-    top_k: Optional[int] = Field(None, ge=1, le=1000)
+    top_k: int | None = Field(None, ge=1, le=1000)
 
 
 class GenerateResponse(BaseModel):
@@ -116,7 +115,7 @@ def generate(req: GenerateRequest) -> GenerateResponse:
         )
         generated_ids = out[0, len(input_ids) :].tolist()
         text = tokenizer.decode(generated_ids)
-    except Exception as e:  # noqa: BLE001 - convert to a structured API error
+    except Exception as e:
         _metrics["errors_total"] += 1
         raise HTTPException(status_code=500, detail=f"generation_failed: {e}") from e
 

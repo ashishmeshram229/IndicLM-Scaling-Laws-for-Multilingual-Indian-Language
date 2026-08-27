@@ -71,7 +71,7 @@ ROMANIZED_INDIC_MARKERS: set[str] = {
 
 
 class LanguageIdentifier(Protocol):
-    def identify(self, text: str) -> "LangIdResult": ...
+    def identify(self, text: str) -> LangIdResult: ...
 
 
 @dataclass

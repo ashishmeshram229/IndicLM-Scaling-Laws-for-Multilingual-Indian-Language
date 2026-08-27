@@ -10,8 +10,8 @@ only depends on the `Document` schema.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from pathlib import Path
-from typing import Iterator
 
 from indiclm.data.normalize import normalize_text
 from indiclm.data.schema import Document

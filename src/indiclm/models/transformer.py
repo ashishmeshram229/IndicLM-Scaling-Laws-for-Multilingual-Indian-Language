@@ -6,7 +6,7 @@ training engine — not a wrapped Hugging Face `GPT2LMHeadModel` or similar.
 from __future__ import annotations
 
 import torch
-import torch.nn as nn
+from torch import nn
 
 from indiclm.models.config import ModelConfig
 from indiclm.models.layers import CausalSelfAttention, RMSNorm, SwiGLU
