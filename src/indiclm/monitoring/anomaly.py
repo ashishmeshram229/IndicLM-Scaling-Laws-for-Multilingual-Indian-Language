@@ -6,6 +6,7 @@ with corrupted state.
 
 from __future__ import annotations
 
+import math
 from collections import deque
 from dataclasses import dataclass
 
@@ -25,11 +26,11 @@ class AnomalyDetector:
 
     def check(self, loss: float, grad_norm: float, step: int) -> list[str]:
         warnings: list[str] = []
-        if loss != loss:  # NaN check without importing math for this hot path
+        if math.isnan(loss):
             raise TrainingAnomaly(f"step {step}: loss is NaN")
         if loss in (float("inf"), float("-inf")):
             raise TrainingAnomaly(f"step {step}: loss is Inf")
-        if grad_norm != grad_norm or grad_norm in (float("inf"), float("-inf")):
+        if math.isnan(grad_norm) or grad_norm in (float("inf"), float("-inf")):
             raise TrainingAnomaly(f"step {step}: gradient norm is NaN/Inf")
         if grad_norm > self.grad_norm_threshold:
             warnings.append(

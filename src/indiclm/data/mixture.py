@@ -55,8 +55,8 @@ def capped_mixture(weights: dict[str, float], cap: float) -> dict[str, float]:
         remaining_total = sum(remaining.values())
         if remaining_total == 0:
             break
-        for k in remaining:
-            weights[k] += excess * (remaining[k] / remaining_total)
+        for k, v in remaining.items():
+            weights[k] += excess * (v / remaining_total)
     total = sum(weights.values())
     return {k: v / total for k, v in weights.items()}
 

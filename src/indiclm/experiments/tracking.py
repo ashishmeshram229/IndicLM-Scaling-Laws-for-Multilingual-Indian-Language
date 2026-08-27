@@ -30,7 +30,13 @@ class LocalTracker:
     def __init__(self, run_dir: Path) -> None:
         self.run_dir = Path(run_dir)
         self.run_dir.mkdir(parents=True, exist_ok=True)
-        self._metrics_file = open(self.run_dir / "tracked_metrics.jsonl", "a", encoding="utf-8")
+        # Held open for the lifetime of the run (appended to on every
+        # log_metrics call, closed explicitly in close()) -- a `with`
+        # block doesn't fit this usage pattern, hence noqa rather than a
+        # restructure.
+        self._metrics_file = open(  # noqa: SIM115
+            self.run_dir / "tracked_metrics.jsonl", "a", encoding="utf-8"
+        )
 
     def log_params(self, params: dict[str, Any]) -> None:
         (self.run_dir / "params.json").write_text(json.dumps(params, indent=2, default=str))

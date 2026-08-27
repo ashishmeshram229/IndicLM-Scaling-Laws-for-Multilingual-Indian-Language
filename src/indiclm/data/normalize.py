@@ -10,7 +10,7 @@ from __future__ import annotations
 import re
 import unicodedata
 
-_WHITESPACE_RE = re.compile(r"[ \t ​]+")
+_WHITESPACE_RE = re.compile(r"[ \t\xa0\u200b]+")  # incl. NBSP and zero-width space
 _MULTI_NEWLINE_RE = re.compile(r"\n{3,}")
 
 

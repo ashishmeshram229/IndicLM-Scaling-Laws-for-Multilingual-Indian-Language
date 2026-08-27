@@ -47,7 +47,7 @@ class Document:
         self.character_count = len(self.text)
         if not self.document_id:
             self.document_id = hashlib.sha256(
-                f"{self.source}:{self.text}".encode("utf-8")
+                f"{self.source}:{self.text}".encode()
             ).hexdigest()[:16]
         if not self.ingested_at:
             self.ingested_at = time.time()

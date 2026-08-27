@@ -51,6 +51,16 @@ indiclm = "indiclm.cli.main:app"
 line-length = 100
 target-version = "py311"
 
+[tool.ruff.lint]
+# B008 (function call in a default argument) is a real anti-pattern in
+# general Python, but it's the canonical Typer/FastAPI idiom -- every CLI
+# command and API endpoint in this repo uses `= typer.Option(...)` /
+# `= Field(...)` as a default, which Typer/FastAPI evaluate once at
+# registration time, not per-call. Ignoring it here (rather than
+# rewriting ~30 call sites against the framework's own documented style)
+# is the correct fix, not a suppression of a real bug.
+ignore = ["B008"]
+
 [tool.mypy]
 python_version = "3.11"
 warn_unused_ignores = true

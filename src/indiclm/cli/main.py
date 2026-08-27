@@ -14,6 +14,13 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from indiclm.cli.ablation_cmd import app as ablation_app
+from indiclm.cli.data_cmd import app as data_app
+from indiclm.cli.experiment_cmd import app as experiment_app
+from indiclm.cli.report_cmd import app as report_app
+from indiclm.cli.scaling_cmd import app as scaling_app
+from indiclm.cli.tokenizer_cmd import app as tokenizer_app
+from indiclm.cli.train_cmd import app as train_app
 from indiclm.utils.hardware import detect_hardware
 from indiclm.utils.logging import configure_logging, get_logger
 
@@ -23,6 +30,31 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 console = Console()
+
+app.add_typer(data_app, name="data")
+app.add_typer(tokenizer_app, name="tokenizer")
+app.add_typer(train_app, name="")  # exposes `train` and `evaluate` at top level
+app.add_typer(experiment_app, name="experiment")
+app.add_typer(scaling_app, name="experiment")
+app.add_typer(ablation_app, name="experiment")
+app.add_typer(report_app, name="report")
+
+
+@app.command()
+def serve(
+    checkpoint: str = typer.Option(..., help="Path to a training checkpoint (.pt)."),
+    tokenizer: str = typer.Option("data/tokenizer_v1/indiclm_tokenizer.model"),
+    host: str = typer.Option("0.0.0.0"),
+    port: int = typer.Option(8000),
+) -> None:
+    """Serve a trained checkpoint over the inference API (FastAPI/uvicorn)."""
+    import os
+
+    import uvicorn
+
+    os.environ["INDICLM_CHECKPOINT"] = checkpoint
+    os.environ["INDICLM_TOKENIZER"] = tokenizer
+    uvicorn.run("indiclm.inference.api:app", host=host, port=port)
 
 
 @app.command()

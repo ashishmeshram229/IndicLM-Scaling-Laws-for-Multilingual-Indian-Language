@@ -16,7 +16,8 @@ from indiclm.evaluation.downstream import evaluate_downstream_sentiment
 from indiclm.evaluation.perplexity import evaluate_checkpoint
 from indiclm.models.config import ModelConfig
 from indiclm.training.dataset import PackedTokenDataset
-from indiclm.training.trainer import TrainingConfig, train as run_training
+from indiclm.training.trainer import TrainingConfig
+from indiclm.training.trainer import train as run_training
 from indiclm.utils.logging import configure_logging
 
 app = typer.Typer(help="Train and evaluate models directly (ad-hoc, outside the experiment registry).")

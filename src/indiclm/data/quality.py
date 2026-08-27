@@ -58,7 +58,7 @@ def compute_signals(text: str) -> QualitySignals:
         else:
             run = 1
 
-    unique_words = len(set(w.lower() for w in words))
+    unique_words = len({w.lower() for w in words})
 
     return QualitySignals(
         length_chars=len(text),

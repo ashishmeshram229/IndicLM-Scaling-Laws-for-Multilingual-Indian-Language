@@ -25,7 +25,7 @@ def _git_commit(repo_dir: Path | None = None) -> str:
             cwd=repo_dir, capture_output=True, text=True, timeout=5, check=True,
         )
         return out.stdout.strip()
-    except Exception:
+    except (subprocess.SubprocessError, OSError, FileNotFoundError):
         return "unknown (not a git repository or git unavailable)"
 
 

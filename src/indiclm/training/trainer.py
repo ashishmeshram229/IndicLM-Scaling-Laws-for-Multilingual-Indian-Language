@@ -100,7 +100,11 @@ def train(
     output_dir.mkdir(parents=True, exist_ok=True)
     metrics_path = output_dir / "metrics.jsonl"
     checkpoints_dir = output_dir / "checkpoints"
-    metrics_file = open(metrics_path, "a", encoding="utf-8")
+    # Held open for the whole training run (appended to on every logged
+    # step, closed explicitly at the end of this function) -- a `with`
+    # block doesn't fit this usage pattern, hence noqa rather than a
+    # restructure.
+    metrics_file = open(metrics_path, "a", encoding="utf-8")  # noqa: SIM115
 
     use_bf16 = train_config.precision == "bf16" and device.type == "cuda"
     autocast_ctx = torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=use_bf16)

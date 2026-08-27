@@ -94,7 +94,7 @@ def test_moe_forward_and_stats() -> None:
     model = DecoderOnlyTransformer(cfg)
     x = torch.randint(0, 80, (2, 8))
     y = torch.randint(0, 80, (2, 8))
-    logits, loss = model(x, y)
+    logits, _loss = model(x, y)
     assert logits.shape == (2, 8, 80)
     stats = model.blocks[0].ffn.last_stats
     assert stats is not None

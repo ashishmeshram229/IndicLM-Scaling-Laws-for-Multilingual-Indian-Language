@@ -41,7 +41,7 @@ def test_quality_scorer_penalizes_repeated_character_spam() -> None:
     scorer = RuleBasedQualityScorer()
     spammy = Document(text="!" * 50, source="test")
     spammy.language = "eng"
-    score, reasons = scorer.score(spammy)
+    _score, reasons = scorer.score(spammy)
     assert "high_repeated_char_ratio" in reasons
 
 
@@ -49,5 +49,5 @@ def test_quality_scorer_accepts_reasonable_sentence() -> None:
     scorer = RuleBasedQualityScorer()
     doc = Document(text="The library near our house has thousands of books.", source="test")
     doc.language = "eng"
-    score, reasons = scorer.score(doc)
+    score, _reasons = scorer.score(doc)
     assert score >= 0.8
