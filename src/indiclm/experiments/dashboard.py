@@ -317,6 +317,60 @@ def _ablation_section(root: Path) -> str:
     return f"<section><h2>Ablations</h2>{''.join(blocks)}</section>"
 
 
+def _downstream_section(root: Path) -> str:
+    """Reads every `<exp_id>/downstream_evaluation.json` under `root`
+    (written by `indiclm evaluate-downstream --out-path ...`) and compares
+    zero-shot sentiment accuracy across whichever experiments have one —
+    directly answering whether mixture/tokenizer/data-quality choices
+    move downstream task quality, not just perplexity."""
+    rows = []
+    chance = None
+    overall_accuracies = []
+    for path in sorted(root.glob("*/downstream_evaluation.json")):
+        report = _load_json(path)
+        if report is None:
+            continue
+        exp_id = path.parent.name
+        chance = report.get("chance_accuracy", chance)
+        overall_accuracies.append(report.get("overall_accuracy"))
+        rows.append(
+            f"<tr><td><code>{_esc(exp_id)}</code></td>"
+            f"<td>{_fmt(report.get('overall_accuracy'), 4)}</td>"
+            f"<td>{_fmt(report.get('macro_avg_accuracy'), 4)}</td>"
+            f"<td>{report.get('n_examples')}</td></tr>"
+        )
+    if not rows:
+        return (
+            "<section><h2>Downstream evaluation</h2>"
+            "<p class='muted'>Run `indiclm evaluate-downstream --checkpoint ... "
+            "--out-path experiments/manifests/&lt;exp_id&gt;/downstream_evaluation.json` "
+            "to populate this section.</p></section>"
+        )
+    table = (
+        "<table><thead><tr><th>Experiment</th><th>Overall accuracy</th>"
+        "<th>Macro-avg accuracy</th><th>N examples</th></tr></thead>"
+        f"<tbody>{''.join(rows)}</tbody></table>"
+    )
+    all_at_chance = chance is not None and all(a == chance for a in overall_accuracies)
+    note = (
+        f"<p class='muted'>Zero-shot sentiment classification (see "
+        f"<code>indiclm.evaluation.downstream</code> for the scoring method); chance = {_fmt(chance, 4)}. "
+        + (
+            "Every run here scores at chance — at this project's scale "
+            "(tens-to-hundreds of thousands of parameters, tens of thousands of training tokens), "
+            "no configuration shows measurable zero-shot task signal; all collapse to predicting "
+            "whichever label the tiny tokenizer/vocabulary makes marginally more probable, "
+            "regardless of the input. This is an honest negative result about scale, not a "
+            "claim that mixture/tokenizer/data-quality choices don't matter — see "
+            "docs/reproducibility.md."
+            if all_at_chance
+            else "Differences between rows reflect real per-configuration variation."
+        )
+        + "</p>"
+    )
+    return f"<section><h2>Downstream evaluation</h2>{table}{note}</section>"
+
+
 def _scaling_section(root: Path) -> str:
     fit = _load_json(root / "EXP-012" / "scaling_law_fit.json")
     if fit is None:
@@ -436,6 +490,7 @@ def generate_dashboard(
     tokenizer_html = _tokenizer_section(data_dir)
     experiments_html = _experiments_section(experiments_root)
     ablation_html = _ablation_section(experiments_root)
+    downstream_html = _downstream_section(experiments_root)
     scaling_html = _scaling_section(experiments_root)
 
     generated_at = time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime())
@@ -463,6 +518,7 @@ def generate_dashboard(
   {tokenizer_html}
   {experiments_html}
   {ablation_html}
+  {downstream_html}
   {scaling_html}
   <footer>IndicLM &middot; static, dependency-free, regenerate anytime with
   <code>indiclm report dashboard</code>.</footer>

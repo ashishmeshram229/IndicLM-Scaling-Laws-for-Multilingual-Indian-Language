@@ -7,12 +7,14 @@ interact when training language models for Indian languages.
 **Status: end-to-end pipeline implemented and run** — data pipeline,
 tokenizer training/benchmarking, a from-scratch decoder-only Transformer,
 a real training engine (checkpointing, resume, mixed precision path,
-anomaly detection), standalone evaluation, an experiment-tracking +
-manifest + report system, a scaling-law sweep with a fitted (if
-underdetermined) power law, a FastAPI inference service, Docker/Compose
-files, CI, and 31 passing unit/integration tests. All 12 registry
-experiments (EXP-001 through EXP-012) have been run — see
-`docs/research_report.md` and `experiments/manifests/`.
+anomaly detection), standalone evaluation (perplexity + a zero-shot
+sentiment downstream task, see `docs/evaluation.md`), an
+experiment-tracking + manifest + report system, a scaling-law sweep with
+a fitted (if underdetermined) power law, a static HTML research
+dashboard, a FastAPI inference service, Docker/Compose files, CI, and 36
+passing unit/integration tests. All 12 registry experiments (EXP-001
+through EXP-012) have been run — see `docs/research_report.md` and
+`experiments/manifests/`.
 
 **Read this before trusting any number below:** every experiment in this
 repository trains on a small, hand-authored bootstrap corpus (a few
@@ -60,7 +62,7 @@ but-unvalidated (GPU, multi-GPU, Slurm), in `docs/architecture.md`.
 ```bash
 git clone <this-repo> && cd indiclm
 make dev-install                 # pip install -e ".[dev]" + pre-commit
-make test                        # 31 unit + integration tests, CPU-only
+make test                        # 36 unit + integration tests, CPU-only
 indiclm doctor                    # inspect Python/PyTorch/CUDA/GPU/disk/memory
 
 indiclm data prepare              # data/raw -> data/processed (+ stats)
@@ -73,6 +75,8 @@ indiclm experiment scaling-sweep  # EXP-001/002/003/012
 indiclm experiment tokenizer-ablation   # EXP-004
 indiclm experiment data-ablation        # EXP-008, EXP-009
 indiclm experiment compare --experiments EXP-005 EXP-006 EXP-007
+indiclm evaluate-downstream --checkpoint experiments/manifests/EXP-007/checkpoints/final.pt \
+  --out-path experiments/manifests/EXP-007/downstream_evaluation.json   # zero-shot sentiment eval
 indiclm report generate            # docs/research_report.md
 indiclm report dashboard            # docs/dashboard.html (static, no deps)
 
@@ -107,10 +111,11 @@ build unverified (no Docker daemon in the build environment).
 
 ## Roadmap
 
-Implemented: data pipeline, tokenizer, model, training, evaluation,
-experiment tracking, scaling experiments, inference API, a static HTML
-research dashboard, CI, tests. Not yet implemented: multi-GPU/Slurm
-execution (architecture documented, untested), model-based
-quality/contamination scoring, downstream-task (QA/classification/
-translation) evaluation against public Indic benchmarks. See
+Implemented: data pipeline, tokenizer, model, training, evaluation
+(perplexity + a zero-shot sentiment downstream task), experiment
+tracking, scaling experiments, inference API, a static HTML research
+dashboard, CI, tests. Not yet implemented: multi-GPU/Slurm execution
+(architecture documented, untested), model-based quality/contamination
+scoring, downstream tasks beyond sentiment classification (QA,
+translation, summarization) against public Indic benchmarks. See
 `docs/architecture.md` for the full map.

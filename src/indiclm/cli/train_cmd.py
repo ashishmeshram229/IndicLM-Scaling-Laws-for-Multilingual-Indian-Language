@@ -12,6 +12,7 @@ import yaml
 from rich.console import Console
 from torch.utils.data import DataLoader, random_split
 
+from indiclm.evaluation.downstream import evaluate_downstream_sentiment
 from indiclm.evaluation.perplexity import evaluate_checkpoint
 from indiclm.models.config import ModelConfig
 from indiclm.training.dataset import PackedTokenDataset
@@ -68,3 +69,30 @@ def evaluate(
     configure_logging()
     report = evaluate_checkpoint(checkpoint, shards_dir, tokenizer_path, seq_len)
     console.print(report.to_dict())
+
+
+@app.command("evaluate-downstream")
+def evaluate_downstream(
+    checkpoint: Path = typer.Option(...),
+    tokenizer_path: Path = typer.Option(Path("data/tokenizer_v1/indiclm_tokenizer.model")),
+    eval_dir: Path = typer.Option(Path("data/eval/sentiment")),
+    out_path: Path = typer.Option(None, help="Optional path to write the full report as JSON."),
+) -> None:
+    """Zero-shot sentiment classification eval (see
+    `indiclm.evaluation.downstream` for the scoring method and why it
+    exists alongside perplexity)."""
+    configure_logging()
+    report = evaluate_downstream_sentiment(checkpoint, tokenizer_path, eval_dir)
+    console.print(
+        f"[green]Downstream eval complete.[/green] overall_accuracy={report.overall_accuracy} "
+        f"macro_avg_accuracy={report.macro_avg_accuracy} (chance={report.chance_accuracy}, "
+        f"n={report.n_examples})"
+    )
+    for lang, result in sorted(report.per_language.items()):
+        console.print(f"  {lang}: {result.accuracy} ({result.n_correct}/{result.n_examples})")
+    if out_path is not None:
+        import json
+
+        Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(out_path).write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
+        console.print(f"Report written to {out_path}")

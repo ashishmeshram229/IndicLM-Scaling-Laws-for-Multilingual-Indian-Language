@@ -11,20 +11,26 @@ venv/
 .coverage
 htmlcov/
 
-# Data & artifacts (never commit large/binary research artifacts)
-data/raw/
-data/processed/
+# Data & artifacts: data/raw/ and data/eval/ (hand-authored, small,
+# license-clean input) ARE committed — everything else is regenerated
+# from them by `indiclm data prepare` / `indiclm tokenizer train`, so
+# committing the regenerated output would just be redundant, derived state.
+data/processed*/
 data/shards/
+data/tokenizer_v1/
+data/tokenizer_unigram/
 *.bin
 *.safetensors
-*.pt
+*.model
+*.vocab
 *.ckpt
+*.pt
 
-# Experiment outputs
-experiments/manifests/*.json
-experiments/reports/*
-!experiments/reports/.gitkeep
-checkpoints/
+# Experiment checkpoints are large binaries and fully reproducible from
+# the versioned config + seed (see docs/reproducibility.md) — manifests,
+# reports, metrics, and plots ARE committed (they're the actual evidence).
+experiments/manifests/*/checkpoints/
+experiments/manifests/*/_train_corpus.txt
 wandb/
 mlruns/
 

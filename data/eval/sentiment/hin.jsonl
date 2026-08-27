@@ -1,0 +1,8 @@
+{"text": "यह फिल्म बहुत अच्छी और दिलचस्प थी।", "label": "positive"}
+{"text": "खाना बहुत स्वादिष्ट था।", "label": "positive"}
+{"text": "सेवा उत्कृष्ट और मित्रवत थी।", "label": "positive"}
+{"text": "यह एक प्रेरणादायक कहानी है।", "label": "positive"}
+{"text": "यह फिल्म बहुत उबाऊ थी।", "label": "negative"}
+{"text": "खाना ठंडा और बेस्वाद था।", "label": "negative"}
+{"text": "सेवा बहुत खराब थी।", "label": "negative"}
+{"text": "मुझे यह उत्पाद पसंद नहीं आया।", "label": "negative"}

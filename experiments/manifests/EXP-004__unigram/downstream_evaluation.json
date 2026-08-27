@@ -1,0 +1,735 @@
+{
+  "task": "sentiment_classification",
+  "checkpoint": "experiments/manifests/EXP-004__unigram/checkpoints/final.pt",
+  "tokenizer": "data/tokenizer_unigram/indiclm_tokenizer.model",
+  "overall_accuracy": 0.5,
+  "macro_avg_accuracy": 0.5,
+  "n_examples": 64,
+  "label_words": [
+    "positive",
+    "negative"
+  ],
+  "chance_accuracy": 0.5,
+  "per_language": {
+    "ben": {
+      "language": "ben",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u099a\u09b2\u099a\u09cd\u099a\u09bf\u09a4\u09cd\u09b0\u099f\u09bf \u0996\u09c1\u09ac \u09b8\u09c1\u09a8\u09cd\u09a6\u09b0 \u098f\u09ac\u0982 \u09b9\u09c3\u09a6\u09af\u09bc\u09b8\u09cd\u09aa\u09b0\u09cd\u09b6\u09c0 \u099b\u09bf\u09b2\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.3193907207912865,
+            "negative": -6.67036787668864
+          }
+        },
+        {
+          "text": "\u0996\u09be\u09ac\u09be\u09b0\u099f\u09bf \u0996\u09c1\u09ac \u09b8\u09c1\u09b8\u09cd\u09ac\u09be\u09a6\u09c1 \u099b\u09bf\u09b2\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.318413257598877,
+            "negative": -6.662572383880615
+          }
+        },
+        {
+          "text": "\u09aa\u09b0\u09bf\u09b7\u09c7\u09ac\u09be \u099a\u09ae\u09ce\u0995\u09be\u09b0 \u099b\u09bf\u09b2\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.30936066309611,
+            "negative": -6.6625025272369385
+          }
+        },
+        {
+          "text": "\u099a\u09b2\u099a\u09cd\u099a\u09bf\u09a4\u09cd\u09b0\u099f\u09bf \u0996\u09c1\u09ac \u09ac\u09bf\u09b0\u0995\u09cd\u09a4\u09bf\u0995\u09b0 \u099b\u09bf\u09b2\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.320885393354628,
+            "negative": -6.6661057472229
+          }
+        },
+        {
+          "text": "\u0996\u09be\u09ac\u09be\u09b0\u099f\u09bf \u09a0\u09be\u09a8\u09cd\u09a1\u09be \u098f\u09ac\u0982 \u09b8\u09cd\u09ac\u09be\u09a6\u09b9\u09c0\u09a8 \u099b\u09bf\u09b2\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.314259158240424,
+            "negative": -6.660026629765828
+          }
+        },
+        {
+          "text": "\u09aa\u09b0\u09bf\u09b7\u09c7\u09ac\u09be \u0996\u09c1\u09ac \u0996\u09be\u09b0\u09be\u09aa \u099b\u09bf\u09b2\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.3106076452467175,
+            "negative": -6.660966952641805
+          }
+        }
+      ]
+    },
+    "eng": {
+      "language": "eng",
+      "n_examples": 8,
+      "n_correct": 4,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "This movie was absolutely wonderful and touching.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.303104241689046,
+            "negative": -6.660932461420695
+          }
+        },
+        {
+          "text": "I loved the food, it was delicious and fresh.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.304849306742351,
+            "negative": -6.658092657725017
+          }
+        },
+        {
+          "text": "The service was excellent and the staff were friendly.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.30407534705268,
+            "negative": -6.660831371943156
+          }
+        },
+        {
+          "text": "What a beautiful and inspiring story.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.302097850375706,
+            "negative": -6.6599440574646
+          }
+        },
+        {
+          "text": "This movie was boring and way too long.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.306754271189372,
+            "negative": -6.659606536229451
+          }
+        },
+        {
+          "text": "The food was cold and tasteless.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.303214814927843,
+            "negative": -6.662966251373291
+          }
+        },
+        {
+          "text": "The service was terrible and very slow.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.304911719428168,
+            "negative": -6.659497817357381
+          }
+        },
+        {
+          "text": "I regret buying this product, it broke immediately.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.306651592254639,
+            "negative": -6.660799105962117
+          }
+        }
+      ]
+    },
+    "guj": {
+      "language": "guj",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0a86 \u0aab\u0abf\u0ab2\u0acd\u0aae \u0a96\u0ac2\u0aac \u0ab8\u0ab0\u0ab8 \u0a85\u0aa8\u0ac7 \u0aaa\u0acd\u0ab0\u0ac7\u0ab0\u0aa3\u0abe\u0aa6\u0abe\u0aaf\u0a95 \u0ab9\u0aa4\u0ac0.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.32693534427219,
+            "negative": -6.6714928150177
+          }
+        },
+        {
+          "text": "\u0a96\u0acb\u0ab0\u0abe\u0a95 \u0a96\u0ac2\u0aac \u0ab8\u0acd\u0ab5\u0abe\u0aa6\u0abf\u0ab7\u0acd\u0a9f \u0ab9\u0aa4\u0acb.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.33769596947564,
+            "negative": -6.675684849421184
+          }
+        },
+        {
+          "text": "\u0ab8\u0ac7\u0ab5\u0abe \u0a89\u0aa4\u0acd\u0aa4\u0aae \u0ab9\u0aa4\u0ac0.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.32317935095893,
+            "negative": -6.668308734893799
+          }
+        },
+        {
+          "text": "\u0a86 \u0aab\u0abf\u0ab2\u0acd\u0aae \u0a96\u0ac2\u0aac \u0a95\u0a82\u0a9f\u0abe\u0ab3\u0abe\u0a9c\u0aa8\u0a95 \u0ab9\u0aa4\u0ac0.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.3200375239054365,
+            "negative": -6.6683140595753985
+          }
+        },
+        {
+          "text": "\u0a96\u0acb\u0ab0\u0abe\u0a95 \u0aa0\u0a82\u0aa1\u0acb \u0a85\u0aa8\u0ac7 \u0ab8\u0acd\u0ab5\u0abe\u0aa6 \u0ab5\u0a97\u0ab0\u0aa8\u0acb \u0ab9\u0aa4\u0acb.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.336704836951362,
+            "negative": -6.678782065709432
+          }
+        },
+        {
+          "text": "\u0ab8\u0ac7\u0ab5\u0abe \u0a96\u0ac2\u0aac \u0a96\u0ab0\u0abe\u0aac \u0ab9\u0aa4\u0ac0.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.340462154812283,
+            "negative": -6.674789110819499
+          }
+        }
+      ]
+    },
+    "hin": {
+      "language": "hin",
+      "n_examples": 8,
+      "n_correct": 4,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u092f\u0939 \u092b\u093f\u0932\u094d\u092e \u092c\u0939\u0941\u0924 \u0905\u091a\u094d\u091b\u0940 \u0914\u0930 \u0926\u093f\u0932\u091a\u0938\u094d\u092a \u0925\u0940\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.319599310557048,
+            "negative": -6.660888433456421
+          }
+        },
+        {
+          "text": "\u0916\u093e\u0928\u093e \u092c\u0939\u0941\u0924 \u0938\u094d\u0935\u093e\u0926\u093f\u0937\u094d\u091f \u0925\u093e\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.311510668860541,
+            "negative": -6.660290400187175
+          }
+        },
+        {
+          "text": "\u0938\u0947\u0935\u093e \u0909\u0924\u094d\u0915\u0943\u0937\u094d\u091f \u0914\u0930 \u092e\u093f\u0924\u094d\u0930\u0935\u0924 \u0925\u0940\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.334595309363471,
+            "negative": -6.660735845565796
+          }
+        },
+        {
+          "text": "\u092f\u0939 \u090f\u0915 \u092a\u094d\u0930\u0947\u0930\u0923\u093e\u0926\u093e\u092f\u0915 \u0915\u0939\u093e\u0928\u0940 \u0939\u0948\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.313740571339925,
+            "negative": -6.660901149113973
+          }
+        },
+        {
+          "text": "\u092f\u0939 \u092b\u093f\u0932\u094d\u092e \u092c\u0939\u0941\u0924 \u0909\u092c\u093e\u090a \u0925\u0940\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.31332000096639,
+            "negative": -6.661540349324544
+          }
+        },
+        {
+          "text": "\u0916\u093e\u0928\u093e \u0920\u0902\u0921\u093e \u0914\u0930 \u092c\u0947\u0938\u094d\u0935\u093e\u0926 \u0925\u093e\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.32094489203559,
+            "negative": -6.659750858942668
+          }
+        },
+        {
+          "text": "\u0938\u0947\u0935\u093e \u092c\u0939\u0941\u0924 \u0916\u0930\u093e\u092c \u0925\u0940\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.313910961151123,
+            "negative": -6.658710400263469
+          }
+        },
+        {
+          "text": "\u092e\u0941\u091d\u0947 \u092f\u0939 \u0909\u0924\u094d\u092a\u093e\u0926 \u092a\u0938\u0902\u0926 \u0928\u0939\u0940\u0902 \u0906\u092f\u093e\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.317571851942274,
+            "negative": -6.660744031270345
+          }
+        }
+      ]
+    },
+    "kan": {
+      "language": "kan",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0c88 \u0c9a\u0cbf\u0ca4\u0ccd\u0cb0 \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0c9a\u0cc6\u0ca8\u0ccd\u0ca8\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1 \u0cae\u0ca4\u0ccd\u0ca4\u0cc1 \u0cb8\u0ccd\u0caa\u0cc2\u0cb0\u0ccd\u0ca4\u0cbf\u0ca6\u0cbe\u0caf\u0c95\u0cb5\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.318153487311469,
+            "negative": -6.672932147979736
+          }
+        },
+        {
+          "text": "\u0c8a\u0c9f \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0cb0\u0cc1\u0c9a\u0cbf\u0caf\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.310785028669569,
+            "negative": -6.669019381205241
+          }
+        },
+        {
+          "text": "\u0cb8\u0cc7\u0cb5\u0cc6 \u0c85\u0ca4\u0ccd\u0caf\u0cc1\u0ca4\u0ccd\u0ca4\u0cae\u0cb5\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.308542251586914,
+            "negative": -6.666726112365723
+          }
+        },
+        {
+          "text": "\u0c88 \u0c9a\u0cbf\u0ca4\u0ccd\u0cb0 \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0cac\u0cc7\u0cb8\u0cb0\u0cb5\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.314411269293891,
+            "negative": -6.668717543284099
+          }
+        },
+        {
+          "text": "\u0c8a\u0c9f \u0ca4\u0ca3\u0ccd\u0ca3\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1 \u0cae\u0ca4\u0ccd\u0ca4\u0cc1 \u0cb0\u0cc1\u0c9a\u0cbf \u0c87\u0cb0\u0cb2\u0cbf\u0cb2\u0ccd\u0cb2.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.317687299516466,
+            "negative": -6.667898178100586
+          }
+        },
+        {
+          "text": "\u0cb8\u0cc7\u0cb5\u0cc6 \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0c95\u0cc6\u0c9f\u0ccd\u0c9f\u0ca6\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.313375420040554,
+            "negative": -6.670421838760376
+          }
+        }
+      ]
+    },
+    "mal": {
+      "language": "mal",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0d08 \u0d38\u0d3f\u0d28\u0d3f\u0d2e \u0d35\u0d33\u0d30\u0d46 \u0d28\u0d32\u0d4d\u0d32\u0d24\u0d41\u0d02 \u0d2a\u0d4d\u0d30\u0d1a\u0d4b\u0d26\u0d28\u0d3e\u0d24\u0d4d\u0d2e\u0d15\u0d35\u0d41\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.303881857130262,
+            "negative": -6.660763740539551
+          }
+        },
+        {
+          "text": "\u0d2d\u0d15\u0d4d\u0d37\u0d23\u0d02 \u0d35\u0d33\u0d30\u0d46 \u0d30\u0d41\u0d1a\u0d3f\u0d15\u0d30\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.30280081431071,
+            "negative": -6.653650681177775
+          }
+        },
+        {
+          "text": "\u0d38\u0d47\u0d35\u0d28\u0d02 \u0d2e\u0d3f\u0d15\u0d1a\u0d4d\u0d1a\u0d24\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.304058339860704,
+            "negative": -6.658227602640788
+          }
+        },
+        {
+          "text": "\u0d08 \u0d38\u0d3f\u0d28\u0d3f\u0d2e \u0d35\u0d33\u0d30\u0d46 \u0d35\u0d3f\u0d30\u0d38\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.301835589938694,
+            "negative": -6.655155340830485
+          }
+        },
+        {
+          "text": "\u0d2d\u0d15\u0d4d\u0d37\u0d23\u0d02 \u0d24\u0d23\u0d41\u0d24\u0d4d\u0d24\u0d24\u0d41\u0d02 \u0d30\u0d41\u0d1a\u0d3f\u0d2f\u0d3f\u0d32\u0d4d\u0d32\u0d3e\u0d24\u0d4d\u0d24\u0d24\u0d41\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.309641414218479,
+            "negative": -6.6585352420806885
+          }
+        },
+        {
+          "text": "\u0d38\u0d47\u0d35\u0d28\u0d02 \u0d35\u0d33\u0d30\u0d46 \u0d2e\u0d4b\u0d36\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.302439159817165,
+            "negative": -6.657689650853475
+          }
+        }
+      ]
+    },
+    "mar": {
+      "language": "mar",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0939\u093e \u091a\u093f\u0924\u094d\u0930\u092a\u091f \u0916\u0942\u092a \u091b\u093e\u0928 \u0906\u0923\u093f \u092a\u094d\u0930\u0947\u0930\u0923\u093e\u0926\u093e\u092f\u0940 \u0939\u094b\u0924\u093e.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.317856046888563,
+            "negative": -6.66165558497111
+          }
+        },
+        {
+          "text": "\u091c\u0947\u0935\u0923 \u0916\u0942\u092a \u091a\u0935\u093f\u0937\u094d\u091f \u0939\u094b\u0924\u0947.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.319096141391331,
+            "negative": -6.664143482844035
+          }
+        },
+        {
+          "text": "\u0938\u0947\u0935\u093e \u0909\u0924\u094d\u0915\u0943\u0937\u094d\u091f \u0939\u094b\u0924\u0940.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.328687032063802,
+            "negative": -6.661967754364014
+          }
+        },
+        {
+          "text": "\u0939\u093e \u091a\u093f\u0924\u094d\u0930\u092a\u091f \u0916\u0942\u092a \u0915\u0902\u091f\u093e\u0933\u0935\u093e\u0923\u093e \u0939\u094b\u0924\u093e.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.318936241997613,
+            "negative": -6.662173827489217
+          }
+        },
+        {
+          "text": "\u091c\u0947\u0935\u0923 \u0925\u0902\u0921 \u0906\u0923\u093f \u092c\u0947\u091a\u0935 \u0939\u094b\u0924\u0947.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.319609853956434,
+            "negative": -6.661176999409993
+          }
+        },
+        {
+          "text": "\u0938\u0947\u0935\u093e \u0916\u0942\u092a \u0935\u093e\u0908\u091f \u0939\u094b\u0924\u0940.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.316488213009304,
+            "negative": -6.65731406211853
+          }
+        }
+      ]
+    },
+    "pan": {
+      "language": "pan",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0a07\u0a39 \u0a2b\u0a3f\u0a32\u0a2e \u0a2c\u0a39\u0a41\u0a24 \u0a35\u0a27\u0a40\u0a06 \u0a05\u0a24\u0a47 \u0a2a\u0a4d\u0a30\u0a47\u0a30\u0a28\u0a3e\u0a26\u0a3e\u0a07\u0a15 \u0a38\u0a40\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.315163082546658,
+            "negative": -6.66340692838033
+          }
+        },
+        {
+          "text": "\u0a16\u0a3e\u0a23\u0a3e \u0a2c\u0a39\u0a41\u0a24 \u0a38\u0a41\u0a06\u0a26\u0a40 \u0a38\u0a40\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.313192208607991,
+            "negative": -6.670515139897664
+          }
+        },
+        {
+          "text": "\u0a38\u0a47\u0a35\u0a3e \u0a2c\u0a39\u0a41\u0a24 \u0a35\u0a27\u0a40\u0a06 \u0a38\u0a40\u0964",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.308679315778944,
+            "negative": -6.668797969818115
+          }
+        },
+        {
+          "text": "\u0a07\u0a39 \u0a2b\u0a3f\u0a32\u0a2e \u0a2c\u0a39\u0a41\u0a24 \u0a2c\u0a4b\u0a30\u0a3f\u0a70\u0a17 \u0a38\u0a40\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.307853486802843,
+            "negative": -6.66042693456014
+          }
+        },
+        {
+          "text": "\u0a16\u0a3e\u0a23\u0a3e \u0a20\u0a70\u0a21\u0a3e \u0a05\u0a24\u0a47 \u0a2c\u0a47\u0a38\u0a41\u0a06\u0a26\u0a3e \u0a38\u0a40\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.314014646742079,
+            "negative": -6.667487462361653
+          }
+        },
+        {
+          "text": "\u0a38\u0a47\u0a35\u0a3e \u0a2c\u0a39\u0a41\u0a24 \u0a16\u0a3c\u0a30\u0a3e\u0a2c \u0a38\u0a40\u0964",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.311503675248888,
+            "negative": -6.670910596847534
+          }
+        }
+      ]
+    },
+    "tam": {
+      "language": "tam",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0b87\u0ba8\u0bcd\u0ba4 \u0ba4\u0bbf\u0bb0\u0bc8\u0baa\u0bcd\u0baa\u0b9f\u0bae\u0bcd \u0bae\u0bbf\u0b95\u0bb5\u0bc1\u0bae\u0bcd \u0b85\u0bb0\u0bc1\u0bae\u0bc8\u0baf\u0bbe\u0b95 \u0b87\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0ba4\u0bc1.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.342161655426025,
+            "negative": -6.674548149108887
+          }
+        },
+        {
+          "text": "\u0b89\u0ba3\u0bb5\u0bc1 \u0bae\u0bbf\u0b95\u0bb5\u0bc1\u0bae\u0bcd \u0b9a\u0bc1\u0bb5\u0bc8\u0baf\u0bbe\u0b95 \u0b87\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0ba4\u0bc1.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.346278826395671,
+            "negative": -6.676958958307902
+          }
+        },
+        {
+          "text": "\u0b9a\u0bc7\u0bb5\u0bc8 \u0b9a\u0bbf\u0bb1\u0baa\u0bcd\u0baa\u0bbe\u0b95 \u0b87\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0ba4\u0bc1.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.326249758402507,
+            "negative": -6.668570518493652
+          }
+        },
+        {
+          "text": "\u0b87\u0ba8\u0bcd\u0ba4 \u0ba4\u0bbf\u0bb0\u0bc8\u0baa\u0bcd\u0baa\u0b9f\u0bae\u0bcd \u0bae\u0bbf\u0b95\u0bb5\u0bc1\u0bae\u0bcd \u0b9a\u0bb2\u0bbf\u0baa\u0bcd\u0baa\u0bbe\u0b95 \u0b87\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0ba4\u0bc1.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.337491141425239,
+            "negative": -6.6717870235443115
+          }
+        },
+        {
+          "text": "\u0b89\u0ba3\u0bb5\u0bc1 \u0b95\u0bc1\u0bb3\u0bbf\u0bb0\u0bcd\u0ba8\u0bcd\u0ba4\u0bc1 \u0b9a\u0bc1\u0bb5\u0bc8\u0baf\u0bb1\u0bcd\u0bb1\u0ba4\u0bbe\u0b95 \u0b87\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0ba4\u0bc1.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.341276115841335,
+            "negative": -6.674757957458496
+          }
+        },
+        {
+          "text": "\u0b9a\u0bc7\u0bb5\u0bc8 \u0bae\u0bbf\u0b95\u0bb5\u0bc1\u0bae\u0bcd \u0bae\u0bcb\u0b9a\u0bae\u0bbe\u0b95 \u0b87\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0ba4\u0bc1.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.3369682100084095,
+            "negative": -6.67179520924886
+          }
+        }
+      ]
+    },
+    "tel": {
+      "language": "tel",
+      "n_examples": 6,
+      "n_correct": 3,
+      "accuracy": 0.5,
+      "predictions": [
+        {
+          "text": "\u0c08 \u0c38\u0c3f\u0c28\u0c3f\u0c2e\u0c3e \u0c1a\u0c3e\u0c32\u0c3e \u0c2c\u0c3e\u0c17\u0c41\u0c02\u0c26\u0c3f \u0c2e\u0c30\u0c3f\u0c2f\u0c41 \u0c38\u0c4d\u0c2b\u0c42\u0c30\u0c4d\u0c24\u0c3f\u0c26\u0c3e\u0c2f\u0c15\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.3164083162943525,
+            "negative": -6.66473650932312
+          }
+        },
+        {
+          "text": "\u0c06\u0c39\u0c3e\u0c30\u0c02 \u0c1a\u0c3e\u0c32\u0c3e \u0c30\u0c41\u0c1a\u0c3f\u0c15\u0c30\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.309085845947266,
+            "negative": -6.658272584279378
+          }
+        },
+        {
+          "text": "\u0c38\u0c47\u0c35 \u0c05\u0c26\u0c4d\u0c2d\u0c41\u0c24\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+          "gold": "positive",
+          "predicted": "positive",
+          "correct": true,
+          "scores": {
+            "positive": -6.315225124359131,
+            "negative": -6.667609135309855
+          }
+        },
+        {
+          "text": "\u0c08 \u0c38\u0c3f\u0c28\u0c3f\u0c2e\u0c3e \u0c1a\u0c3e\u0c32\u0c3e \u0c2c\u0c4b\u0c30\u0c3f\u0c02\u0c17\u0c4d\u200c\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.313168260786268,
+            "negative": -6.663799444834392
+          }
+        },
+        {
+          "text": "\u0c06\u0c39\u0c3e\u0c30\u0c02 \u0c1a\u0c32\u0c4d\u0c32\u0c17\u0c3e \u0c2e\u0c30\u0c3f\u0c2f\u0c41 \u0c30\u0c41\u0c1a\u0c3f \u0c32\u0c47\u0c15\u0c41\u0c02\u0c21\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.310367955101861,
+            "negative": -6.661461750666301
+          }
+        },
+        {
+          "text": "\u0c38\u0c47\u0c35 \u0c1a\u0c3e\u0c32\u0c3e \u0c1a\u0c46\u0c21\u0c4d\u0c21\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+          "gold": "negative",
+          "predicted": "positive",
+          "correct": false,
+          "scores": {
+            "positive": -6.312051190270318,
+            "negative": -6.664597113927205
+          }
+        }
+      ]
+    }
+  }
+}
