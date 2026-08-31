@@ -36,8 +36,14 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "pytest-cov>=5.0",
-    "ruff>=0.4",
-    "mypy>=1.9",
+    # Pinned narrowly on purpose: an unpinned `ruff>=0.4` is what caused
+    # every CI run to silently drift out of sync with local `ruff check`
+    # results (a clean install always grabs the newest release, and
+    # newer ruff versions enable more default lint rules). Bump this
+    # deliberately, verify clean, and bump `[tool.ruff.lint]` alongside
+    # it if the new version's defaults changed.
+    "ruff>=0.16.4,<0.17",
+    "mypy>=1.9,<3",
     "pre-commit>=3.7",
     "types-PyYAML>=6.0",
     "scipy-stubs>=1.12; python_version >= '3.10'",

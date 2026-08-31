@@ -1,0 +1,40 @@
+# Hooks run against the SAME `ruff`/`mypy` binaries installed by
+# `pip install -e ".[dev]"` (via `language: system`), rather than
+# pre-commit's own isolated mirror environments. This is deliberate:
+# a mirror-repo hook (e.g. astral-sh/ruff-pre-commit) can end up
+# pinned to a different ruff version than pyproject.toml's, which is
+# exactly the drift that broke CI on every run early in this project
+# (see the "Fix CI" commits). Using the project's own installed tools
+# means there is only one version to keep in sync, not two.
+#
+# Setup: `make dev-install` (runs `pre-commit install` for you), or
+# manually: `pip install -e ".[dev]" && pre-commit install`.
+
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-check
+        name: ruff check (src, tests)
+        entry: ruff check
+        language: system
+        types: [python]
+        pass_filenames: false
+        args: [src, tests]
+
+      - id: mypy
+        name: mypy (src)
+        entry: mypy
+        language: system
+        types: [python]
+        pass_filenames: false
+        args: [src]
+
+      - id: pytest
+        name: pytest -q
+        entry: pytest -q
+        language: system
+        pass_filenames: false
+        always_run: true
+        # Full test run is slow-ish (CPU-only) to want on every commit;
+        # matches CI's third step but only gates `git push`.
+        stages: [pre-push]

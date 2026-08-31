@@ -1,5 +1,7 @@
 # IndicLM
 
+[![CI](https://github.com/ashishmeshram229/IndicLM-Scaling-Laws-for-Multilingual-Indian-Language/actions/workflows/ci.yml/badge.svg)](https://github.com/ashishmeshram229/IndicLM-Scaling-Laws-for-Multilingual-Indian-Language/actions/workflows/ci.yml)
+
 A research platform for studying how model scale, training-token budget,
 tokenizer efficiency, data quality, and multilingual data composition
 interact when training language models for Indian languages.
