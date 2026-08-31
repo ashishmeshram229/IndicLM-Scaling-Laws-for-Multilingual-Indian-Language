@@ -1,0 +1,138 @@
+[
+  {
+    "n_params_non_embedding": 24736,
+    "d_tokens": 8192,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 7.085633333333334,
+    "final_val_loss_std": 0.00391219558986149,
+    "final_val_loss_values": [
+      7.089459,
+      7.085801,
+      7.08164
+    ]
+  },
+  {
+    "n_params_non_embedding": 24736,
+    "d_tokens": 23872,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 7.051947000000001,
+    "final_val_loss_std": 0.006199517481223743,
+    "final_val_loss_values": [
+      7.057156,
+      7.053595,
+      7.04509
+    ]
+  },
+  {
+    "n_params_non_embedding": 50928,
+    "d_tokens": 8192,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 7.076542333333333,
+    "final_val_loss_std": 0.00873758715740984,
+    "final_val_loss_values": [
+      7.077849,
+      7.067225,
+      7.084553
+    ]
+  },
+  {
+    "n_params_non_embedding": 50928,
+    "d_tokens": 23872,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 7.010106666666666,
+    "final_val_loss_std": 0.012584083015195433,
+    "final_val_loss_values": [
+      7.011094,
+      6.997058,
+      7.022168
+    ]
+  },
+  {
+    "n_params_non_embedding": 98624,
+    "d_tokens": 8192,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 7.057148000000001,
+    "final_val_loss_std": 0.002558042024674497,
+    "final_val_loss_values": [
+      7.059865,
+      7.054786,
+      7.056793
+    ]
+  },
+  {
+    "n_params_non_embedding": 98624,
+    "d_tokens": 23872,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 6.941552333333334,
+    "final_val_loss_std": 0.0039870104506178625,
+    "final_val_loss_values": [
+      6.941626,
+      6.937529,
+      6.945502
+    ]
+  },
+  {
+    "n_params_non_embedding": 304800,
+    "d_tokens": 8192,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 7.023461666666667,
+    "final_val_loss_std": 0.004752512002439479,
+    "final_val_loss_values": [
+      7.019166,
+      7.028567,
+      7.022652
+    ]
+  },
+  {
+    "n_params_non_embedding": 304800,
+    "d_tokens": 23872,
+    "n_seeds": 3,
+    "seeds": [
+      0,
+      1,
+      2
+    ],
+    "final_val_loss_mean": 6.8294690000000005,
+    "final_val_loss_std": 0.017687499314487667,
+    "final_val_loss_values": [
+      6.812897,
+      6.827417,
+      6.848093
+    ]
+  }
+]

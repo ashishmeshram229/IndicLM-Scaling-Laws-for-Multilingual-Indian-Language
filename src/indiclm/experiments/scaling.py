@@ -44,6 +44,7 @@ class ScalingObservation:
     d_tokens: int
     final_val_loss: float
     mean_tokens_per_sec: float
+    seed: int = 0
 
     def to_dict(self) -> dict:
         return self.__dict__
@@ -177,6 +178,7 @@ def run_scaling_sweep(
             d_tokens=result.tokens_seen,
             final_val_loss=result.final_val_loss or result.final_train_loss,
             mean_tokens_per_sec=result.mean_tokens_per_sec,
+            seed=seed,
         )
         observations.append(obs)
 
@@ -184,6 +186,36 @@ def run_scaling_sweep(
         json.dumps([o.to_dict() for o in observations], indent=2)
     )
     return observations
+
+
+def aggregate_by_grid_point(observations: list[ScalingObservation]) -> list[dict[str, Any]]:
+    """Groups multi-seed observations by grid point (same N, D) and
+    reports mean/std/stderr of final_val_loss across seeds, so the
+    scaling-law fit's honesty can be judged not just from the fit's own
+    parameter uncertainty but from how noisy the underlying measurements
+    actually are at each point. Grouped by (n_params_non_embedding,
+    d_tokens) rather than by `run_id` string, since `run_id` embeds the
+    seed and differs per observation."""
+    groups: dict[tuple[int, int], list[ScalingObservation]] = {}
+    for o in observations:
+        key = (o.n_params_non_embedding, o.d_tokens)
+        groups.setdefault(key, []).append(o)
+
+    result = []
+    for (n_params, d_tokens), obs_list in sorted(groups.items()):
+        losses = np.array([o.final_val_loss for o in obs_list])
+        result.append(
+            {
+                "n_params_non_embedding": n_params,
+                "d_tokens": d_tokens,
+                "n_seeds": len(obs_list),
+                "seeds": [o.seed for o in obs_list],
+                "final_val_loss_mean": float(losses.mean()),
+                "final_val_loss_std": float(losses.std(ddof=1)) if len(losses) > 1 else 0.0,
+                "final_val_loss_values": [float(loss_val) for loss_val in losses],
+            }
+        )
+    return result
 
 
 def plot_scaling_curves(observations: list[ScalingObservation], fit: dict[str, Any], out_path: Path) -> None:

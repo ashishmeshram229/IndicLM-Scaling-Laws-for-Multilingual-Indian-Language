@@ -1,0 +1,38 @@
+[
+  {
+    "run_id": "n_tiny_d24000_seed0",
+    "n_params": 63136,
+    "n_params_non_embedding": 24736,
+    "d_tokens": 23872,
+    "final_val_loss": 7.057156,
+    "mean_tokens_per_sec": 33930.2,
+    "seed": 0
+  },
+  {
+    "run_id": "n_small_d24000_seed0",
+    "n_params": 108528,
+    "n_params_non_embedding": 50928,
+    "d_tokens": 23872,
+    "final_val_loss": 7.011094,
+    "mean_tokens_per_sec": 28830.71,
+    "seed": 0
+  },
+  {
+    "run_id": "n_medium_d24000_seed0",
+    "n_params": 175424,
+    "n_params_non_embedding": 98624,
+    "d_tokens": 23872,
+    "final_val_loss": 6.941626,
+    "mean_tokens_per_sec": 25251.3,
+    "seed": 0
+  },
+  {
+    "run_id": "n_large_d24000_seed0",
+    "n_params": 420000,
+    "n_params_non_embedding": 304800,
+    "d_tokens": 23872,
+    "final_val_loss": 6.812897,
+    "mean_tokens_per_sec": 15373.93,
+    "seed": 0
+  }
+]

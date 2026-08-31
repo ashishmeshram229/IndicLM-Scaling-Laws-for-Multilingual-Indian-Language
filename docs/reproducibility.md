@@ -54,7 +54,7 @@ indiclm .` before relying on them.
 ## Known environment this repository was built and evaluated in
 
 - Python 3.11.15, PyTorch 2.13.0+cpu, no CUDA GPU, 2 CPU cores, 7.8GB RAM.
-- All 38 unit + integration tests pass (`pytest -q`) in this environment.
+- All 40 unit + integration tests pass (`pytest -q`) in this environment.
 - All 12 experiments in the registry (EXP-001 through EXP-012) were run;
   none are marked "not available" in `docs/research_report.md`.
 
@@ -71,6 +71,14 @@ indiclm .` before relying on them.
    performance, and no GPU/multi-GPU/cluster code path has been
    exercised (see `docs/training.md`).
 3. The scaling-law fit (`docs/scaling_laws.md`) is underdetermined given
-   only 8 grid points — the methodology is real, the fitted exponents are
-   not trustworthy point estimates.
-4. Single seed per experiment; no confidence intervals across seeds.
+   only 8 (N, D) grid points — the methodology is real, the fitted
+   exponents are not trustworthy point estimates. This is now backed by
+   3 seeds per grid point (24 observations), which confirmed the
+   underdetermination is structural (a coarse 4x2 grid), not sampling
+   noise — see `docs/scaling_laws.md`'s "Fit result" for the reasoning.
+4. Single seed per experiment everywhere except the scaling sweep
+   (EXP-001/002/003/012, which now run 3 seeds per grid point via
+   `indiclm experiment scaling-sweep --seeds`). The mixture experiments
+   (EXP-005 through EXP-011) and tokenizer/data ablations (EXP-004,
+   EXP-008/009) remain single-seed; no confidence intervals across seeds
+   for those.

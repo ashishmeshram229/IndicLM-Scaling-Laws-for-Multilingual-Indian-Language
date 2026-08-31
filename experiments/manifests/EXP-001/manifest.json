@@ -1,11 +1,16 @@
 {
   "experiment_id": "EXP-001",
   "git_commit": "unknown (not a git repository or git unavailable)",
-  "config_hash": "23023a4b1f41edd0",
+  "config_hash": "349ba050e161e2d8",
   "config": {
     "model_size": "n_tiny",
     "token_budget": 24000,
-    "source_sweep": "EXP-012"
+    "source_sweep": "EXP-012",
+    "seeds": [
+      0,
+      1,
+      2
+    ]
   },
   "dataset_version": "v1",
   "tokenizer_version": "bpe_v1",
@@ -24,11 +29,20 @@
     "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
     "torch": "2.13.0+cu130"
   },
-  "created_at": 1788188080.9919257,
+  "created_at": 1788190251.9551172,
   "training_tokens": 23872,
   "final_train_loss": null,
-  "final_val_loss": 7.057156,
-  "evaluation_metrics": {},
+  "final_val_loss": 7.051947000000001,
+  "evaluation_metrics": {
+    "final_val_loss_mean": 7.051947000000001,
+    "final_val_loss_std": 0.006199517481223743,
+    "final_val_loss_per_seed": {
+      "0": 7.057156,
+      "1": 7.053595,
+      "2": 7.04509
+    },
+    "n_seeds": 3
+  },
   "checkpoint_path": null,
   "notes": ""
 }

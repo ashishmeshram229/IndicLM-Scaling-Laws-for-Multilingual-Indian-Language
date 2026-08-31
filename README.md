@@ -13,7 +13,7 @@ anomaly detection), standalone evaluation (perplexity + a zero-shot
 sentiment downstream task, see `docs/evaluation.md`), an
 experiment-tracking + manifest + report system, a scaling-law sweep with
 a fitted (if underdetermined) power law, a static HTML research
-dashboard, a FastAPI inference service, Docker/Compose files, CI, and 38
+dashboard, a FastAPI inference service, Docker/Compose files, CI, and 40
 passing unit/integration tests. All 12 registry experiments (EXP-001
 through EXP-012) have been run — see `docs/research_report.md` and
 `experiments/manifests/`.
@@ -65,7 +65,7 @@ but-unvalidated (GPU, multi-GPU, Slurm), in `docs/architecture.md`.
 ```bash
 git clone <this-repo> && cd indiclm
 make dev-install                 # pip install -e ".[dev]" + pre-commit
-make test                        # 38 unit + integration tests, CPU-only
+make test                        # 40 unit + integration tests, CPU-only
 indiclm doctor                    # inspect Python/PyTorch/CUDA/GPU/disk/memory
 
 indiclm data prepare              # data/raw -> data/processed (+ stats)
@@ -110,8 +110,10 @@ See `docs/reproducibility.md` "Limitations that affect every result" —
 in short: real but bootstrap-scale corpus (~1,800 Wikipedia paragraphs,
 not a production pretraining corpus), CPU-only, an underdetermined
 scaling-law fit (methodology real, exponents not trustworthy at 8 grid
-points), single seed per experiment, and Docker build unverified (no
-Docker daemon in the build environment).
+points — now confirmed via 3-seed reruns to be a structural grid-coarseness
+issue, not sampling noise), single seed everywhere except the scaling
+sweep, and Docker build unverified (no Docker daemon in the build
+environment).
 
 ## Roadmap
 

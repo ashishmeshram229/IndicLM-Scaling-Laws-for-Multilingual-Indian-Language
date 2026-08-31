@@ -22,45 +22,60 @@ fit.
 
 4 model sizes (`n_tiny` 55K params, `n_small` 96K, `n_medium` 159K,
 `n_large` 396K, all non-embedding-param counts about half those figures)
-x 2 token budgets (~8.2K and ~23.9K tokens actually consumed), all on
-CPU, all on the bootstrap corpus described in `docs/data_pipeline.md`,
-alpha=0.7 temperature mixture. Full observations:
-`experiments/manifests/EXP-012/scaling_law_fit.json`.
+x 2 token budgets (~8.2K and ~23.9K tokens actually consumed) x **3
+seeds each (0, 1, 2)** — 24 runs total, all on CPU, all on the real
+Wikipedia-sourced corpus described in `docs/data_pipeline.md`, alpha=0.7
+temperature mixture. Full observations and the per-grid-point seed
+aggregation: `experiments/manifests/EXP-012/scaling_law_fit.json` and
+`experiments/manifests/EXP-012/seed_aggregation.json`.
 
-| run_id | N (non-embed) | D (tokens) | final val loss | tokens/sec |
-|---|---|---|---|---|
-| n_tiny_d8000 | 24,736 | 8,192 | 6.836 | 16,711 |
-| n_small_d8000 | 50,928 | 8,192 | 6.826 | 16,646 |
-| n_medium_d8000 | 98,624 | 8,192 | 6.796 | 14,726 |
-| n_large_d8000 | 304,800 | 8,192 | 6.750 | 8,726 |
-| n_tiny_d24000 | 24,736 | 23,872 | 6.792 | 22,421 |
-| n_small_d24000 | 50,928 | 23,872 | 6.739 | 18,456 |
-| n_medium_d24000 | 98,624 | 23,872 | 6.661 | 16,194 |
-| n_large_d24000 | 304,800 | 23,872 | 6.533 | 9,580 |
+| N (non-embed) | D (tokens) | mean val loss | std across 3 seeds |
+|---|---|---|---|
+| 24,736 | 8,192 | 7.0856 | 0.0039 |
+| 24,736 | 23,872 | 7.0519 | 0.0062 |
+| 50,928 | 8,192 | 7.0765 | 0.0087 |
+| 50,928 | 23,872 | 7.0101 | 0.0126 |
+| 98,624 | 8,192 | 7.0571 | 0.0026 |
+| 98,624 | 23,872 | 6.9416 | 0.0040 |
+| 304,800 | 8,192 | 7.0235 | 0.0048 |
+| 304,800 | 23,872 | 6.8295 | 0.0177 |
 
 Loss decreases monotonically with both model size and token budget at
-this scale — the qualitative direction scaling laws predict.
+this scale — the qualitative direction scaling laws predict. Seed-to-seed
+standard deviation is small (0.003-0.018 nats, well under 1% of the loss
+values themselves) at every grid point — training itself is not the
+noisy part of this experiment; see "Fit result" for what is.
 
 ### Fit result
 
 ```
 fit_status: ok
-alpha = 0.011 ± 0.753     (essentially unconstrained — see below)
-beta  = 1.997 ± 0.122     (pinned near the fit's upper bound of 2.0)
-R^2   = 0.879
+alpha = 0.008 ± 0.350     (statistically indistinguishable from 0 — see below)
+beta  = 1.872 ± 0.074     (near the fit's upper bound of 2.0)
+R^2   = 0.845
+n_observations = 24 (8 grid points x 3 seeds)
 ```
 
-**This fit should not be trusted as an estimate of a real scaling
-exponent.** With only 4 N-values and 2 D-values (8 points total, 5 free
-parameters), the fit is underdetermined: `alpha`'s standard error (0.75)
-is larger than its point estimate, and `beta` sits at the search bound,
-which is the classic symptom of the D-dependence term absorbing residual
-variance the N-dependence term could not identify. Two D-values 3x apart
-is also a narrow range for isolating a power law. The methodology (grid
-sweep -> nonlinear fit -> honest uncertainty reporting) is real and
-reusable; the numeric alpha/beta are not evidence about Indic-language
-scaling behavior. Running more model sizes and a wider spread of token
-budgets is the direct fix — see "Next experiment" below.
+**This fit should still not be trusted as an estimate of a real scaling
+exponent, but multi-seed reruns pin down *why* more precisely than the
+single-seed version could.** Going from 1 seed (8 points) to 3 seeds (24
+points) tightened `alpha`'s standard error from 0.75 to 0.35 — real
+information gain — but `alpha`'s point estimate (0.008) barely moved and
+stayed far smaller than its own uncertainty. Combined with the very low
+per-grid-point seed variance above, this rules out "the single-seed run
+was just an unlucky draw" as the explanation: the flat, unidentifiable
+`alpha` is a genuine property of this grid, not sampling noise. The
+actual cause is structural, as before — only 4 N-values and 2 D-values
+(a 3x spread) is a narrow, coarse grid for a 5-parameter model to
+identify two exponents independently from, and `beta` sitting near its
+search bound is the classic symptom of the D-term absorbing variance the
+N-term couldn't. The methodology (grid sweep -> multi-seed -> nonlinear
+fit -> honest uncertainty reporting) is real and reusable; the numeric
+alpha/beta are not evidence about Indic-language scaling behavior.
+Widening the grid (more N-values, a wider D range) is the direct fix for
+the fit itself — see "Next experiment" below; multi-seeding was the fix
+for "is the noise coming from training stochasticity or the grid" and
+that question is now answered.
 
 ### Plot
 
@@ -81,6 +96,12 @@ tracked as a gap, not silently omitted: `indiclm experiment run`'s
 
 Widen the sweep: 6-8 model sizes across a 20x parameter range, 4+ token
 budgets across a 10x range, to properly identify both exponents
-independently. At real (non-bootstrap) corpus scale this also requires a
-corpus large enough that larger token budgets don't force many repeated
-epochs over the same few hundred documents.
+independently. This also requires a corpus large enough that larger
+token budgets don't force many repeated epochs over the same documents
+— `data/raw/wiki_sample/` is ~1,800 real paragraphs now (see
+`docs/data_pipeline.md`), better than the original hand-authored sample
+but still not large relative to the D values a wider budget sweep would
+need. Multi-seeding (`--seeds 0 1 2 3 4`, or any list) is already wired
+up via `indiclm experiment scaling-sweep`'s `seeds` option and
+`aggregate_by_grid_point`; a wider grid should reuse it rather than
+reintroduce a single-seed run.

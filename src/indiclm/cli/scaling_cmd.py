@@ -15,6 +15,7 @@ from rich.console import Console
 from indiclm.experiments.manifest import build_manifest, write_manifest
 from indiclm.experiments.scaling import (
     ScalingObservation,
+    aggregate_by_grid_point,
     fit_scaling_law,
     plot_scaling_curves,
     run_scaling_sweep,
@@ -31,6 +32,16 @@ def scaling_sweep(
     tokenizer_path: Path = typer.Option(Path("data/tokenizer_v1/indiclm_tokenizer.model")),
     out_dir: Path = typer.Option(Path("experiments/manifests/EXP-012")),
     seq_len: int = typer.Option(64),
+    seeds: list[int] = typer.Option(
+        [0, 1, 2],
+        help=(
+            "One run per (model size, token budget, seed). Multiple seeds "
+            "let the scaling-law fit report actual measurement noise per "
+            "grid point (see aggregate_by_grid_point), not just the fit's "
+            "own parameter uncertainty -- pass a single seed to reproduce "
+            "the original single-seed behavior."
+        ),
+    ),
 ) -> None:
     configure_logging()
 
@@ -57,52 +68,83 @@ def scaling_sweep(
     all_observations: list[ScalingObservation] = []
     for d_tokens_target in target_token_budgets:
         max_steps = max(1, round(d_tokens_target / tokens_per_step))
-        obs = run_scaling_sweep(
-            model_sizes=[{**m, "run_id": f"{m['run_id']}_d{d_tokens_target}"} for m in model_sizes],
-            data_cfg=data_cfg,
-            train_cfg_overrides={
-                "max_steps": max_steps, "micro_batch_size": micro_batch_size,
-                "gradient_accumulation_steps": grad_accum,
-                "warmup_steps": max(2, max_steps // 6), "eval_every": max(5, max_steps // 3),
-                "checkpoint_every": max_steps, "log_every": max(5, max_steps // 3),
-            },
-            out_dir=out_dir / f"tokens_{d_tokens_target}",
-            seed=0,
-        )
-        all_observations.extend(obs)
+        for seed in seeds:
+            obs = run_scaling_sweep(
+                model_sizes=[
+                    {**m, "run_id": f"{m['run_id']}_d{d_tokens_target}_seed{seed}"} for m in model_sizes
+                ],
+                data_cfg=data_cfg,
+                train_cfg_overrides={
+                    "max_steps": max_steps, "micro_batch_size": micro_batch_size,
+                    "gradient_accumulation_steps": grad_accum,
+                    "warmup_steps": max(2, max_steps // 6), "eval_every": max(5, max_steps // 3),
+                    "checkpoint_every": max_steps, "log_every": max(5, max_steps // 3),
+                },
+                out_dir=out_dir / f"tokens_{d_tokens_target}" / f"seed_{seed}",
+                seed=seed,
+            )
+            all_observations.extend(obs)
+
+    # Grouped by (N, D) across seeds *before* fitting, so the fit is
+    # judged against per-point measurement noise, not just its own
+    # parameter covariance -- see aggregate_by_grid_point's docstring.
+    grid_aggregation = aggregate_by_grid_point(all_observations)
+    (out_dir / "seed_aggregation.json").write_text(json.dumps(grid_aggregation, indent=2))
 
     fit = fit_scaling_law(all_observations)
+    fit["seeds_used"] = seeds
+    fit["grid_point_aggregation"] = grid_aggregation
     (out_dir / "scaling_law_fit.json").write_text(json.dumps(fit, indent=2))
     plot_scaling_curves(all_observations, fit, out_dir / "loss_vs_params.png")
 
     manifest = build_manifest(
         experiment_id="EXP-012",
-        config={"model_sizes": model_sizes, "target_token_budgets": target_token_budgets},
-        dataset_version="v1", tokenizer_version="bpe_v1", seed=0,
+        config={
+            "model_sizes": model_sizes, "target_token_budgets": target_token_budgets, "seeds": seeds,
+        },
+        dataset_version="v1", tokenizer_version="bpe_v1", seed=seeds[0],
     )
     manifest.evaluation_metrics = fit
     write_manifest(manifest, out_dir)
 
     # EXP-001/002/003: the three canonical baseline sizes at the larger
     # token budget, each gets its own manifest pointing back at the shared
-    # sweep run for provenance.
+    # sweep run for provenance. final_val_loss is the mean across seeds,
+    # with per-seed spread recorded in evaluation_metrics so a reviewer
+    # can see how much a single-seed number could have varied.
     baseline_map = {"EXP-001": "n_tiny", "EXP-002": "n_small", "EXP-003": "n_medium"}
+    max_d = max(target_token_budgets)
     for exp_id, run_id in baseline_map.items():
-        matched_run: ScalingObservation | None = next(
-            (o for o in all_observations if o.run_id == f"{run_id}_d{max(target_token_budgets)}"), None
-        )
-        if matched_run is None:
+        matched_runs = [
+            o for o in all_observations
+            if o.run_id.startswith(f"{run_id}_d{max_d}_seed") and o.d_tokens > 0
+        ]
+        if not matched_runs:
             continue
+        losses = [o.final_val_loss for o in matched_runs]
+        mean_loss = sum(losses) / len(losses)
+        std_loss = (
+            (sum((loss_val - mean_loss) ** 2 for loss_val in losses) / (len(losses) - 1)) ** 0.5
+            if len(losses) > 1
+            else 0.0
+        )
         m = build_manifest(
             experiment_id=exp_id,
-            config={"model_size": run_id, "token_budget": max(target_token_budgets), "source_sweep": "EXP-012"},
-            dataset_version="v1", tokenizer_version="bpe_v1", seed=0,
+            config={"model_size": run_id, "token_budget": max_d, "source_sweep": "EXP-012", "seeds": seeds},
+            dataset_version="v1", tokenizer_version="bpe_v1", seed=seeds[0],
         )
-        m.training_tokens = matched_run.d_tokens
-        m.final_val_loss = matched_run.final_val_loss
+        m.training_tokens = matched_runs[0].d_tokens
+        m.final_val_loss = mean_loss
+        m.evaluation_metrics = {
+            "final_val_loss_mean": mean_loss,
+            "final_val_loss_std": std_loss,
+            "final_val_loss_per_seed": {o.seed: o.final_val_loss for o in matched_runs},
+            "n_seeds": len(matched_runs),
+        }
         write_manifest(m, out_dir.parent / exp_id)
 
     console.print(f"[green]Scaling sweep complete.[/green] Fit status: {fit.get('fit_status')}")
     if fit.get("fit_status") == "ok":
         console.print(f"alpha={fit['alpha']:.4f} +/- {fit['alpha_stderr']:.4f}, R^2={fit['r_squared']:.4f}")
+    console.print(f"Seeds used: {seeds}")
     console.print(f"Plot: {out_dir / 'loss_vs_params.png'}")
