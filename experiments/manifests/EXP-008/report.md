@@ -8,9 +8,9 @@ Does quality filtering (raw -> filtered) and/or deduplication (filtered -> filte
 
 | Variant | Final val loss | Overall perplexity | Macro-avg perplexity |
 |---|---|---|---|
-| raw | 6.609044 | 734.025 | 734.2832 |
-| filtered | 6.609044 | 734.025 | 734.2832 |
-| filtered_dedup | 6.606203 | 733.2537 | 733.596 |
+| raw | 6.813816 | 903.4774 | 905.4335 |
+| filtered | 6.813816 | 903.4774 | 905.4335 |
+| filtered_dedup | 6.814866 | 901.9895 | 903.9558 |
 
 Each variant's full report is at `experiments/manifests/EXP-008__<variant>/report.md`.
 

@@ -54,15 +54,19 @@ indiclm .` before relying on them.
 ## Known environment this repository was built and evaluated in
 
 - Python 3.11.15, PyTorch 2.13.0+cpu, no CUDA GPU, 2 CPU cores, 7.8GB RAM.
-- All 31 unit + integration tests pass (`pytest -q`) in this environment.
+- All 38 unit + integration tests pass (`pytest -q`) in this environment.
 - All 12 experiments in the registry (EXP-001 through EXP-012) were run;
   none are marked "not available" in `docs/research_report.md`.
 
 ## Limitations that affect every result in this repository
 
-1. The training corpus (`data/raw/`) is a small, hand-authored sample —
-   see `docs/data_pipeline.md`. No result here should be read as evidence
-   about real Indic-language model quality at scale.
+1. The training corpus (`data/raw/wiki_sample/`) is ~1,800 real
+   Wikipedia paragraphs across 10 languages — real text, not
+   hand-authored placeholders, but still a small bootstrap-scale sample,
+   not a production pretraining corpus. See `docs/data_pipeline.md` for
+   exactly how it was sourced and what license it carries. No result
+   here should be read as evidence about real Indic-language model
+   quality at production scale.
 2. All training is CPU-only; throughput numbers do not reflect GPU
    performance, and no GPU/multi-GPU/cluster code path has been
    exercised (see `docs/training.md`).

@@ -1,67 +1,67 @@
 {
-  "overall_loss": 6.597291,
-  "overall_perplexity": 733.1068,
-  "macro_avg_perplexity": 733.4844,
-  "weighted_avg_perplexity": 733.4844,
+  "overall_loss": 6.895999,
+  "overall_perplexity": 988.3124,
+  "macro_avg_perplexity": 989.004,
+  "weighted_avg_perplexity": 989.004,
   "per_language": {
     "ben": {
       "language": "ben",
-      "loss": 6.588233,
-      "perplexity": 726.4964,
+      "loss": 6.940352,
+      "perplexity": 1033.1339,
       "tokens_evaluated": 2944
     },
     "eng": {
       "language": "eng",
-      "loss": 6.673458,
-      "perplexity": 791.1268,
+      "loss": 6.896816,
+      "perplexity": 989.1202,
       "tokens_evaluated": 2944
     },
     "guj": {
       "language": "guj",
-      "loss": 6.545092,
-      "perplexity": 695.8204,
+      "loss": 6.863479,
+      "perplexity": 956.6898,
       "tokens_evaluated": 2944
     },
     "hin": {
       "language": "hin",
-      "loss": 6.587206,
-      "perplexity": 725.7499,
+      "loss": 6.847981,
+      "perplexity": 941.9776,
       "tokens_evaluated": 2944
     },
     "kan": {
       "language": "kan",
-      "loss": 6.599459,
-      "perplexity": 734.6978,
+      "loss": 6.916318,
+      "perplexity": 1008.5995,
       "tokens_evaluated": 2944
     },
     "mal": {
       "language": "mal",
-      "loss": 6.606814,
-      "perplexity": 740.121,
+      "loss": 6.913918,
+      "perplexity": 1006.1814,
       "tokens_evaluated": 2944
     },
     "mar": {
       "language": "mar",
-      "loss": 6.570803,
-      "perplexity": 713.9429,
+      "loss": 6.831287,
+      "perplexity": 926.3826,
       "tokens_evaluated": 2944
     },
     "pan": {
       "language": "pan",
-      "loss": 6.60327,
-      "perplexity": 737.5031,
+      "loss": 6.912842,
+      "perplexity": 1005.1,
       "tokens_evaluated": 2944
     },
     "tam": {
       "language": "tam",
-      "loss": 6.617345,
-      "perplexity": 747.9568,
+      "loss": 6.883256,
+      "perplexity": 975.7985,
       "tokens_evaluated": 2944
     },
     "tel": {
       "language": "tel",
-      "loss": 6.581234,
-      "perplexity": 721.4287,
+      "loss": 6.953739,
+      "perplexity": 1047.0569,
       "tokens_evaluated": 2944
     }
   },

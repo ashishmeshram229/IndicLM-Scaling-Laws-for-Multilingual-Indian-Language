@@ -21,13 +21,13 @@
   },
   "software_versions": {
     "python": "3.11.15",
-    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
-    "torch": "2.13.0+cpu"
+    "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cu130"
   },
-  "created_at": 1787074300.5933366,
+  "created_at": 1788188080.9985287,
   "training_tokens": 23872,
   "final_train_loss": null,
-  "final_val_loss": 6.661185,
+  "final_val_loss": 6.941626,
   "evaluation_metrics": {},
   "checkpoint_path": null,
   "notes": ""

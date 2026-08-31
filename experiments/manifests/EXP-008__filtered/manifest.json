@@ -46,77 +46,77 @@
   },
   "software_versions": {
     "python": "3.11.15",
-    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
-    "torch": "2.13.0+cpu"
+    "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cu130"
   },
-  "created_at": 1787074361.2425945,
+  "created_at": 1788188059.4037764,
   "training_tokens": 30528,
-  "final_train_loss": 6.604960203170776,
-  "final_val_loss": 6.609044,
+  "final_train_loss": 6.798642158508301,
+  "final_val_loss": 6.813816,
   "evaluation_metrics": {
-    "overall_loss": 6.598543,
-    "overall_perplexity": 734.025,
-    "macro_avg_perplexity": 734.2832,
-    "weighted_avg_perplexity": 734.2832,
+    "overall_loss": 6.806251,
+    "overall_perplexity": 903.4774,
+    "macro_avg_perplexity": 905.4335,
+    "weighted_avg_perplexity": 905.4335,
     "per_language": {
       "ben": {
         "language": "ben",
-        "loss": 6.597271,
-        "perplexity": 733.092,
+        "loss": 6.9425,
+        "perplexity": 1035.3553,
         "tokens_evaluated": 2944
       },
       "eng": {
         "language": "eng",
-        "loss": 6.655835,
-        "perplexity": 777.3068,
+        "loss": 6.708305,
+        "perplexity": 819.1809,
         "tokens_evaluated": 2944
       },
       "guj": {
         "language": "guj",
-        "loss": 6.550493,
-        "perplexity": 699.5889,
+        "loss": 6.793461,
+        "perplexity": 891.9958,
         "tokens_evaluated": 2944
       },
       "hin": {
         "language": "hin",
-        "loss": 6.5935,
-        "perplexity": 730.3325,
+        "loss": 6.788392,
+        "perplexity": 887.4851,
         "tokens_evaluated": 2944
       },
       "kan": {
         "language": "kan",
-        "loss": 6.620595,
-        "perplexity": 750.3912,
+        "loss": 6.798075,
+        "perplexity": 896.1203,
         "tokens_evaluated": 2944
       },
       "mal": {
         "language": "mal",
-        "loss": 6.601626,
-        "perplexity": 736.2916,
+        "loss": 6.782098,
+        "perplexity": 881.9171,
         "tokens_evaluated": 2944
       },
       "mar": {
         "language": "mar",
-        "loss": 6.588432,
-        "perplexity": 726.6409,
+        "loss": 6.760341,
+        "perplexity": 862.936,
         "tokens_evaluated": 2944
       },
       "pan": {
         "language": "pan",
-        "loss": 6.58765,
-        "perplexity": 726.0723,
+        "loss": 6.86349,
+        "perplexity": 956.6999,
         "tokens_evaluated": 2944
       },
       "tam": {
         "language": "tam",
-        "loss": 6.613018,
-        "perplexity": 744.7273,
+        "loss": 6.750098,
+        "perplexity": 854.1424,
         "tokens_evaluated": 2944
       },
       "tel": {
         "language": "tel",
-        "loss": 6.577011,
-        "perplexity": 718.3886,
+        "loss": 6.875751,
+        "perplexity": 968.5023,
         "tokens_evaluated": 2944
       }
     },

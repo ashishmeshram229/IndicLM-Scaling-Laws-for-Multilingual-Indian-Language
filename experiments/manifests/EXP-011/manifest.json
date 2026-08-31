@@ -50,23 +50,23 @@
   },
   "software_versions": {
     "python": "3.11.15",
-    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
-    "torch": "2.13.0+cpu"
+    "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cu130"
   },
-  "created_at": 1787074109.8530183,
+  "created_at": 1788188046.4262087,
   "training_tokens": 7392,
-  "final_train_loss": 6.327212810516357,
-  "final_val_loss": 6.37383,
+  "final_train_loss": 6.387308120727539,
+  "final_val_loss": 6.429962,
   "evaluation_metrics": {
-    "overall_loss": 6.339861,
-    "overall_perplexity": 566.7175,
-    "macro_avg_perplexity": 566.7178,
-    "weighted_avg_perplexity": 566.7178,
+    "overall_loss": 6.412812,
+    "overall_perplexity": 609.6055,
+    "macro_avg_perplexity": 609.6056,
+    "weighted_avg_perplexity": 609.6056,
     "per_language": {
       "eng": {
         "language": "eng",
-        "loss": 6.339861,
-        "perplexity": 566.7178,
+        "loss": 6.412812,
+        "perplexity": 609.6056,
         "tokens_evaluated": 2928
       }
     },

@@ -11,7 +11,7 @@
 - Seed: `0`
 - Hardware: `cpu`, 2 CPU cores,
   7.84 GB RAM, 0 GPU(s)
-- Software: Python 3.11.15, PyTorch 2.13.0+cpu
+- Software: Python 3.11.15, PyTorch 2.13.0+cu130
 
 ## 3. Dataset
 
@@ -19,9 +19,9 @@
 - Tokenizer version: `bpe_v1`
 - Sequence length: 64
 - Total packed tokens: 19955
-- Tokens per language: {'ben': 1812, 'eng': 3522, 'guj': 1823, 'hin': 2218, 'kan': 1905, 'mal': 2050, 'mar': 1035, 'pan': 1820, 'tam': 1875, 'tel': 1940}
+- Tokens per language: {'ben': 1663, 'eng': 3924, 'guj': 1735, 'hin': 2190, 'kan': 1896, 'mal': 2012, 'mar': 1060, 'pan': 1735, 'tam': 1885, 'tel': 1900}
 - Epochs per language (token budget / available tokens; >1 means the
-  small bootstrap corpus was repeated to reach the budget): {'ben': 2.288, 'eng': 1.721, 'guj': 2.282, 'hin': 2.098, 'kan': 2.239, 'mal': 2.169, 'mar': 2.907, 'pan': 2.284, 'tam': 2.254, 'tel': 2.222}
+  small bootstrap corpus was repeated to reach the budget): {'ben': 2.313, 'eng': 1.6, 'guj': 2.271, 'hin': 2.054, 'kan': 2.187, 'mal': 2.131, 'mar': 2.804, 'pan': 2.271, 'tam': 2.192, 'tel': 2.184}
 - Padding ratio: 0.0
 
 ## 4. Model
@@ -33,8 +33,8 @@
 ## 5. Compute
 
 - Training tokens seen: 30528
-- Total training wall-clock time: 1.693 s
-- Mean tokens/sec (measured, CPU): 18032.44
+- Total training wall-clock time: 1.765 s
+- Mean tokens/sec (measured, CPU): 17291.85
 - FLOPs estimate: not computed in this report (see `docs/scaling_laws.md`
   compute-accounting note); wall-clock and tokens/sec above are measured,
   not estimated.
@@ -47,24 +47,24 @@
 
 ## 7. Results
 
-- Final training loss: 6.599850416183472
-- Final validation loss: 6.606203
-- Overall perplexity: 733.2537
-- Macro-average per-language perplexity: 733.596
-- Weighted-average per-language perplexity: 733.596
+- Final training loss: 6.7970921993255615
+- Final validation loss: 6.814866
+- Overall perplexity: 901.9895
+- Macro-average per-language perplexity: 903.9558
+- Weighted-average per-language perplexity: 903.9558
 
 | Language | Loss | Perplexity | Tokens evaluated |
 |---|---|---|---|
-| ben | 6.597795 | 733.476 | 2944 |
-| eng | 6.665875 | 785.1504 | 2944 |
-| guj | 6.553451 | 701.6613 | 2944 |
-| hin | 6.578663 | 719.5765 | 2944 |
-| kan | 6.617557 | 748.1154 | 2944 |
-| mal | 6.608365 | 741.2699 | 2944 |
-| mar | 6.574229 | 716.3928 | 2944 |
-| pan | 6.583597 | 723.1357 | 2944 |
-| tam | 6.620453 | 750.2846 | 2944 |
-| tel | 6.574933 | 716.8976 | 2944 |
+| ben | 6.939447 | 1032.1995 | 2944 |
+| eng | 6.707908 | 818.8558 | 2944 |
+| guj | 6.788484 | 887.5672 | 2944 |
+| hin | 6.782088 | 881.9086 | 2944 |
+| kan | 6.800922 | 898.6751 | 2944 |
+| mal | 6.774989 | 875.6698 | 2944 |
+| mar | 6.750673 | 854.6338 | 2944 |
+| pan | 6.867737 | 960.772 | 2944 |
+| tam | 6.75964 | 862.3318 | 2944 |
+| tel | 6.874141 | 966.9447 | 2944 |
 
 ## 8. Statistical uncertainty
 

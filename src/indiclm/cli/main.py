@@ -34,9 +34,22 @@ console = Console()
 app.add_typer(data_app, name="data")
 app.add_typer(tokenizer_app, name="tokenizer")
 app.add_typer(train_app, name="")  # exposes `train` and `evaluate` at top level
+
+# `experiment_app`, `scaling_app`, and `ablation_app` are three separate
+# Typer sub-apps (split across files so each stays focused: run/compare,
+# the scaling sweep, and the two ablations) that all logically belong
+# under one `indiclm experiment ...` namespace. Click's command registry
+# is a flat dict keyed by name, so three `app.add_typer(..., name=
+# "experiment")` calls here don't merge -- each one silently overwrites
+# the last, leaving only the final call's commands reachable (this was
+# discovered as a real bug: `experiment run`, `experiment compare`,
+# `experiment list-experiments`, and `experiment scaling-sweep` were all
+# unreachable via the CLI, though the underlying functions work fine
+# when called directly). Merging the registered commands onto one Typer
+# app before mounting it once is the fix.
+experiment_app.registered_commands += scaling_app.registered_commands
+experiment_app.registered_commands += ablation_app.registered_commands
 app.add_typer(experiment_app, name="experiment")
-app.add_typer(scaling_app, name="experiment")
-app.add_typer(ablation_app, name="experiment")
 app.add_typer(report_app, name="report")
 
 

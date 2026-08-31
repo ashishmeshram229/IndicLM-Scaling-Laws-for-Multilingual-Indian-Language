@@ -1,13 +1,13 @@
 {
-  "overall_loss": 6.339861,
-  "overall_perplexity": 566.7175,
-  "macro_avg_perplexity": 566.7178,
-  "weighted_avg_perplexity": 566.7178,
+  "overall_loss": 6.412812,
+  "overall_perplexity": 609.6055,
+  "macro_avg_perplexity": 609.6056,
+  "weighted_avg_perplexity": 609.6056,
   "per_language": {
     "eng": {
       "language": "eng",
-      "loss": 6.339861,
-      "perplexity": 566.7178,
+      "loss": 6.412812,
+      "perplexity": 609.6056,
       "tokens_evaluated": 2928
     }
   },

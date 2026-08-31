@@ -8,8 +8,8 @@ Does tokenizer efficiency (tokens/char, compression) predict actual model qualit
 
 | Variant | Final val loss | Overall perplexity | Macro-avg perplexity |
 |---|---|---|---|
-| bpe | 6.606203 | 733.2537 | 733.596 |
-| unigram | 6.500119 | 660.7111 | 661.3335 |
+| bpe | 6.88879 | 991.8323 | 992.3379 |
+| unigram | 6.363677 | 597.4121 | 598.7749 |
 
 Each variant's full report is at `experiments/manifests/EXP-004__<variant>/report.md`.
 

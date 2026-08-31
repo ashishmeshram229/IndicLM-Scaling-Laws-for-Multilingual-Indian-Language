@@ -12,7 +12,7 @@ Temperature sampling (alpha=0.5, p_i = n_i^alpha / sum_j n_j^alpha over each lan
 - Seed: `0`
 - Hardware: `cpu`, 2 CPU cores,
   7.84 GB RAM, 0 GPU(s)
-- Software: Python 3.11.15, PyTorch 2.13.0+cpu
+- Software: Python 3.11.15, PyTorch 2.13.0+cu130
 
 ## 3. Dataset
 
@@ -20,9 +20,9 @@ Temperature sampling (alpha=0.5, p_i = n_i^alpha / sum_j n_j^alpha over each lan
 - Tokenizer version: `bpe_v1`
 - Sequence length: 64
 - Total packed tokens: 19955
-- Tokens per language: {'ben': 1879, 'eng': 3021, 'guj': 1887, 'hin': 2170, 'kan': 1947, 'mal': 2052, 'mar': 1260, 'pan': 1885, 'tam': 1926, 'tel': 1973}
+- Tokens per language: {'ben': 2320, 'eng': 2270, 'guj': 1971, 'hin': 2081, 'kan': 1926, 'mal': 1935, 'mar': 1763, 'pan': 1969, 'tam': 1745, 'tel': 2020}
 - Epochs per language (token budget / available tokens; >1 means the
-  small bootstrap corpus was repeated to reach the budget): {'ben': 2.372, 'eng': 1.476, 'guj': 2.362, 'hin': 2.053, 'kan': 2.288, 'mal': 2.171, 'mar': 3.539, 'pan': 2.365, 'tam': 2.315, 'tel': 2.26}
+  small bootstrap corpus was repeated to reach the budget): {'ben': 0.036, 'eng': 0.037, 'guj': 0.042, 'hin': 0.04, 'kan': 0.043, 'mal': 0.043, 'mar': 0.047, 'pan': 0.042, 'tam': 0.048, 'tel': 0.041}
 - Padding ratio: 0.0
 
 ## 4. Model
@@ -34,8 +34,8 @@ Temperature sampling (alpha=0.5, p_i = n_i^alpha / sum_j n_j^alpha over each lan
 ## 5. Compute
 
 - Training tokens seen: 30528
-- Total training wall-clock time: 1.892 s
-- Mean tokens/sec (measured, CPU): 16131.06
+- Total training wall-clock time: 1.854 s
+- Mean tokens/sec (measured, CPU): 16462.37
 - FLOPs estimate: not computed in this report (see `docs/scaling_laws.md`
   compute-accounting note); wall-clock and tokens/sec above are measured,
   not estimated.
@@ -48,24 +48,24 @@ Temperature sampling (alpha=0.5, p_i = n_i^alpha / sum_j n_j^alpha over each lan
 
 ## 7. Results
 
-- Final training loss: 6.583242177963257
-- Final validation loss: 6.616812
-- Overall perplexity: 733.1068
-- Macro-average per-language perplexity: 733.4844
-- Weighted-average per-language perplexity: 733.4844
+- Final training loss: 6.8683977127075195
+- Final validation loss: 6.896834
+- Overall perplexity: 988.3124
+- Macro-average per-language perplexity: 989.004
+- Weighted-average per-language perplexity: 989.004
 
 | Language | Loss | Perplexity | Tokens evaluated |
 |---|---|---|---|
-| ben | 6.588233 | 726.4964 | 2944 |
-| eng | 6.673458 | 791.1268 | 2944 |
-| guj | 6.545092 | 695.8204 | 2944 |
-| hin | 6.587206 | 725.7499 | 2944 |
-| kan | 6.599459 | 734.6978 | 2944 |
-| mal | 6.606814 | 740.121 | 2944 |
-| mar | 6.570803 | 713.9429 | 2944 |
-| pan | 6.60327 | 737.5031 | 2944 |
-| tam | 6.617345 | 747.9568 | 2944 |
-| tel | 6.581234 | 721.4287 | 2944 |
+| ben | 6.940352 | 1033.1339 | 2944 |
+| eng | 6.896816 | 989.1202 | 2944 |
+| guj | 6.863479 | 956.6898 | 2944 |
+| hin | 6.847981 | 941.9776 | 2944 |
+| kan | 6.916318 | 1008.5995 | 2944 |
+| mal | 6.913918 | 1006.1814 | 2944 |
+| mar | 6.831287 | 926.3826 | 2944 |
+| pan | 6.912842 | 1005.1 | 2944 |
+| tam | 6.883256 | 975.7985 | 2944 |
+| tel | 6.953739 | 1047.0569 | 2944 |
 
 ## 8. Statistical uncertainty
 

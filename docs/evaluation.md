@@ -36,18 +36,31 @@ indiclm evaluate-downstream --checkpoint <path/to/final.pt> \
 
 **Result actually observed, across every mixture/tokenizer/data-quality
 variant run so far (EXP-004 both tokenizers, EXP-005/006/007/010/011,
-EXP-008 all three variants):** every single configuration scores exactly
-at chance (0.5) on this task, always predicting the same label
-regardless of the input text (see the per-example `predictions` array in
-any `downstream_evaluation.json` to verify — this is a real, reproducible
-finding, not a placeholder). At this project's model scale (55K-400K
-parameters, 8K-24K training tokens per run), there is no measurable
-zero-shot task signal for *any* mixture or tokenizer choice to
-differentiate — the finding is that scale, not mixture policy, is the
-binding constraint at this size. Re-running this eval after scaling up
-model size and/or real training data (see `docs/reproducibility.md`) is
-the natural next experiment; a mixture/tokenizer effect that is invisible
-below some scale threshold would itself be a meaningful result.
+EXP-008 all three variants), on the real Wikipedia-sourced corpus (see
+`docs/data_pipeline.md`):** every configuration scores within a few
+points of chance (0.5) — from 0.4844 (`EXP-004__bpe`) to 0.5625
+(`EXP-008__raw`/`EXP-008__filtered`) — and, unlike on the earlier
+hand-authored placeholder corpus, no longer always predicts the same
+label regardless of input (see the per-example `predictions` array in
+any `downstream_evaluation.json` to verify). That's a real change from
+the previous fully-degenerate result, but the spread is still small and
+mostly explained by data mechanics rather than mixture/tokenizer policy:
+`EXP-008__raw` and `EXP-008__filtered` score identically (0.5625) because
+the quality filter accepted essentially all real Wikipedia text on this
+corpus (mean quality score ~1.0 — see `docs/data_pipeline.md`) and so
+removed nothing, leaving the two runs' training data numerically
+identical; only `EXP-008__filtered_dedup` (0.5) differs, from the small
+number of near-duplicate paragraphs dedup actually removed. None of this
+should be read as a mixture or tokenizer choice actually working. At
+this project's model scale
+(55K-400K parameters, 8K-24K training tokens per run), there still isn't
+enough signal for *any* mixture or tokenizer choice to reliably
+differentiate — the finding remains that scale, not mixture policy, is
+the binding constraint at this size. Re-running this eval after scaling
+up model size and/or training-token budget (see `docs/reproducibility.md`)
+is the natural next experiment; a mixture/tokenizer effect that is
+invisible below some scale threshold would itself be a meaningful
+result.
 
 ## Not implemented in this milestone
 

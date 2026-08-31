@@ -12,7 +12,7 @@ An English-heavy static mixture (60% English, remaining 40% split evenly across 
 - Seed: `0`
 - Hardware: `cpu`, 2 CPU cores,
   7.84 GB RAM, 0 GPU(s)
-- Software: Python 3.11.15, PyTorch 2.13.0+cpu
+- Software: Python 3.11.15, PyTorch 2.13.0+cu130
 
 ## 3. Dataset
 
@@ -22,7 +22,7 @@ An English-heavy static mixture (60% English, remaining 40% split evenly across 
 - Total packed tokens: 19955
 - Tokens per language: {'ben': 884, 'eng': 12048, 'guj': 884, 'hin': 884, 'kan': 884, 'mal': 884, 'mar': 883, 'pan': 883, 'tam': 883, 'tel': 883}
 - Epochs per language (token budget / available tokens; >1 means the
-  small bootstrap corpus was repeated to reach the budget): {'ben': 1.116, 'eng': 5.886, 'guj': 1.106, 'hin': 0.836, 'kan': 1.039, 'mal': 0.935, 'mar': 2.48, 'pan': 1.108, 'tam': 1.061, 'tel': 1.011}
+  small bootstrap corpus was repeated to reach the budget): {'ben': 0.014, 'eng': 0.195, 'guj': 0.019, 'hin': 0.017, 'kan': 0.02, 'mal': 0.02, 'mar': 0.024, 'pan': 0.019, 'tam': 0.024, 'tel': 0.018}
 - Padding ratio: 0.0
 
 ## 4. Model
@@ -34,8 +34,8 @@ An English-heavy static mixture (60% English, remaining 40% split evenly across 
 ## 5. Compute
 
 - Training tokens seen: 30528
-- Total training wall-clock time: 2.078 s
-- Mean tokens/sec (measured, CPU): 14692.27
+- Total training wall-clock time: 2.35 s
+- Mean tokens/sec (measured, CPU): 12990.86
 - FLOPs estimate: not computed in this report (see `docs/scaling_laws.md`
   compute-accounting note); wall-clock and tokens/sec above are measured,
   not estimated.
@@ -48,24 +48,24 @@ An English-heavy static mixture (60% English, remaining 40% split evenly across 
 
 ## 7. Results
 
-- Final training loss: 6.527769565582275
-- Final validation loss: 6.548765
-- Overall perplexity: 789.1673
-- Macro-average per-language perplexity: 792.4607
-- Weighted-average per-language perplexity: 792.4607
+- Final training loss: 6.832165956497192
+- Final validation loss: 6.683803
+- Overall perplexity: 1040.9505
+- Macro-average per-language perplexity: 1052.1425
+- Weighted-average per-language perplexity: 1052.1425
 
 | Language | Loss | Perplexity | Tokens evaluated |
 |---|---|---|---|
-| ben | 6.696329 | 809.429 | 2944 |
-| eng | 6.402652 | 603.4433 | 2944 |
-| guj | 6.712696 | 822.7857 | 2944 |
-| hin | 6.703235 | 815.038 | 2944 |
-| kan | 6.66617 | 785.3821 | 2944 |
-| mal | 6.717824 | 827.0158 | 2944 |
-| mar | 6.654172 | 776.0152 | 2944 |
-| pan | 6.735716 | 841.9459 | 2944 |
-| tam | 6.754626 | 858.0187 | 2944 |
-| tel | 6.666363 | 785.5331 | 2944 |
+| ben | 7.04678 | 1149.1522 | 2944 |
+| eng | 6.491524 | 659.5279 | 2944 |
+| guj | 6.992279 | 1088.1986 | 2944 |
+| hin | 6.968187 | 1062.2946 | 2944 |
+| kan | 7.021769 | 1120.7672 | 2944 |
+| mal | 6.98445 | 1079.7119 | 2944 |
+| mar | 6.948829 | 1041.9293 | 2944 |
+| pan | 7.0472 | 1149.6348 | 2944 |
+| tam | 6.957533 | 1051.0371 | 2944 |
+| tel | 7.020344 | 1119.1717 | 2944 |
 
 ## 8. Statistical uncertainty
 

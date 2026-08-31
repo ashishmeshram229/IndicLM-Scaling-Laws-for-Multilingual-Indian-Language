@@ -2,8 +2,8 @@
   "task": "sentiment_classification",
   "checkpoint": "experiments/manifests/EXP-004__bpe/checkpoints/final.pt",
   "tokenizer": "data/tokenizer_v1/indiclm_tokenizer.model",
-  "overall_accuracy": 0.5,
-  "macro_avg_accuracy": 0.5,
+  "overall_accuracy": 0.4844,
+  "macro_avg_accuracy": 0.4792,
   "n_examples": 64,
   "label_words": [
     "positive",
@@ -23,8 +23,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.710765838623047,
-            "negative": -6.796681086222331
+            "positive": -7.0058384736378985,
+            "negative": -7.040203094482422
           }
         },
         {
@@ -33,8 +33,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.688553946358817,
-            "negative": -6.776203950246175
+            "positive": -6.908511797587077,
+            "negative": -6.986198345820109
           }
         },
         {
@@ -43,8 +43,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.700589724949428,
-            "negative": -6.798529068628947
+            "positive": -6.9249653816223145,
+            "negative": -6.949395338694255
           }
         },
         {
@@ -53,8 +53,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.7300979750497,
-            "negative": -6.800752401351929
+            "positive": -6.989319483439128,
+            "negative": -7.015314658482869
           }
         },
         {
@@ -63,8 +63,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.693051883152553,
-            "negative": -6.768656571706136
+            "positive": -6.920300324757894,
+            "negative": -6.958973328272502
           }
         },
         {
@@ -73,8 +73,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.695695263998849,
-            "negative": -6.780867099761963
+            "positive": -6.927976290384929,
+            "negative": -6.969716787338257
           }
         }
       ]
@@ -82,8 +82,8 @@
     "eng": {
       "language": "eng",
       "n_examples": 8,
-      "n_correct": 4,
-      "accuracy": 0.5,
+      "n_correct": 5,
+      "accuracy": 0.625,
       "predictions": [
         {
           "text": "This movie was absolutely wonderful and touching.",
@@ -91,8 +91,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.619933945792062,
-            "negative": -6.712087869644165
+            "positive": -6.9369479815165205,
+            "negative": -6.941027561823527
           }
         },
         {
@@ -101,8 +101,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.640768868582589,
-            "negative": -6.725973844528198
+            "positive": -6.929373423258464,
+            "negative": -6.979843695958455
           }
         },
         {
@@ -111,8 +111,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.6386920383998325,
-            "negative": -6.7186598777771
+            "positive": -6.94227663675944,
+            "negative": -6.959378004074097
           }
         },
         {
@@ -121,8 +121,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.635378292628697,
-            "negative": -6.763385375340779
+            "positive": -6.894679148991902,
+            "negative": -6.929796616236369
           }
         },
         {
@@ -131,8 +131,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.610855443137033,
-            "negative": -6.7084635098775225
+            "positive": -6.928886969884236,
+            "negative": -6.953092892964681
           }
         },
         {
@@ -141,18 +141,18 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.66826377596174,
-            "negative": -6.729307969411214
+            "positive": -6.923822561899821,
+            "negative": -6.987754901250203
           }
         },
         {
           "text": "The service was terrible and very slow.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.65581294468471,
-            "negative": -6.728524208068848
+            "positive": -6.984918276468913,
+            "negative": -6.975782473882039
           }
         },
         {
@@ -161,8 +161,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.650598049163818,
-            "negative": -6.756582578023274
+            "positive": -6.930170138676961,
+            "negative": -6.9488710562388105
           }
         }
       ]
@@ -179,8 +179,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.7214164052690775,
-            "negative": -6.832696278889974
+            "positive": -6.937134424845378,
+            "negative": -6.991955916086833
           }
         },
         {
@@ -189,8 +189,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.725648743765695,
-            "negative": -6.83207106590271
+            "positive": -6.912648995717366,
+            "negative": -6.972726583480835
           }
         },
         {
@@ -199,8 +199,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.691666058131626,
-            "negative": -6.799279451370239
+            "positive": -6.9163581530253095,
+            "negative": -6.982447544733684
           }
         },
         {
@@ -209,8 +209,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.712564332144601,
-            "negative": -6.823191086451213
+            "positive": -6.9196732838948565,
+            "negative": -6.958283583323161
           }
         },
         {
@@ -219,8 +219,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.709385054452079,
-            "negative": -6.822644233703613
+            "positive": -6.926161607106526,
+            "negative": -6.993691364924113
           }
         },
         {
@@ -229,8 +229,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.6854079110281805,
-            "negative": -6.801445881525676
+            "positive": -6.9123523235321045,
+            "negative": -6.974846522013347
           }
         }
       ]
@@ -247,8 +247,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.822985580989292,
-            "negative": -6.885547399520874
+            "positive": -6.951503912607829,
+            "negative": -7.017476876576741
           }
         },
         {
@@ -257,8 +257,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.809870856148856,
-            "negative": -6.869758288065593
+            "positive": -6.9690671761830645,
+            "negative": -7.022562503814697
           }
         },
         {
@@ -267,8 +267,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.871392658778599,
-            "negative": -6.914362668991089
+            "positive": -6.998968203862508,
+            "negative": -7.0435844262441
           }
         },
         {
@@ -277,8 +277,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.858822345733643,
-            "negative": -6.915205001831055
+            "positive": -6.995489756266276,
+            "negative": -7.066509326299031
           }
         },
         {
@@ -287,8 +287,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.795811857495989,
-            "negative": -6.865778207778931
+            "positive": -6.95045789082845,
+            "negative": -7.018968343734741
           }
         },
         {
@@ -297,8 +297,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.837141786302839,
-            "negative": -6.897205511728923
+            "positive": -6.974436044692993,
+            "negative": -7.025357246398926
           }
         },
         {
@@ -307,8 +307,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.819466727120536,
-            "negative": -6.880529801050822
+            "positive": -6.9897200266520185,
+            "negative": -7.03196120262146
           }
         },
         {
@@ -317,8 +317,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.8428200994219095,
-            "negative": -6.915079673131307
+            "positive": -6.981246630350749,
+            "negative": -7.027946710586548
           }
         }
       ]
@@ -332,61 +332,61 @@
         {
           "text": "\u0c88 \u0c9a\u0cbf\u0ca4\u0ccd\u0cb0 \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0c9a\u0cc6\u0ca8\u0ccd\u0ca8\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1 \u0cae\u0ca4\u0ccd\u0ca4\u0cc1 \u0cb8\u0ccd\u0caa\u0cc2\u0cb0\u0ccd\u0ca4\u0cbf\u0ca6\u0cbe\u0caf\u0c95\u0cb5\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.660976682390485,
-            "negative": -6.767023960749309
+            "positive": -7.095577716827393,
+            "negative": -7.081308205922444
           }
         },
         {
           "text": "\u0c8a\u0c9f \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0cb0\u0cc1\u0c9a\u0cbf\u0caf\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.652022838592529,
-            "negative": -6.747737407684326
+            "positive": -7.10533881187439,
+            "negative": -7.080781062444051
           }
         },
         {
           "text": "\u0cb8\u0cc7\u0cb5\u0cc6 \u0c85\u0ca4\u0ccd\u0caf\u0cc1\u0ca4\u0ccd\u0ca4\u0cae\u0cb5\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.685640607561384,
-            "negative": -6.773349046707153
+            "positive": -7.078481515248616,
+            "negative": -7.043952306111653
           }
         },
         {
           "text": "\u0c88 \u0c9a\u0cbf\u0ca4\u0ccd\u0cb0 \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0cac\u0cc7\u0cb8\u0cb0\u0cb5\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.659273556300572,
-            "negative": -6.765770832697551
+            "positive": -7.055751959482829,
+            "negative": -7.032580455144246
           }
         },
         {
           "text": "\u0c8a\u0c9f \u0ca4\u0ca3\u0ccd\u0ca3\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1 \u0cae\u0ca4\u0ccd\u0ca4\u0cc1 \u0cb0\u0cc1\u0c9a\u0cbf \u0c87\u0cb0\u0cb2\u0cbf\u0cb2\u0ccd\u0cb2.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.6841839381626675,
-            "negative": -6.779548009236653
+            "positive": -7.14049235979716,
+            "negative": -7.137897809346517
           }
         },
         {
           "text": "\u0cb8\u0cc7\u0cb5\u0cc6 \u0ca4\u0cc1\u0c82\u0cac\u0cbe \u0c95\u0cc6\u0c9f\u0ccd\u0c9f\u0ca6\u0cbe\u0c97\u0cbf\u0ca4\u0ccd\u0ca4\u0cc1.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.665083408355713,
-            "negative": -6.766800165176392
+            "positive": -7.098399559656779,
+            "negative": -7.071757555007935
           }
         }
       ]
@@ -394,8 +394,8 @@
     "mal": {
       "language": "mal",
       "n_examples": 6,
-      "n_correct": 3,
-      "accuracy": 0.5,
+      "n_correct": 2,
+      "accuracy": 0.3333,
       "predictions": [
         {
           "text": "\u0d08 \u0d38\u0d3f\u0d28\u0d3f\u0d2e \u0d35\u0d33\u0d30\u0d46 \u0d28\u0d32\u0d4d\u0d32\u0d24\u0d41\u0d02 \u0d2a\u0d4d\u0d30\u0d1a\u0d4b\u0d26\u0d28\u0d3e\u0d24\u0d4d\u0d2e\u0d15\u0d35\u0d41\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
@@ -403,28 +403,28 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.809398991721017,
-            "negative": -6.9012932777404785
+            "positive": -7.002981503804524,
+            "negative": -7.029950777689616
           }
         },
         {
           "text": "\u0d2d\u0d15\u0d4d\u0d37\u0d23\u0d02 \u0d35\u0d33\u0d30\u0d46 \u0d30\u0d41\u0d1a\u0d3f\u0d15\u0d30\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.791433538709368,
-            "negative": -6.877650737762451
+            "positive": -7.0186998049418134,
+            "negative": -7.017519076665242
           }
         },
         {
           "text": "\u0d38\u0d47\u0d35\u0d28\u0d02 \u0d2e\u0d3f\u0d15\u0d1a\u0d4d\u0d1a\u0d24\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.821232455117362,
-            "negative": -6.912966807683309
+            "positive": -7.036718765894572,
+            "negative": -6.98716386159261
           }
         },
         {
@@ -433,8 +433,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.802441596984863,
-            "negative": -6.881051143010457
+            "positive": -6.985781351725261,
+            "negative": -7.013869841893514
           }
         },
         {
@@ -443,18 +443,18 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.760914393833706,
-            "negative": -6.8698179721832275
+            "positive": -7.00514022509257,
+            "negative": -7.005756298700969
           }
         },
         {
           "text": "\u0d38\u0d47\u0d35\u0d28\u0d02 \u0d35\u0d33\u0d30\u0d46 \u0d2e\u0d4b\u0d36\u0d2e\u0d3e\u0d2f\u0d3f\u0d30\u0d41\u0d28\u0d4d\u0d28\u0d41.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.774043491908482,
-            "negative": -6.864132642745972
+            "positive": -7.036864201227824,
+            "negative": -6.994502464930217
           }
         }
       ]
@@ -471,8 +471,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.856243882860456,
-            "negative": -6.933866818745931
+            "positive": -6.9796373049418134,
+            "negative": -7.0291227499643965
           }
         },
         {
@@ -481,8 +481,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.780774525233677,
-            "negative": -6.874421834945679
+            "positive": -6.968059142430623,
+            "negative": -7.021206855773926
           }
         },
         {
@@ -491,8 +491,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.830896241324289,
-            "negative": -6.890519460042317
+            "positive": -7.06541633605957,
+            "negative": -7.08700958887736
           }
         },
         {
@@ -501,8 +501,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.832954270499093,
-            "negative": -6.920095841089885
+            "positive": -6.9719014167785645,
+            "negative": -7.018696864446004
           }
         },
         {
@@ -511,8 +511,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.801379476274763,
-            "negative": -6.887670675913493
+            "positive": -6.974747498830159,
+            "negative": -7.031262715657552
           }
         },
         {
@@ -521,8 +521,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.851667063576834,
-            "negative": -6.930211782455444
+            "positive": -7.008350292841594,
+            "negative": -7.046889781951904
           }
         }
       ]
@@ -539,8 +539,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.749020440237863,
-            "negative": -6.81201974550883
+            "positive": -6.920178810755412,
+            "negative": -6.942007462183635
           }
         },
         {
@@ -549,8 +549,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.778641019548688,
-            "negative": -6.845335404078166
+            "positive": -6.921875794728597,
+            "negative": -6.956961472829183
           }
         },
         {
@@ -559,8 +559,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.751380034855434,
-            "negative": -6.818396250406901
+            "positive": -6.894548734029134,
+            "negative": -6.944592714309692
           }
         },
         {
@@ -569,8 +569,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.758846964154925,
-            "negative": -6.813752174377441
+            "positive": -6.9324939250946045,
+            "negative": -6.947736501693726
           }
         },
         {
@@ -579,8 +579,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.733434336526053,
-            "negative": -6.815756718317668
+            "positive": -6.948209921518962,
+            "negative": -6.964247226715088
           }
         },
         {
@@ -589,8 +589,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.743714605058942,
-            "negative": -6.813263972600301
+            "positive": -6.904373486836751,
+            "negative": -6.948044538497925
           }
         }
       ]
@@ -607,8 +607,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.76913104738508,
-            "negative": -6.875441392262776
+            "positive": -7.026704390843709,
+            "negative": -7.0726650555928545
           }
         },
         {
@@ -617,8 +617,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.861668178013393,
-            "negative": -6.943785905838013
+            "positive": -6.981409629185994,
+            "negative": -7.027676582336426
           }
         },
         {
@@ -627,8 +627,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.803952557700021,
-            "negative": -6.89176591237386
+            "positive": -6.9495086669921875,
+            "negative": -6.98734982808431
           }
         },
         {
@@ -637,8 +637,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.756914547511509,
-            "negative": -6.864839553833008
+            "positive": -7.023706595102946,
+            "negative": -7.075295686721802
           }
         },
         {
@@ -647,8 +647,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.863525186266218,
-            "negative": -6.927812576293945
+            "positive": -7.0006028811136884,
+            "negative": -7.046836773554484
           }
         },
         {
@@ -657,8 +657,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.846013273511614,
-            "negative": -6.915134827295939
+            "positive": -6.985248486200969,
+            "negative": -7.009450594584147
           }
         }
       ]
@@ -666,57 +666,57 @@
     "tel": {
       "language": "tel",
       "n_examples": 6,
-      "n_correct": 3,
-      "accuracy": 0.5,
+      "n_correct": 2,
+      "accuracy": 0.3333,
       "predictions": [
         {
           "text": "\u0c08 \u0c38\u0c3f\u0c28\u0c3f\u0c2e\u0c3e \u0c1a\u0c3e\u0c32\u0c3e \u0c2c\u0c3e\u0c17\u0c41\u0c02\u0c26\u0c3f \u0c2e\u0c30\u0c3f\u0c2f\u0c41 \u0c38\u0c4d\u0c2b\u0c42\u0c30\u0c4d\u0c24\u0c3f\u0c26\u0c3e\u0c2f\u0c15\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.663726602281843,
-            "negative": -6.749538421630859
+            "positive": -7.178378502527873,
+            "negative": -7.141649564107259
           }
         },
         {
           "text": "\u0c06\u0c39\u0c3e\u0c30\u0c02 \u0c1a\u0c3e\u0c32\u0c3e \u0c30\u0c41\u0c1a\u0c3f\u0c15\u0c30\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.636665480477469,
-            "negative": -6.717741250991821
+            "positive": -7.189227660497029,
+            "negative": -7.1509677569071455
           }
         },
         {
           "text": "\u0c38\u0c47\u0c35 \u0c05\u0c26\u0c4d\u0c2d\u0c41\u0c24\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
           "gold": "positive",
-          "predicted": "positive",
-          "correct": true,
+          "predicted": "negative",
+          "correct": false,
           "scores": {
-            "positive": -6.619562012808664,
-            "negative": -6.72199026743571
+            "positive": -7.2121914227803545,
+            "negative": -7.21060578028361
           }
         },
         {
           "text": "\u0c08 \u0c38\u0c3f\u0c28\u0c3f\u0c2e\u0c3e \u0c1a\u0c3e\u0c32\u0c3e \u0c2c\u0c4b\u0c30\u0c3f\u0c02\u0c17\u0c4d\u200c\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.657324109758649,
-            "negative": -6.7551242510477705
+            "positive": -7.1579164663950605,
+            "negative": -7.109561761220296
           }
         },
         {
           "text": "\u0c06\u0c39\u0c3e\u0c30\u0c02 \u0c1a\u0c32\u0c4d\u0c32\u0c17\u0c3e \u0c2e\u0c30\u0c3f\u0c2f\u0c41 \u0c30\u0c41\u0c1a\u0c3f \u0c32\u0c47\u0c15\u0c41\u0c02\u0c21\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
           "gold": "negative",
-          "predicted": "positive",
-          "correct": false,
+          "predicted": "negative",
+          "correct": true,
           "scores": {
-            "positive": -6.635041236877441,
-            "negative": -6.716414213180542
+            "positive": -7.222965240478516,
+            "negative": -7.177348454793294
           }
         },
         {
@@ -725,8 +725,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.6570362363542825,
-            "negative": -6.74649715423584
+            "positive": -7.157577117284139,
+            "negative": -7.162611087163289
           }
         }
       ]

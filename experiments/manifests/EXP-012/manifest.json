@@ -52,89 +52,89 @@
   },
   "software_versions": {
     "python": "3.11.15",
-    "platform": "Linux-6.18.5-fc-v20-x86_64-with-glibc2.39",
-    "torch": "2.13.0+cpu"
+    "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
+    "torch": "2.13.0+cu130"
   },
-  "created_at": 1787074300.5854151,
+  "created_at": 1788188080.9875505,
   "training_tokens": null,
   "final_train_loss": null,
   "final_val_loss": null,
   "evaluation_metrics": {
     "fit_status": "ok",
-    "A": 7.5089395322213885,
-    "alpha": 0.010579537413075461,
-    "alpha_stderr": 0.7528256356846404,
-    "B": 8966067.693519078,
-    "beta": 1.9973105795374708,
-    "beta_stderr": 0.1217759731591103,
-    "L_infinity": 5.0187219578566894e-29,
-    "L_infinity_stderr": 473.6241596804496,
-    "r_squared": 0.8786937482097386,
+    "A": 7.698561572697784,
+    "alpha": 0.009187551785706724,
+    "alpha_stderr": 0.8499994838668876,
+    "B": 7991354.651867304,
+    "beta": 1.999108873629356,
+    "beta_stderr": 0.14409393392537337,
+    "L_infinity": 1.9147037184713376e-29,
+    "L_infinity_stderr": 641.4242392758439,
+    "r_squared": 0.846802584926019,
     "n_observations": 8,
     "observations": [
       {
         "run_id": "n_tiny_d8000",
-        "n_params": 55072,
+        "n_params": 63136,
         "n_params_non_embedding": 24736,
         "d_tokens": 8192,
-        "final_val_loss": 6.836364,
-        "mean_tokens_per_sec": 16710.86
+        "final_val_loss": 7.089459,
+        "mean_tokens_per_sec": 20331.1
       },
       {
         "run_id": "n_small_d8000",
-        "n_params": 96432,
+        "n_params": 108528,
         "n_params_non_embedding": 50928,
         "d_tokens": 8192,
-        "final_val_loss": 6.826179,
-        "mean_tokens_per_sec": 16645.67
+        "final_val_loss": 7.077849,
+        "mean_tokens_per_sec": 19118.76
       },
       {
         "run_id": "n_medium_d8000",
-        "n_params": 159296,
+        "n_params": 175424,
         "n_params_non_embedding": 98624,
         "d_tokens": 8192,
-        "final_val_loss": 6.796077,
-        "mean_tokens_per_sec": 14725.54
+        "final_val_loss": 7.059865,
+        "mean_tokens_per_sec": 17386.04
       },
       {
         "run_id": "n_large_d8000",
-        "n_params": 395808,
+        "n_params": 420000,
         "n_params_non_embedding": 304800,
         "d_tokens": 8192,
-        "final_val_loss": 6.749945,
-        "mean_tokens_per_sec": 8726.12
+        "final_val_loss": 7.019166,
+        "mean_tokens_per_sec": 10863.35
       },
       {
         "run_id": "n_tiny_d24000",
-        "n_params": 55072,
+        "n_params": 63136,
         "n_params_non_embedding": 24736,
         "d_tokens": 23872,
-        "final_val_loss": 6.792248,
-        "mean_tokens_per_sec": 22420.66
+        "final_val_loss": 7.057156,
+        "mean_tokens_per_sec": 27476.34
       },
       {
         "run_id": "n_small_d24000",
-        "n_params": 96432,
+        "n_params": 108528,
         "n_params_non_embedding": 50928,
         "d_tokens": 23872,
-        "final_val_loss": 6.739266,
-        "mean_tokens_per_sec": 18456.2
+        "final_val_loss": 7.011094,
+        "mean_tokens_per_sec": 23836.43
       },
       {
         "run_id": "n_medium_d24000",
-        "n_params": 159296,
+        "n_params": 175424,
         "n_params_non_embedding": 98624,
         "d_tokens": 23872,
-        "final_val_loss": 6.661185,
-        "mean_tokens_per_sec": 16194.1
+        "final_val_loss": 6.941626,
+        "mean_tokens_per_sec": 19844.48
       },
       {
         "run_id": "n_large_d24000",
-        "n_params": 395808,
+        "n_params": 420000,
         "n_params_non_embedding": 304800,
         "d_tokens": 23872,
-        "final_val_loss": 6.532998,
-        "mean_tokens_per_sec": 9579.54
+        "final_val_loss": 6.812897,
+        "mean_tokens_per_sec": 12186.64
       }
     ]
   },

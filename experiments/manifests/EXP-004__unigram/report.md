@@ -11,7 +11,7 @@
 - Seed: `0`
 - Hardware: `cpu`, 2 CPU cores,
   7.84 GB RAM, 0 GPU(s)
-- Software: Python 3.11.15, PyTorch 2.13.0+cpu
+- Software: Python 3.11.15, PyTorch 2.13.0+cu130
 
 ## 3. Dataset
 
@@ -19,9 +19,9 @@
 - Tokenizer version: `unigram`
 - Sequence length: 64
 - Total packed tokens: 19955
-- Tokens per language: {'ben': 1793, 'eng': 3458, 'guj': 1837, 'hin': 2295, 'kan': 1898, 'mal': 2003, 'mar': 994, 'pan': 1846, 'tam': 1905, 'tel': 1971}
+- Tokens per language: {'ben': 2567, 'eng': 2357, 'guj': 1935, 'hin': 2206, 'kan': 1799, 'mal': 1858, 'mar': 1714, 'pan': 1973, 'tam': 1592, 'tel': 1999}
 - Epochs per language (token budget / available tokens; >1 means the
-  small bootstrap corpus was repeated to reach the budget): {'ben': 2.384, 'eng': 1.799, 'guj': 2.358, 'hin': 2.145, 'kan': 2.326, 'mal': 2.274, 'mar': 3.068, 'pan': 2.355, 'tam': 2.323, 'tel': 2.289}
+  small bootstrap corpus was repeated to reach the budget): {'ben': 0.03, 'eng': 0.031, 'guj': 0.034, 'hin': 0.032, 'kan': 0.035, 'mal': 0.034, 'mar': 0.035, 'pan': 0.033, 'tam': 0.037, 'tel': 0.033}
 - Padding ratio: 0.0
 
 ## 4. Model
@@ -33,8 +33,8 @@
 ## 5. Compute
 
 - Training tokens seen: 30528
-- Total training wall-clock time: 2.045 s
-- Mean tokens/sec (measured, CPU): 14924.66
+- Total training wall-clock time: 1.698 s
+- Mean tokens/sec (measured, CPU): 17980.53
 - FLOPs estimate: not computed in this report (see `docs/scaling_laws.md`
   compute-accounting note); wall-clock and tokens/sec above are measured,
   not estimated.
@@ -47,24 +47,24 @@
 
 ## 7. Results
 
-- Final training loss: 6.504048109054565
-- Final validation loss: 6.500119
-- Overall perplexity: 660.7111
-- Macro-average per-language perplexity: 661.3335
-- Weighted-average per-language perplexity: 661.3335
+- Final training loss: 6.360205888748169
+- Final validation loss: 6.363677
+- Overall perplexity: 597.4121
+- Macro-average per-language perplexity: 598.7749
+- Weighted-average per-language perplexity: 598.7749
 
 | Language | Loss | Perplexity | Tokens evaluated |
 |---|---|---|---|
-| ben | 6.544796 | 695.6146 | 2944 |
-| eng | 6.427234 | 618.4608 | 2944 |
-| guj | 6.4833 | 654.1258 | 2944 |
-| hin | 6.440415 | 626.6666 | 2944 |
-| kan | 6.564239 | 709.2718 | 2944 |
-| mal | 6.511239 | 672.6591 | 2944 |
-| mar | 6.441067 | 627.0757 | 2944 |
-| pan | 6.520092 | 678.6405 | 2944 |
-| tam | 6.50507 | 668.5223 | 2944 |
-| tel | 6.495715 | 662.2977 | 2944 |
+| ben | 6.392332 | 597.2478 | 2944 |
+| eng | 6.335931 | 564.4947 | 2944 |
+| guj | 6.391885 | 596.9807 | 2944 |
+| hin | 6.283076 | 535.4329 | 2944 |
+| kan | 6.481847 | 653.176 | 2944 |
+| mal | 6.471241 | 646.285 | 2944 |
+| mar | 6.301881 | 545.5971 | 2944 |
+| pan | 6.372795 | 585.6923 | 2944 |
+| tam | 6.47694 | 649.9787 | 2944 |
+| tel | 6.418144 | 612.8643 | 2944 |
 
 ## 8. Statistical uncertainty
 

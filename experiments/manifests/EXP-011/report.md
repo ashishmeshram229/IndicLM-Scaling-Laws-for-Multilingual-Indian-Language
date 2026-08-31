@@ -12,7 +12,7 @@ A tiny model trained only on the code-mixed sample corpus (Hindi-English, Marath
 - Seed: `0`
 - Hardware: `cpu`, 2 CPU cores,
   7.84 GB RAM, 0 GPU(s)
-- Software: Python 3.11.15, PyTorch 2.13.0+cpu
+- Software: Python 3.11.15, PyTorch 2.13.0+cu130
 
 ## 3. Dataset
 
@@ -22,7 +22,7 @@ A tiny model trained only on the code-mixed sample corpus (Hindi-English, Marath
 - Total packed tokens: 3969
 - Tokens per language: {'eng': 4000}
 - Epochs per language (token budget / available tokens; >1 means the
-  small bootstrap corpus was repeated to reach the budget): {'eng': 3.868}
+  small bootstrap corpus was repeated to reach the budget): {'eng': 3.177}
 - Padding ratio: 0.0
 
 ## 4. Model
@@ -34,8 +34,8 @@ A tiny model trained only on the code-mixed sample corpus (Hindi-English, Marath
 ## 5. Compute
 
 - Training tokens seen: 7392
-- Total training wall-clock time: 0.669 s
-- Mean tokens/sec (measured, CPU): 11053.26
+- Total training wall-clock time: 0.631 s
+- Mean tokens/sec (measured, CPU): 11707.02
 - FLOPs estimate: not computed in this report (see `docs/scaling_laws.md`
   compute-accounting note); wall-clock and tokens/sec above are measured,
   not estimated.
@@ -48,15 +48,15 @@ A tiny model trained only on the code-mixed sample corpus (Hindi-English, Marath
 
 ## 7. Results
 
-- Final training loss: 6.327212810516357
-- Final validation loss: 6.37383
-- Overall perplexity: 566.7175
-- Macro-average per-language perplexity: 566.7178
-- Weighted-average per-language perplexity: 566.7178
+- Final training loss: 6.387308120727539
+- Final validation loss: 6.429962
+- Overall perplexity: 609.6055
+- Macro-average per-language perplexity: 609.6056
+- Weighted-average per-language perplexity: 609.6056
 
 | Language | Loss | Perplexity | Tokens evaluated |
 |---|---|---|---|
-| eng | 6.339861 | 566.7178 | 2928 |
+| eng | 6.412812 | 609.6056 | 2928 |
 
 ## 8. Statistical uncertainty
 

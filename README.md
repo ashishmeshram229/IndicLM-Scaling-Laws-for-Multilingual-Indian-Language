@@ -13,19 +13,20 @@ anomaly detection), standalone evaluation (perplexity + a zero-shot
 sentiment downstream task, see `docs/evaluation.md`), an
 experiment-tracking + manifest + report system, a scaling-law sweep with
 a fitted (if underdetermined) power law, a static HTML research
-dashboard, a FastAPI inference service, Docker/Compose files, CI, and 36
+dashboard, a FastAPI inference service, Docker/Compose files, CI, and 38
 passing unit/integration tests. All 12 registry experiments (EXP-001
 through EXP-012) have been run — see `docs/research_report.md` and
 `experiments/manifests/`.
 
 **Read this before trusting any number below:** every experiment in this
-repository trains on a small, hand-authored bootstrap corpus (a few
-hundred short documents across 10 languages — see `docs/data_pipeline.md`
-for exactly why and how), on CPU only, with tiny (55K-400K parameter)
-models. The *infrastructure* is real and reusable; the *numbers* are a
+repository trains on ~1,800 real Wikipedia paragraphs across 10
+languages (see `docs/data_pipeline.md` for exactly how that corpus was
+fetched and licensed), on CPU only, with tiny (55K-400K parameter)
+models. The text is real, not fabricated, but the scale still isn't —
+the *infrastructure* is real and reusable; the *numbers* are a
 methodology demonstration, not evidence about real Indic-language model
-quality. Every doc in `docs/` says this again in context so it isn't
-missed.
+quality at production scale. Every doc in `docs/` says this again in
+context so it isn't missed.
 
 ## Motivation
 
@@ -64,7 +65,7 @@ but-unvalidated (GPU, multi-GPU, Slurm), in `docs/architecture.md`.
 ```bash
 git clone <this-repo> && cd indiclm
 make dev-install                 # pip install -e ".[dev]" + pre-commit
-make test                        # 36 unit + integration tests, CPU-only
+make test                        # 38 unit + integration tests, CPU-only
 indiclm doctor                    # inspect Python/PyTorch/CUDA/GPU/disk/memory
 
 indiclm data prepare              # data/raw -> data/processed (+ stats)
@@ -106,10 +107,11 @@ recipe and an explicit list of what "tested" means in this repo.
 ## Limitations
 
 See `docs/reproducibility.md` "Limitations that affect every result" —
-in short: bootstrap-scale hand-authored corpus, CPU-only, an
-underdetermined scaling-law fit (methodology real, exponents not
-trustworthy at 8 grid points), single seed per experiment, and Docker
-build unverified (no Docker daemon in the build environment).
+in short: real but bootstrap-scale corpus (~1,800 Wikipedia paragraphs,
+not a production pretraining corpus), CPU-only, an underdetermined
+scaling-law fit (methodology real, exponents not trustworthy at 8 grid
+points), single seed per experiment, and Docker build unverified (no
+Docker daemon in the build environment).
 
 ## Roadmap
 

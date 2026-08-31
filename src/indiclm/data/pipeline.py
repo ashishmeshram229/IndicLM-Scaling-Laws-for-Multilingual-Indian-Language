@@ -12,7 +12,7 @@ stage can be run, tested, and reasoned about independently.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from indiclm.data.dedup import ExactDeduplicator, MinHashNearDeduplicator
@@ -35,6 +35,19 @@ class DataPipelineConfig:
     min_langid_confidence: float = 0.3
     near_dedup_threshold: float = 0.8
     license_tag: str = "hand-authored-sample; see docs/data_pipeline.md"
+    # Per-subdirectory override: `wiki_sample/` holds real Wikipedia
+    # excerpts (see data/raw/wiki_sample/SOURCE.md), which are under a
+    # different, share-alike license than the hand-authored synthetic
+    # examples in codemixed_sample/ and junk_sample/ -- those two fall
+    # through to `license_tag` above.
+    license_by_source: dict[str, str] = field(
+        default_factory=lambda: {
+            "wiki_sample": (
+                "CC BY-SA 3.0 / GFDL (Wikipedia, via wikimedia/wikipedia "
+                "dump 20231101); see data/raw/wiki_sample/SOURCE.md"
+            ),
+        }
+    )
     enable_quality_filter: bool = True
     enable_exact_dedup: bool = True
     enable_near_dedup: bool = True
@@ -46,7 +59,11 @@ def run_pipeline(config: DataPipelineConfig) -> PipelineStats:
     stats = PipelineStats()
 
     docs: list[Document] = list(
-        ingest_text_directory(config.raw_dir, license_tag=config.license_tag)
+        ingest_text_directory(
+            config.raw_dir,
+            license_tag=config.license_tag,
+            license_by_source=config.license_by_source,
+        )
     )
     log.info("ingestion_complete", documents=len(docs))
 

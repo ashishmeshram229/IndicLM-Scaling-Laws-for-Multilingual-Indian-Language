@@ -23,8 +23,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.373908247266497,
-            "negative": -6.52430788675944
+            "positive": -7.213496605555217,
+            "negative": -7.30910062789917
           }
         },
         {
@@ -33,8 +33,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.30098955971854,
-            "negative": -6.429032405217488
+            "positive": -6.732987562815349,
+            "negative": -6.844483057657878
           }
         },
         {
@@ -43,8 +43,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.370048795427595,
-            "negative": -6.533682505289714
+            "positive": -6.556139628092448,
+            "negative": -6.652045011520386
           }
         },
         {
@@ -53,8 +53,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.39052152633667,
-            "negative": -6.531722942988078
+            "positive": -7.070855061213176,
+            "negative": -7.180222590764363
           }
         },
         {
@@ -63,8 +63,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.319360256195068,
-            "negative": -6.4486669699351
+            "positive": -6.51940377553304,
+            "negative": -6.618356943130493
           }
         },
         {
@@ -73,8 +73,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.3261991909572055,
-            "negative": -6.467121839523315
+            "positive": -6.576321601867676,
+            "negative": -6.675340175628662
           }
         }
       ]
@@ -91,8 +91,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.273411614554269,
-            "negative": -6.380870183308919
+            "positive": -6.437733332316081,
+            "negative": -6.546661376953125
           }
         },
         {
@@ -101,8 +101,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.274423735482352,
-            "negative": -6.383877436319987
+            "positive": -6.443450530370076,
+            "negative": -6.556464592615764
           }
         },
         {
@@ -111,8 +111,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.279117107391357,
-            "negative": -6.387895663579305
+            "positive": -6.439820686976115,
+            "negative": -6.552027146021525
           }
         },
         {
@@ -121,8 +121,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.271250316074917,
-            "negative": -6.3901175657908125
+            "positive": -6.436967134475708,
+            "negative": -6.547733783721924
           }
         },
         {
@@ -131,8 +131,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.27875416619437,
-            "negative": -6.390843391418457
+            "positive": -6.441871325174968,
+            "negative": -6.552905082702637
           }
         },
         {
@@ -141,8 +141,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.285549095698765,
-            "negative": -6.388490915298462
+            "positive": -6.43977936108907,
+            "negative": -6.558021863301595
           }
         },
         {
@@ -151,8 +151,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.292306627546038,
-            "negative": -6.404573837916057
+            "positive": -6.446190516153972,
+            "negative": -6.554253737131755
           }
         },
         {
@@ -161,8 +161,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.284361771174839,
-            "negative": -6.401733954747518
+            "positive": -6.441991329193115,
+            "negative": -6.54919695854187
           }
         }
       ]
@@ -179,8 +179,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.489059720720563,
-            "negative": -6.667596817016602
+            "positive": -6.549280405044556,
+            "negative": -6.651577949523926
           }
         },
         {
@@ -189,8 +189,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.47516850062779,
-            "negative": -6.635766585667928
+            "positive": -6.480993827184041,
+            "negative": -6.592945575714111
           }
         },
         {
@@ -199,8 +199,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.426231861114502,
-            "negative": -6.597966988881429
+            "positive": -6.500324249267578,
+            "negative": -6.620198329289754
           }
         },
         {
@@ -209,8 +209,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.459122725895473,
-            "negative": -6.636375109354655
+            "positive": -6.513204415639241,
+            "negative": -6.61019500096639
           }
         },
         {
@@ -219,8 +219,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.491613592420306,
-            "negative": -6.655744393666585
+            "positive": -6.540006796518962,
+            "negative": -6.64910356203715
           }
         },
         {
@@ -229,8 +229,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.4132249014718195,
-            "negative": -6.5763645966847735
+            "positive": -6.482418378194173,
+            "negative": -6.5980565547943115
           }
         }
       ]
@@ -247,8 +247,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.630338600703648,
-            "negative": -6.768394072850545
+            "positive": -6.451560417811076,
+            "negative": -6.5774467786153155
           }
         },
         {
@@ -257,8 +257,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.3890203067234586,
-            "negative": -6.528369903564453
+            "positive": -6.444962660471599,
+            "negative": -6.562840302785237
           }
         },
         {
@@ -267,8 +267,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.6420215879167825,
-            "negative": -6.761289676030477
+            "positive": -6.48712158203125,
+            "negative": -6.604192813237508
           }
         },
         {
@@ -277,8 +277,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.6339834077017645,
-            "negative": -6.7663804690043134
+            "positive": -6.493548313776652,
+            "negative": -6.618588209152222
           }
         },
         {
@@ -287,8 +287,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.451302324022565,
-            "negative": -6.607760508855184
+            "positive": -6.453545967737834,
+            "negative": -6.581687291463216
           }
         },
         {
@@ -297,8 +297,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.404254640851702,
-            "negative": -6.5480735301971436
+            "positive": -6.449024041493733,
+            "negative": -6.565011262893677
           }
         },
         {
@@ -307,8 +307,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.5373936380658835,
-            "negative": -6.684819380442302
+            "positive": -6.454939444859822,
+            "negative": -6.573897043863933
           }
         },
         {
@@ -317,8 +317,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.5321181161063055,
-            "negative": -6.690062999725342
+            "positive": -6.474059502283732,
+            "negative": -6.587272485097249
           }
         }
       ]
@@ -335,8 +335,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.298121724809919,
-            "negative": -6.428850412368774
+            "positive": -6.592793146769206,
+            "negative": -6.665605068206787
           }
         },
         {
@@ -345,8 +345,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.293170588357108,
-            "negative": -6.420048713684082
+            "positive": -6.5846874713897705,
+            "negative": -6.653322140375773
           }
         },
         {
@@ -355,8 +355,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.37053986958095,
-            "negative": -6.507063150405884
+            "positive": -6.6479175090789795,
+            "negative": -6.7139519055684405
           }
         },
         {
@@ -365,8 +365,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.288716111864362,
-            "negative": -6.4174723625183105
+            "positive": -6.528810183207194,
+            "negative": -6.6109992663065595
           }
         },
         {
@@ -375,8 +375,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.319424561091831,
-            "negative": -6.451677083969116
+            "positive": -6.839226245880127,
+            "negative": -6.9086519082387285
           }
         },
         {
@@ -385,8 +385,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.342678138187954,
-            "negative": -6.485505183537801
+            "positive": -6.7198067506154375,
+            "negative": -6.767923911412557
           }
         }
       ]
@@ -403,8 +403,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.530056749071393,
-            "negative": -6.69140362739563
+            "positive": -6.475716590881348,
+            "negative": -6.580534776051839
           }
         },
         {
@@ -413,8 +413,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.474686145782471,
-            "negative": -6.626971483230591
+            "positive": -6.479960123697917,
+            "negative": -6.574806213378906
           }
         },
         {
@@ -423,8 +423,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.682237693241665,
-            "negative": -6.824411153793335
+            "positive": -6.547831455866496,
+            "negative": -6.609767516454061
           }
         },
         {
@@ -433,8 +433,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.432605879647391,
-            "negative": -6.5748482545216875
+            "positive": -6.459179719289144,
+            "negative": -6.567415714263916
           }
         },
         {
@@ -443,8 +443,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.498025076729911,
-            "negative": -6.670095284779866
+            "positive": -6.508932987848918,
+            "negative": -6.594176530838013
           }
         },
         {
@@ -453,8 +453,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.555263655526297,
-            "negative": -6.701711336771647
+            "positive": -6.548216183980306,
+            "negative": -6.622568289438884
           }
         }
       ]
@@ -471,8 +471,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.523962838309152,
-            "negative": -6.686877727508545
+            "positive": -6.45383087793986,
+            "negative": -6.5663948853810625
           }
         },
         {
@@ -481,8 +481,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.477054732186454,
-            "negative": -6.647463162740071
+            "positive": -6.4544878005981445,
+            "negative": -6.5676655769348145
           }
         },
         {
@@ -491,8 +491,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.547377858843122,
-            "negative": -6.694377342859904
+            "positive": -6.542875607808431,
+            "negative": -6.6436537106831866
           }
         },
         {
@@ -501,8 +501,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.536939484732492,
-            "negative": -6.708615223566691
+            "positive": -6.45147180557251,
+            "negative": -6.565839449564616
           }
         },
         {
@@ -511,8 +511,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.49736533846174,
-            "negative": -6.652099529902141
+            "positive": -6.452789227167766,
+            "negative": -6.569931983947754
           }
         },
         {
@@ -521,8 +521,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.7029337882995605,
-            "negative": -6.8565512498219805
+            "positive": -6.468071540196736,
+            "negative": -6.581500053405762
           }
         }
       ]
@@ -539,8 +539,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.366628851209368,
-            "negative": -6.5049863656361895
+            "positive": -6.505610227584839,
+            "negative": -6.607766469319661
           }
         },
         {
@@ -549,8 +549,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.364638805389404,
-            "negative": -6.4930189450581866
+            "positive": -6.755935033162435,
+            "negative": -6.81652045249939
           }
         },
         {
@@ -559,8 +559,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.393383639199393,
-            "negative": -6.5325502554575605
+            "positive": -6.558269103368123,
+            "negative": -6.660621563593547
           }
         },
         {
@@ -569,8 +569,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.350116048540388,
-            "negative": -6.477455298105876
+            "positive": -6.497114340464274,
+            "negative": -6.599632898966472
           }
         },
         {
@@ -579,8 +579,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.31530897957938,
-            "negative": -6.440532525380452
+            "positive": -6.961825450261434,
+            "negative": -7.0137403806050616
           }
         },
         {
@@ -589,8 +589,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.355018275124686,
-            "negative": -6.487639983495076
+            "positive": -6.674275795618693,
+            "negative": -6.759259303410848
           }
         }
       ]
@@ -607,8 +607,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.4307717595781595,
-            "negative": -6.596980969111125
+            "positive": -6.573336680730184,
+            "negative": -6.674715995788574
           }
         },
         {
@@ -617,8 +617,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.777348722730364,
-            "negative": -6.902311484018962
+            "positive": -6.505264043807983,
+            "negative": -6.613711913426717
           }
         },
         {
@@ -627,8 +627,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.766527993338449,
-            "negative": -6.878683408101399
+            "positive": -6.47686751683553,
+            "negative": -6.5785384972890215
           }
         },
         {
@@ -637,8 +637,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.4713311195373535,
-            "negative": -6.646751324335734
+            "positive": -6.609312534332275,
+            "negative": -6.702600638071696
           }
         },
         {
@@ -647,8 +647,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.837465150015695,
-            "negative": -6.945088624954224
+            "positive": -6.616911093393962,
+            "negative": -6.697977860768636
           }
         },
         {
@@ -657,8 +657,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.749092170170376,
-            "negative": -6.859870831171672
+            "positive": -6.501038392384847,
+            "negative": -6.6005228360493975
           }
         }
       ]
@@ -675,8 +675,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.356302806309292,
-            "negative": -6.498015483220418
+            "positive": -6.650794347127278,
+            "negative": -6.706944068272908
           }
         },
         {
@@ -685,8 +685,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.313015188489642,
-            "negative": -6.443821430206299
+            "positive": -6.853686412175496,
+            "negative": -6.8891565799713135
           }
         },
         {
@@ -695,8 +695,8 @@
           "predicted": "positive",
           "correct": true,
           "scores": {
-            "positive": -6.3122969354902,
-            "negative": -6.452206293741862
+            "positive": -6.797452290852864,
+            "negative": -6.875033934911092
           }
         },
         {
@@ -705,8 +705,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.344440596444266,
-            "negative": -6.491902907689412
+            "positive": -6.52840526898702,
+            "negative": -6.609631220499675
           }
         },
         {
@@ -715,8 +715,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.310165541512625,
-            "negative": -6.441094160079956
+            "positive": -7.024434884389241,
+            "negative": -7.0683064460754395
           }
         },
         {
@@ -725,8 +725,8 @@
           "predicted": "positive",
           "correct": false,
           "scores": {
-            "positive": -6.380574703216553,
-            "negative": -6.529609839121501
+            "positive": -6.943966547648112,
+            "negative": -7.022418737411499
           }
         }
       ]
