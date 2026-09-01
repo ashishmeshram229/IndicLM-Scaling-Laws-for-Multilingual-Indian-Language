@@ -1,0 +1,56 @@
+[
+  {
+    "run_id": "n_xs_d6000_seed2",
+    "n_params": 41592,
+    "n_params_non_embedding": 12792,
+    "d_tokens": 6144,
+    "final_val_loss": 7.090322,
+    "mean_tokens_per_sec": 109434.28,
+    "seed": 2
+  },
+  {
+    "run_id": "n_tiny_d6000_seed2",
+    "n_params": 63136,
+    "n_params_non_embedding": 24736,
+    "d_tokens": 6144,
+    "final_val_loss": 7.084789,
+    "mean_tokens_per_sec": 102634.6,
+    "seed": 2
+  },
+  {
+    "run_id": "n_small_d6000_seed2",
+    "n_params": 108528,
+    "n_params_non_embedding": 50928,
+    "d_tokens": 6144,
+    "final_val_loss": 7.089419,
+    "mean_tokens_per_sec": 82064.47,
+    "seed": 2
+  },
+  {
+    "run_id": "n_medium_d6000_seed2",
+    "n_params": 175424,
+    "n_params_non_embedding": 98624,
+    "d_tokens": 6144,
+    "final_val_loss": 7.067025,
+    "mean_tokens_per_sec": 75093.4,
+    "seed": 2
+  },
+  {
+    "run_id": "n_large_d6000_seed2",
+    "n_params": 420000,
+    "n_params_non_embedding": 304800,
+    "d_tokens": 6144,
+    "final_val_loss": 7.044432,
+    "mean_tokens_per_sec": 48430.56,
+    "seed": 2
+  },
+  {
+    "run_id": "n_xl_d6000_seed2",
+    "n_params": 707456,
+    "n_params_non_embedding": 553856,
+    "d_tokens": 6144,
+    "final_val_loss": 7.055522,
+    "mean_tokens_per_sec": 37482.86,
+    "seed": 2
+  }
+]

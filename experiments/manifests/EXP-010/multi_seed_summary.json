@@ -1,0 +1,16 @@
+{
+  "experiment_id": "EXP-010",
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "n_seeds": 3,
+  "final_val_loss_mean": 6.882456,
+  "final_val_loss_std": 0.01664600729904894,
+  "final_val_loss_per_seed": {
+    "0": 6.882474,
+    "1": 6.865801,
+    "2": 6.899093
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "overall_loss": 6.444219,
+  "overall_perplexity": 629.0552,
+  "macro_avg_perplexity": 629.0553,
+  "weighted_avg_perplexity": 629.0553,
+  "per_language": {
+    "eng": {
+      "language": "eng",
+      "loss": 6.444219,
+      "perplexity": 629.0553,
+      "tokens_evaluated": 2928
+    }
+  },
+  "checkpoint": "experiments/manifests/EXP-011/seed_1/checkpoints/final.pt",
+  "tokenizer": "data/tokenizer_v1/indiclm_tokenizer.model"
+}

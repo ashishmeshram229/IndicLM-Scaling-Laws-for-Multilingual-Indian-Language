@@ -1,0 +1,615 @@
+{
+  "final_step": 60,
+  "final_train_loss": 6.912670373916626,
+  "final_val_loss": 6.865801,
+  "tokens_seen": 30528,
+  "total_train_time_sec": 0.381,
+  "mean_tokens_per_sec": 80090.29,
+  "history": [
+    {
+      "step": 0,
+      "loss": 7.094777,
+      "learning_rate": 5.9999999999999995e-05,
+      "gradient_norm": 0.776989,
+      "tokens_seen": 512,
+      "tokens_per_sec": 78963.22,
+      "step_time_sec": 0.0065,
+      "data_loading_time_sec": 0.0002,
+      "val_loss": 7.094658
+    },
+    {
+      "step": 1,
+      "loss": 7.089781,
+      "learning_rate": 8.999999999999999e-05,
+      "gradient_norm": 0.738866,
+      "tokens_seen": 1024,
+      "tokens_per_sec": 90504.2,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 2,
+      "loss": 7.09485,
+      "learning_rate": 0.00011999999999999999,
+      "gradient_norm": 0.784411,
+      "tokens_seen": 1536,
+      "tokens_per_sec": 91989.02,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 3,
+      "loss": 7.106076,
+      "learning_rate": 0.00015,
+      "gradient_norm": 0.807793,
+      "tokens_seen": 2048,
+      "tokens_per_sec": 97710.6,
+      "step_time_sec": 0.0052,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 4,
+      "loss": 7.092488,
+      "learning_rate": 0.00017999999999999998,
+      "gradient_norm": 0.730916,
+      "tokens_seen": 2560,
+      "tokens_per_sec": 87792.14,
+      "step_time_sec": 0.0058,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 5,
+      "loss": 7.09153,
+      "learning_rate": 0.00020999999999999998,
+      "gradient_norm": 0.774823,
+      "tokens_seen": 3072,
+      "tokens_per_sec": 95422.51,
+      "step_time_sec": 0.0054,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 6,
+      "loss": 7.089527,
+      "learning_rate": 0.00023999999999999998,
+      "gradient_norm": 0.753121,
+      "tokens_seen": 3584,
+      "tokens_per_sec": 97471.12,
+      "step_time_sec": 0.0053,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 7,
+      "loss": 7.098747,
+      "learning_rate": 0.00027,
+      "gradient_norm": 0.848454,
+      "tokens_seen": 4096,
+      "tokens_per_sec": 99646.59,
+      "step_time_sec": 0.0051,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 8,
+      "loss": 7.082108,
+      "learning_rate": 0.0003,
+      "gradient_norm": 0.724864,
+      "tokens_seen": 4608,
+      "tokens_per_sec": 96951.86,
+      "step_time_sec": 0.0053,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 9,
+      "loss": 7.075396,
+      "learning_rate": 0.0003,
+      "gradient_norm": 0.768853,
+      "tokens_seen": 5120,
+      "tokens_per_sec": 101081.84,
+      "step_time_sec": 0.0051,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 10,
+      "loss": 7.079125,
+      "learning_rate": 0.00029973360833781664,
+      "gradient_norm": 0.80708,
+      "tokens_seen": 5632,
+      "tokens_per_sec": 99869.03,
+      "step_time_sec": 0.0051,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 11,
+      "loss": 7.063311,
+      "learning_rate": 0.0002989354846774545,
+      "gradient_norm": 0.793254,
+      "tokens_seen": 6144,
+      "tokens_per_sec": 94378.29,
+      "step_time_sec": 0.0054,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 12,
+      "loss": 7.068776,
+      "learning_rate": 0.00029760877884837294,
+      "gradient_norm": 0.849173,
+      "tokens_seen": 6656,
+      "tokens_per_sec": 105026.83,
+      "step_time_sec": 0.0049,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 13,
+      "loss": 7.057203,
+      "learning_rate": 0.0002957587267523652,
+      "gradient_norm": 0.815644,
+      "tokens_seen": 7168,
+      "tokens_per_sec": 93792.96,
+      "step_time_sec": 0.0055,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 14,
+      "loss": 7.048031,
+      "learning_rate": 0.0002933926296998457,
+      "gradient_norm": 0.832275,
+      "tokens_seen": 7680,
+      "tokens_per_sec": 82367.43,
+      "step_time_sec": 0.0062,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 15,
+      "loss": 7.049699,
+      "learning_rate": 0.00029051982559491393,
+      "gradient_norm": 0.77317,
+      "tokens_seen": 8192,
+      "tokens_per_sec": 88640.1,
+      "step_time_sec": 0.0058,
+      "data_loading_time_sec": 0.0001,
+      "val_loss": 7.03653
+    },
+    {
+      "step": 16,
+      "loss": 7.042722,
+      "learning_rate": 0.00028715165208291265,
+      "gradient_norm": 0.799278,
+      "tokens_seen": 8704,
+      "tokens_per_sec": 87058.97,
+      "step_time_sec": 0.0059,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 17,
+      "loss": 7.027799,
+      "learning_rate": 0.00028330140180592156,
+      "gradient_norm": 0.831275,
+      "tokens_seen": 9216,
+      "tokens_per_sec": 94432.24,
+      "step_time_sec": 0.0054,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 18,
+      "loss": 7.019454,
+      "learning_rate": 0.00027898426994277204,
+      "gradient_norm": 0.816145,
+      "tokens_seen": 9728,
+      "tokens_per_sec": 85062.33,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 19,
+      "loss": 7.011075,
+      "learning_rate": 0.00027421729424061787,
+      "gradient_norm": 0.791179,
+      "tokens_seen": 10240,
+      "tokens_per_sec": 88919.04,
+      "step_time_sec": 0.0058,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 20,
+      "loss": 7.062234,
+      "learning_rate": 0.0002690192877747315,
+      "gradient_norm": 0.76024,
+      "tokens_seen": 10752,
+      "tokens_per_sec": 91246.38,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 21,
+      "loss": 7.012573,
+      "learning_rate": 0.0002634107647018905,
+      "gradient_norm": 0.813953,
+      "tokens_seen": 11264,
+      "tokens_per_sec": 85160.16,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 22,
+      "loss": 7.021032,
+      "learning_rate": 0.00025741385930037295,
+      "gradient_norm": 0.747177,
+      "tokens_seen": 11776,
+      "tokens_per_sec": 85349.69,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 23,
+      "loss": 6.997486,
+      "learning_rate": 0.00025105223861607306,
+      "gradient_norm": 0.826228,
+      "tokens_seen": 12288,
+      "tokens_per_sec": 84726.73,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 24,
+      "loss": 6.976308,
+      "learning_rate": 0.00024435100905948387,
+      "gradient_norm": 0.754085,
+      "tokens_seen": 12800,
+      "tokens_per_sec": 83184.21,
+      "step_time_sec": 0.0062,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 25,
+      "loss": 6.984511,
+      "learning_rate": 0.00023733661732216452,
+      "gradient_norm": 0.855506,
+      "tokens_seen": 13312,
+      "tokens_per_sec": 92024.5,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 26,
+      "loss": 6.99227,
+      "learning_rate": 0.00023003674600373153,
+      "gradient_norm": 0.815589,
+      "tokens_seen": 13824,
+      "tokens_per_sec": 91199.88,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 27,
+      "loss": 6.988673,
+      "learning_rate": 0.00022248020436128478,
+      "gradient_norm": 0.849186,
+      "tokens_seen": 14336,
+      "tokens_per_sec": 80629.41,
+      "step_time_sec": 0.0064,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 28,
+      "loss": 7.00466,
+      "learning_rate": 0.00021469681461243153,
+      "gradient_norm": 0.825848,
+      "tokens_seen": 14848,
+      "tokens_per_sec": 90699.14,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 29,
+      "loss": 6.992293,
+      "learning_rate": 0.00020671729424061788,
+      "gradient_norm": 0.774886,
+      "tokens_seen": 15360,
+      "tokens_per_sec": 80412.03,
+      "step_time_sec": 0.0064,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 30,
+      "loss": 6.955276,
+      "learning_rate": 0.0001985731347672554,
+      "gradient_norm": 0.735467,
+      "tokens_seen": 15872,
+      "tokens_per_sec": 85021.92,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001,
+      "val_loss": 6.942833
+    },
+    {
+      "step": 31,
+      "loss": 7.002408,
+      "learning_rate": 0.00019029647746907283,
+      "gradient_norm": 0.764728,
+      "tokens_seen": 16384,
+      "tokens_per_sec": 84139.15,
+      "step_time_sec": 0.0061,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 32,
+      "loss": 6.907599,
+      "learning_rate": 0.00018191998653118108,
+      "gradient_norm": 0.716493,
+      "tokens_seen": 16896,
+      "tokens_per_sec": 90317.69,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 33,
+      "loss": 6.949188,
+      "learning_rate": 0.0001734767201364573,
+      "gradient_norm": 0.800813,
+      "tokens_seen": 17408,
+      "tokens_per_sec": 90860.32,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 34,
+      "loss": 6.96099,
+      "learning_rate": 0.000165,
+      "gradient_norm": 1.071627,
+      "tokens_seen": 17728,
+      "tokens_per_sec": 25167.4,
+      "step_time_sec": 0.0051,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 35,
+      "loss": 6.915951,
+      "learning_rate": 0.0001565232798635427,
+      "gradient_norm": 0.768589,
+      "tokens_seen": 18240,
+      "tokens_per_sec": 89478.49,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 36,
+      "loss": 6.89074,
+      "learning_rate": 0.0001480800134688189,
+      "gradient_norm": 0.71057,
+      "tokens_seen": 18752,
+      "tokens_per_sec": 91300.7,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 37,
+      "loss": 6.922447,
+      "learning_rate": 0.00013970352253092714,
+      "gradient_norm": 0.719529,
+      "tokens_seen": 19264,
+      "tokens_per_sec": 87392.0,
+      "step_time_sec": 0.0059,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 38,
+      "loss": 6.89079,
+      "learning_rate": 0.00013142686523274463,
+      "gradient_norm": 0.713105,
+      "tokens_seen": 19776,
+      "tokens_per_sec": 87824.46,
+      "step_time_sec": 0.0058,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 39,
+      "loss": 6.885128,
+      "learning_rate": 0.00012328270575938212,
+      "gradient_norm": 0.777646,
+      "tokens_seen": 20288,
+      "tokens_per_sec": 92635.82,
+      "step_time_sec": 0.0055,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 40,
+      "loss": 6.887359,
+      "learning_rate": 0.00011530318538756846,
+      "gradient_norm": 0.757433,
+      "tokens_seen": 20800,
+      "tokens_per_sec": 85978.45,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 41,
+      "loss": 6.900347,
+      "learning_rate": 0.00010751979563871518,
+      "gradient_norm": 0.7917,
+      "tokens_seen": 21312,
+      "tokens_per_sec": 88900.63,
+      "step_time_sec": 0.0058,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 42,
+      "loss": 6.868519,
+      "learning_rate": 9.996325399626841e-05,
+      "gradient_norm": 0.720925,
+      "tokens_seen": 21824,
+      "tokens_per_sec": 87196.83,
+      "step_time_sec": 0.0059,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 43,
+      "loss": 6.92507,
+      "learning_rate": 9.266338267783541e-05,
+      "gradient_norm": 0.665948,
+      "tokens_seen": 22336,
+      "tokens_per_sec": 79283.9,
+      "step_time_sec": 0.0065,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 44,
+      "loss": 6.857833,
+      "learning_rate": 8.564899094051614e-05,
+      "gradient_norm": 0.726077,
+      "tokens_seen": 22848,
+      "tokens_per_sec": 90094.13,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 45,
+      "loss": 6.844605,
+      "learning_rate": 7.894776138392688e-05,
+      "gradient_norm": 0.759761,
+      "tokens_seen": 23360,
+      "tokens_per_sec": 84710.02,
+      "step_time_sec": 0.006,
+      "data_loading_time_sec": 0.0001,
+      "val_loss": 6.88442
+    },
+    {
+      "step": 46,
+      "loss": 6.871181,
+      "learning_rate": 7.258614069962701e-05,
+      "gradient_norm": 0.760907,
+      "tokens_seen": 23872,
+      "tokens_per_sec": 89665.29,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 47,
+      "loss": 6.846419,
+      "learning_rate": 6.658923529810946e-05,
+      "gradient_norm": 0.768014,
+      "tokens_seen": 24384,
+      "tokens_per_sec": 88552.38,
+      "step_time_sec": 0.0058,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 48,
+      "loss": 6.857774,
+      "learning_rate": 6.098071222526847e-05,
+      "gradient_norm": 0.736962,
+      "tokens_seen": 24896,
+      "tokens_per_sec": 83768.28,
+      "step_time_sec": 0.0061,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 49,
+      "loss": 6.854639,
+      "learning_rate": 5.578270575938211e-05,
+      "gradient_norm": 0.774999,
+      "tokens_seen": 25408,
+      "tokens_per_sec": 89654.06,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 50,
+      "loss": 6.881457,
+      "learning_rate": 5.1015730057227994e-05,
+      "gradient_norm": 0.760761,
+      "tokens_seen": 25920,
+      "tokens_per_sec": 86837.19,
+      "step_time_sec": 0.0059,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 51,
+      "loss": 6.91622,
+      "learning_rate": 4.669859819407844e-05,
+      "gradient_norm": 0.730111,
+      "tokens_seen": 26432,
+      "tokens_per_sec": 92751.85,
+      "step_time_sec": 0.0055,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 52,
+      "loss": 6.838671,
+      "learning_rate": 4.2848347917087386e-05,
+      "gradient_norm": 0.660702,
+      "tokens_seen": 26944,
+      "tokens_per_sec": 90798.85,
+      "step_time_sec": 0.0056,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 53,
+      "loss": 6.849789,
+      "learning_rate": 3.948017440508607e-05,
+      "gradient_norm": 0.618132,
+      "tokens_seen": 27456,
+      "tokens_per_sec": 79062.06,
+      "step_time_sec": 0.0065,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 54,
+      "loss": 6.833784,
+      "learning_rate": 3.660737030015427e-05,
+      "gradient_norm": 0.744313,
+      "tokens_seen": 27968,
+      "tokens_per_sec": 89322.17,
+      "step_time_sec": 0.0057,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 55,
+      "loss": 6.864592,
+      "learning_rate": 3.4241273247634805e-05,
+      "gradient_norm": 0.705344,
+      "tokens_seen": 28480,
+      "tokens_per_sec": 93053.28,
+      "step_time_sec": 0.0055,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 56,
+      "loss": 6.844879,
+      "learning_rate": 3.2391221151627036e-05,
+      "gradient_norm": 0.755747,
+      "tokens_seen": 28992,
+      "tokens_per_sec": 82892.02,
+      "step_time_sec": 0.0062,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 57,
+      "loss": 6.84153,
+      "learning_rate": 3.10645153225455e-05,
+      "gradient_norm": 0.780165,
+      "tokens_seen": 29504,
+      "tokens_per_sec": 92583.9,
+      "step_time_sec": 0.0055,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 58,
+      "loss": 6.863639,
+      "learning_rate": 3.0266391662183335e-05,
+      "gradient_norm": 0.765432,
+      "tokens_seen": 30016,
+      "tokens_per_sec": 84234.86,
+      "step_time_sec": 0.0061,
+      "data_loading_time_sec": 0.0001
+    },
+    {
+      "step": 59,
+      "loss": 6.91267,
+      "learning_rate": 2.9999999999999997e-05,
+      "gradient_norm": 0.794991,
+      "tokens_seen": 30528,
+      "tokens_per_sec": 78515.73,
+      "step_time_sec": 0.0065,
+      "data_loading_time_sec": 0.0001,
+      "val_loss": 6.865801
+    }
+  ]
+}

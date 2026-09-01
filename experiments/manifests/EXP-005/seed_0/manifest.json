@@ -1,0 +1,143 @@
+{
+  "experiment_id": "EXP-005",
+  "git_commit": "b7fa0f9da9fca38ddbd554a57b6c9ff1d4e41670",
+  "config_hash": "3e6cd408067ed4d2",
+  "config": {
+    "experiment_id": "EXP-005",
+    "hypothesis": "An English-heavy static mixture (60% English, remaining 40% split evenly across the nine Indic languages) will show lower validation loss on English and worse (or no better) loss on Indic languages compared to a temperature-sampled or Indic-balanced mixture at the same total token budget \u2014 demonstrating \"how much performance is lost by heavily English-dominated training\" (Q9).\n",
+    "next_experiment": "Compare against EXP-006 (Indic-balanced) and EXP-007 (temperature sampling) at the same token budget.",
+    "seed": 0,
+    "data": {
+      "shards_dir": "data/processed",
+      "tokenizer_path": "data/tokenizer_v1/indiclm_tokenizer.model",
+      "seq_len": 64,
+      "total_tokens": 20000,
+      "val_fraction": 0.1,
+      "dataset_version": "v1",
+      "tokenizer_version": "bpe_v1",
+      "manual_weights": {
+        "eng": 0.6,
+        "hin": 0.044,
+        "mar": 0.044,
+        "ben": 0.044,
+        "tam": 0.044,
+        "tel": 0.044,
+        "kan": 0.044,
+        "mal": 0.044,
+        "guj": 0.044,
+        "pan": 0.044
+      }
+    },
+    "model": {
+      "d_model": 64,
+      "n_layers": 2,
+      "n_heads": 4,
+      "n_kv_heads": 2,
+      "dropout": 0.0
+    },
+    "training": {
+      "max_steps": 60,
+      "micro_batch_size": 4,
+      "gradient_accumulation_steps": 2,
+      "learning_rate": 0.0003,
+      "warmup_steps": 10,
+      "eval_every": 15,
+      "checkpoint_every": 60,
+      "log_every": 15,
+      "device": "cpu"
+    }
+  },
+  "dataset_version": "v1",
+  "tokenizer_version": "bpe_v1",
+  "seed": 0,
+  "hardware": {
+    "device_type": "mps",
+    "num_gpus": 0,
+    "gpu_names": [],
+    "gpu_memory_gb": [],
+    "cpu_count": 10,
+    "total_ram_gb": 16.0,
+    "recommended_profile": "cpu"
+  },
+  "software_versions": {
+    "python": "3.13.5",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "torch": "2.9.1"
+  },
+  "created_at": 1788235635.1362188,
+  "training_tokens": 30528,
+  "final_train_loss": 6.832165956497192,
+  "final_val_loss": 6.683803,
+  "evaluation_metrics": {
+    "overall_loss": 6.947889,
+    "overall_perplexity": 1040.9503,
+    "macro_avg_perplexity": 1052.1425,
+    "weighted_avg_perplexity": 1052.1425,
+    "per_language": {
+      "ben": {
+        "language": "ben",
+        "loss": 7.04678,
+        "perplexity": 1149.1522,
+        "tokens_evaluated": 2944
+      },
+      "eng": {
+        "language": "eng",
+        "loss": 6.491524,
+        "perplexity": 659.5278,
+        "tokens_evaluated": 2944
+      },
+      "guj": {
+        "language": "guj",
+        "loss": 6.992279,
+        "perplexity": 1088.1986,
+        "tokens_evaluated": 2944
+      },
+      "hin": {
+        "language": "hin",
+        "loss": 6.968186,
+        "perplexity": 1062.2945,
+        "tokens_evaluated": 2944
+      },
+      "kan": {
+        "language": "kan",
+        "loss": 7.021769,
+        "perplexity": 1120.7672,
+        "tokens_evaluated": 2944
+      },
+      "mal": {
+        "language": "mal",
+        "loss": 6.98445,
+        "perplexity": 1079.7119,
+        "tokens_evaluated": 2944
+      },
+      "mar": {
+        "language": "mar",
+        "loss": 6.948829,
+        "perplexity": 1041.9291,
+        "tokens_evaluated": 2944
+      },
+      "pan": {
+        "language": "pan",
+        "loss": 7.047199,
+        "perplexity": 1149.6347,
+        "tokens_evaluated": 2944
+      },
+      "tam": {
+        "language": "tam",
+        "loss": 6.957533,
+        "perplexity": 1051.0372,
+        "tokens_evaluated": 2944
+      },
+      "tel": {
+        "language": "tel",
+        "loss": 7.020344,
+        "perplexity": 1119.1718,
+        "tokens_evaluated": 2944
+      }
+    },
+    "checkpoint": "experiments/manifests/EXP-005/seed_0/checkpoints/final.pt",
+    "tokenizer": "data/tokenizer_v1/indiclm_tokenizer.model"
+  },
+  "checkpoint_path": "experiments/manifests/EXP-005/seed_0/checkpoints/final.pt",
+  "notes": ""
+}

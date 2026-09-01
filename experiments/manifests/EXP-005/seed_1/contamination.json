@@ -1,0 +1,8 @@
+{
+  "n": 8,
+  "overlap_threshold": 0.5,
+  "total_eval_documents": 64,
+  "flagged_documents": 0,
+  "flagged_rate": 0.0,
+  "flagged_examples": []
+}

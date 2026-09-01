@@ -45,20 +45,29 @@ def scaling_sweep(
 ) -> None:
     configure_logging()
 
+    # 6 sizes spanning ~43x in non-embedding params (~13K to ~554K),
+    # log-roughly-uniform spacing, to properly identify alpha independently
+    # of beta. The previous 4-size grid (25K–305K, ~7x range) left alpha
+    # statistically indistinguishable from 0 — structural grid-coarseness,
+    # not noise (confirmed via multi-seed reruns; see docs/scaling_laws.md).
     model_sizes = [
-        {"run_id": "n_tiny", "d_model": 32, "n_layers": 2, "n_heads": 2, "n_kv_heads": 1},
-        {"run_id": "n_small", "d_model": 48, "n_layers": 2, "n_heads": 4, "n_kv_heads": 2},
-        {"run_id": "n_medium", "d_model": 64, "n_layers": 2, "n_heads": 4, "n_kv_heads": 2},
-        {"run_id": "n_large", "d_model": 96, "n_layers": 3, "n_heads": 4, "n_kv_heads": 2},
+        {"run_id": "n_xs",    "d_model": 24,  "n_layers": 2, "n_heads": 2, "n_kv_heads": 1},
+        {"run_id": "n_tiny",  "d_model": 32,  "n_layers": 2, "n_heads": 2, "n_kv_heads": 1},
+        {"run_id": "n_small", "d_model": 48,  "n_layers": 2, "n_heads": 4, "n_kv_heads": 2},
+        {"run_id": "n_medium","d_model": 64,  "n_layers": 2, "n_heads": 4, "n_kv_heads": 2},
+        {"run_id": "n_large", "d_model": 96,  "n_layers": 3, "n_heads": 4, "n_kv_heads": 2},
+        {"run_id": "n_xl",    "d_model": 128, "n_layers": 3, "n_heads": 4, "n_kv_heads": 2},
     ]
     # D (training tokens actually consumed) = max_steps * micro_batch_size *
     # gradient_accumulation_steps * seq_len. Varying the *dataset's* pool
     # size does NOT vary D on its own, since the training loop cycles the
     # dataloader for exactly max_steps regardless of pool size — so D is
     # controlled here via max_steps, not via data_cfg.total_tokens.
+    # 4 budgets spanning ~10x (6K–60K), up from the previous 2-budget 3x
+    # range, so beta and alpha can be identified independently.
     micro_batch_size, grad_accum = 4, 2
     tokens_per_step = micro_batch_size * grad_accum * seq_len
-    target_token_budgets = [8000, 24000]
+    target_token_budgets = [6000, 12000, 24000, 60000]
 
     data_cfg = {
         "shards_dir": str(shards_dir), "tokenizer_path": str(tokenizer_path),
@@ -145,6 +154,12 @@ def scaling_sweep(
 
     console.print(f"[green]Scaling sweep complete.[/green] Fit status: {fit.get('fit_status')}")
     if fit.get("fit_status") == "ok":
-        console.print(f"alpha={fit['alpha']:.4f} +/- {fit['alpha_stderr']:.4f}, R^2={fit['r_squared']:.4f}")
+        console.print(f"[bold]Free fit (5-param):[/bold]  alpha={fit['alpha']:.4f} ± {fit['alpha_stderr']:.4f},  "
+                      f"beta={fit['beta']:.4f} ± {fit['beta_stderr']:.4f},  R²={fit['r_squared']:.4f}")
+        fl = fit.get("fit_fixed_linf", {})
+        if fl.get("fit_status") == "ok":
+            console.print(f"[bold]Fixed-Linf fit (4-param):[/bold]  alpha={fl['alpha']:.4f} ± {fl['alpha_stderr']:.4f},  "
+                          f"beta={fl['beta']:.4f} ± {fl['beta_stderr']:.4f},  "
+                          f"L_inf fixed={fl['L_infinity_fixed']:.4f},  R²={fl['r_squared']:.4f}")
     console.print(f"Seeds used: {seeds}")
     console.print(f"Plot: {out_dir / 'loss_vs_params.png'}")

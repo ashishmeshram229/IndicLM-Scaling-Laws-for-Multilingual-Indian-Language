@@ -1,0 +1,70 @@
+{
+  "overall_loss": 6.899394,
+  "overall_perplexity": 991.6732,
+  "macro_avg_perplexity": 992.6504,
+  "weighted_avg_perplexity": 992.6504,
+  "per_language": {
+    "ben": {
+      "language": "ben",
+      "loss": 6.973952,
+      "perplexity": 1068.437,
+      "tokens_evaluated": 2944
+    },
+    "eng": {
+      "language": "eng",
+      "loss": 6.90544,
+      "perplexity": 997.6873,
+      "tokens_evaluated": 2944
+    },
+    "guj": {
+      "language": "guj",
+      "loss": 6.879576,
+      "perplexity": 972.2137,
+      "tokens_evaluated": 2944
+    },
+    "hin": {
+      "language": "hin",
+      "loss": 6.846434,
+      "perplexity": 940.5206,
+      "tokens_evaluated": 2944
+    },
+    "kan": {
+      "language": "kan",
+      "loss": 6.918303,
+      "perplexity": 1010.604,
+      "tokens_evaluated": 2944
+    },
+    "mal": {
+      "language": "mal",
+      "loss": 6.91973,
+      "perplexity": 1012.047,
+      "tokens_evaluated": 2944
+    },
+    "mar": {
+      "language": "mar",
+      "loss": 6.83204,
+      "perplexity": 927.0797,
+      "tokens_evaluated": 2944
+    },
+    "pan": {
+      "language": "pan",
+      "loss": 6.899671,
+      "perplexity": 991.9481,
+      "tokens_evaluated": 2944
+    },
+    "tam": {
+      "language": "tam",
+      "loss": 6.857631,
+      "perplexity": 951.1113,
+      "tokens_evaluated": 2944
+    },
+    "tel": {
+      "language": "tel",
+      "loss": 6.961159,
+      "perplexity": 1054.8558,
+      "tokens_evaluated": 2944
+    }
+  },
+  "checkpoint": "experiments/manifests/EXP-010/seed_0/checkpoints/final.pt",
+  "tokenizer": "data/tokenizer_v1/indiclm_tokenizer.model"
+}

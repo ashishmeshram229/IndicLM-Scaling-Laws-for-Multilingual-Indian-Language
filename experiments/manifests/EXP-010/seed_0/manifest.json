@@ -1,0 +1,132 @@
+{
+  "experiment_id": "EXP-010",
+  "git_commit": "b7fa0f9da9fca38ddbd554a57b6c9ff1d4e41670",
+  "config_hash": "8652c4fb7350d414",
+  "config": {
+    "experiment_id": "EXP-010",
+    "hypothesis": "Uniform sampling (alpha=0.0) across all ten languages regardless of available token count will oversample the lowest-resource language in this corpus (Marathi, ~1000 available tokens vs. English's ~3500) by a larger factor than any other language, testing whether that oversampling helps Marathi perplexity or causes negative transfer (more repetition of a small pool without new information) relative to natural-proportion sampling (Q6).\n",
+    "next_experiment": "Compare Marathi-specific perplexity against EXP-007 (alpha=0.5) and a natural-proportion (alpha=1.0) run.",
+    "seed": 0,
+    "data": {
+      "shards_dir": "data/processed",
+      "tokenizer_path": "data/tokenizer_v1/indiclm_tokenizer.model",
+      "seq_len": 64,
+      "total_tokens": 20000,
+      "alpha": 0.0,
+      "val_fraction": 0.1,
+      "dataset_version": "v1",
+      "tokenizer_version": "bpe_v1"
+    },
+    "model": {
+      "d_model": 64,
+      "n_layers": 2,
+      "n_heads": 4,
+      "n_kv_heads": 2,
+      "dropout": 0.0
+    },
+    "training": {
+      "max_steps": 60,
+      "micro_batch_size": 4,
+      "gradient_accumulation_steps": 2,
+      "learning_rate": 0.0003,
+      "warmup_steps": 10,
+      "eval_every": 15,
+      "checkpoint_every": 60,
+      "log_every": 15,
+      "device": "cpu"
+    }
+  },
+  "dataset_version": "v1",
+  "tokenizer_version": "bpe_v1",
+  "seed": 0,
+  "hardware": {
+    "device_type": "mps",
+    "num_gpus": 0,
+    "gpu_names": [],
+    "gpu_memory_gb": [],
+    "cpu_count": 10,
+    "total_ram_gb": 16.0,
+    "recommended_profile": "cpu"
+  },
+  "software_versions": {
+    "python": "3.13.5",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "torch": "2.9.1"
+  },
+  "created_at": 1788235639.591275,
+  "training_tokens": 30528,
+  "final_train_loss": 6.877647638320923,
+  "final_val_loss": 6.882474,
+  "evaluation_metrics": {
+    "overall_loss": 6.899394,
+    "overall_perplexity": 991.6732,
+    "macro_avg_perplexity": 992.6504,
+    "weighted_avg_perplexity": 992.6504,
+    "per_language": {
+      "ben": {
+        "language": "ben",
+        "loss": 6.973952,
+        "perplexity": 1068.437,
+        "tokens_evaluated": 2944
+      },
+      "eng": {
+        "language": "eng",
+        "loss": 6.90544,
+        "perplexity": 997.6873,
+        "tokens_evaluated": 2944
+      },
+      "guj": {
+        "language": "guj",
+        "loss": 6.879576,
+        "perplexity": 972.2137,
+        "tokens_evaluated": 2944
+      },
+      "hin": {
+        "language": "hin",
+        "loss": 6.846434,
+        "perplexity": 940.5206,
+        "tokens_evaluated": 2944
+      },
+      "kan": {
+        "language": "kan",
+        "loss": 6.918303,
+        "perplexity": 1010.604,
+        "tokens_evaluated": 2944
+      },
+      "mal": {
+        "language": "mal",
+        "loss": 6.91973,
+        "perplexity": 1012.047,
+        "tokens_evaluated": 2944
+      },
+      "mar": {
+        "language": "mar",
+        "loss": 6.83204,
+        "perplexity": 927.0797,
+        "tokens_evaluated": 2944
+      },
+      "pan": {
+        "language": "pan",
+        "loss": 6.899671,
+        "perplexity": 991.9481,
+        "tokens_evaluated": 2944
+      },
+      "tam": {
+        "language": "tam",
+        "loss": 6.857631,
+        "perplexity": 951.1113,
+        "tokens_evaluated": 2944
+      },
+      "tel": {
+        "language": "tel",
+        "loss": 6.961159,
+        "perplexity": 1054.8558,
+        "tokens_evaluated": 2944
+      }
+    },
+    "checkpoint": "experiments/manifests/EXP-010/seed_0/checkpoints/final.pt",
+    "tokenizer": "data/tokenizer_v1/indiclm_tokenizer.model"
+  },
+  "checkpoint_path": "experiments/manifests/EXP-010/seed_0/checkpoints/final.pt",
+  "notes": ""
+}

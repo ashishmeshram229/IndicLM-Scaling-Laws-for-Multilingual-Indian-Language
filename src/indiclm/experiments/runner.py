@@ -14,21 +14,86 @@ from typing import Any
 import torch
 from torch.utils.data import DataLoader, random_split
 
+from indiclm.data.contamination import scan_contamination
+from indiclm.data.schema import Document
 from indiclm.evaluation.perplexity import evaluate_checkpoint
 from indiclm.experiments.manifest import build_manifest, write_manifest
 from indiclm.experiments.report import render_report
 from indiclm.experiments.tracking import get_tracker
 from indiclm.models.config import ModelConfig
-from indiclm.training.dataset import PackedTokenDataset
+from indiclm.training.dataset import PackedTokenDataset, load_shard_texts
 from indiclm.training.trainer import TrainingConfig, train
 from indiclm.utils.logging import get_logger
 
 log = get_logger(__name__)
 
 
-def run_experiment(config: dict[str, Any], experiments_root: Path = Path("experiments/manifests")) -> dict[str, Any]:
+def _run_contamination_scan(shards_dir: Path, eval_dir: Path, out_path: Path) -> dict:
+    """Scans eval documents against the training corpus for n-gram overlap.
+    Writes the ContaminationReport to out_path and returns it as a dict.
+    Skips gracefully if eval_dir doesn't exist (not all experiments have one).
+    """
+    if not eval_dir.exists():
+        result = {"skipped": True, "reason": f"eval_dir {eval_dir} does not exist"}
+        out_path.write_text(json.dumps(result, indent=2))
+        return result
+
+    train_texts = load_shard_texts(shards_dir)
+    train_docs = [
+        Document(text=t, source=lang, language=lang)
+        for lang, texts in train_texts.items()
+        for t in texts
+    ]
+
+    eval_docs: list[Document] = []
+    for jsonl_path in sorted(eval_dir.rglob("*.jsonl")):
+        lang = jsonl_path.stem
+        with open(jsonl_path, encoding="utf-8") as f:
+            for i, line in enumerate(f):
+                line = line.strip()
+                if not line:
+                    continue
+                record = json.loads(line)
+                text = record.get("text", "")
+                if text:
+                    eval_docs.append(Document(
+                        text=text,
+                        source=str(jsonl_path.relative_to(eval_dir)),
+                        language=lang,
+                        document_id=f"{lang}_{i}",
+                    ))
+
+    if not eval_docs:
+        result = {"skipped": True, "reason": "no eval documents found in eval_dir"}
+        out_path.write_text(json.dumps(result, indent=2))
+        return result
+
+    report = scan_contamination(train_docs, eval_docs)
+    result = report.to_dict()
+    out_path.write_text(json.dumps(result, indent=2))
+
+    if report.flagged_rate > 0:
+        log.warning(
+            "contamination_detected",
+            flagged=report.flagged_documents,
+            total=report.total_eval_documents,
+            flagged_rate=round(report.flagged_rate, 4),
+            eval_dir=str(eval_dir),
+        )
+    else:
+        log.info("contamination_scan_clean", total_eval=report.total_eval_documents)
+
+    return result
+
+
+def run_experiment(
+    config: dict[str, Any],
+    experiments_root: Path = Path("experiments/manifests"),
+    *,
+    out_dir: Path | None = None,
+) -> dict[str, Any]:
     experiment_id = config["experiment_id"]
-    out_dir = Path(experiments_root) / experiment_id
+    out_dir = out_dir if out_dir is not None else Path(experiments_root) / experiment_id
     out_dir.mkdir(parents=True, exist_ok=True)
 
     data_cfg = config["data"]
@@ -74,6 +139,13 @@ def run_experiment(config: dict[str, Any], experiments_root: Path = Path("experi
             {k: v for k, v in record.items() if isinstance(v, (int, float))}, record["step"]
         )
     tracker.close()
+
+    eval_dir = Path(data_cfg.get("eval_dir", "data/eval"))
+    _run_contamination_scan(
+        shards_dir=Path(data_cfg["shards_dir"]),
+        eval_dir=eval_dir,
+        out_path=out_dir / "contamination.json",
+    )
 
     final_ckpt = out_dir / "checkpoints" / "final.pt"
     eval_report = evaluate_checkpoint(

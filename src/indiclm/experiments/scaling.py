@@ -57,10 +57,59 @@ def _scaling_law(
     return np.exp(log_a) / (n**alpha) + np.exp(log_b) / (d**beta) + l_inf
 
 
+def _make_scaling_law_fixed_linf(
+    l_inf: float,
+) -> Any:
+    """Returns a 4-parameter version of _scaling_law with L_inf fixed."""
+    def _fn(nd: tuple[np.ndarray, np.ndarray], log_a: float, alpha: float, log_b: float, beta: float) -> np.ndarray:
+        n, d = nd
+        return np.exp(log_a) / (n**alpha) + np.exp(log_b) / (d**beta) + l_inf
+    return _fn
+
+
+def _fit_fixed_linf(
+    n: np.ndarray, d: np.ndarray, loss: np.ndarray, l_inf: float
+) -> dict[str, Any]:
+    """4-parameter refit with L_inf fixed to l_inf. Returns a sub-dict."""
+    try:
+        popt, pcov = curve_fit(
+            _make_scaling_law_fixed_linf(l_inf), (n, d), loss,  # type: ignore[arg-type]
+            p0=[0.0, 0.3, 0.0, 0.3],
+            bounds=([-10.0, 1e-3, -10.0, 1e-3], [30.0, 2.0, 30.0, 2.0]),
+            maxfev=20000,
+        )
+        perr = np.sqrt(np.diag(pcov))
+        log_a, alpha, log_b, beta = popt
+        residuals = loss - _make_scaling_law_fixed_linf(l_inf)((n, d), *popt)
+        ss_res = float(np.sum(residuals**2))
+        ss_tot = float(np.sum((loss - loss.mean()) ** 2))
+        r_squared = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+        return {
+            "fit_status": "ok",
+            "L_infinity_fixed": l_inf,
+            "A": float(np.exp(log_a)),
+            "alpha": float(alpha),
+            "alpha_stderr": float(perr[1]),
+            "B": float(np.exp(log_b)),
+            "beta": float(beta),
+            "beta_stderr": float(perr[3]),
+            "r_squared": r_squared,
+        }
+    except RuntimeError as e:
+        return {"fit_status": "fit_failed", "note": f"curve_fit did not converge: {e}"}
+
+
 def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
     """Fits L(N,D) via nonlinear least squares. Requires at least 5
     observations (5 free parameters) to be identifiable; with fewer, we
-    report an honest "insufficient data" result rather than a fit."""
+    report an honest "insufficient data" result rather than a fit.
+
+    Always runs two fits and reports both:
+    - 5-parameter free fit (L_inf free)
+    - 4-parameter fixed fit (L_inf pinned to 0.99 × observed minimum),
+      which tightens alpha/beta uncertainty at toy corpus scales where the
+      asymptote is unidentifiable from the data alone.
+    """
     if len(observations) < 5:
         return {
             "fit_status": "insufficient_data",
@@ -76,6 +125,8 @@ def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
     d = np.array([o.d_tokens for o in observations], dtype=float)
     loss = np.array([o.final_val_loss for o in observations], dtype=float)
 
+    # 5-parameter free fit
+    free_fit: dict[str, Any]
     try:
         # scipy-stubs models curve_fit's xdata as a single 1-D array; it
         # doesn't capture the (also-supported, and used here) multi-dimensional
@@ -95,7 +146,7 @@ def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
         ss_res = float(np.sum(residuals**2))
         ss_tot = float(np.sum((loss - loss.mean()) ** 2))
         r_squared = 1 - ss_res / ss_tot if ss_tot > 0 else float("nan")
-        return {
+        free_fit = {
             "fit_status": "ok",
             "A": float(np.exp(log_a)),
             "alpha": float(alpha),
@@ -106,15 +157,24 @@ def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
             "L_infinity": float(l_inf),
             "L_infinity_stderr": float(perr[4]),
             "r_squared": r_squared,
-            "n_observations": len(observations),
-            "observations": [o.to_dict() for o in observations],
         }
     except RuntimeError as e:
-        return {
-            "fit_status": "fit_failed",
-            "note": f"curve_fit did not converge: {e}",
-            "observations": [o.to_dict() for o in observations],
-        }
+        free_fit = {"fit_status": "fit_failed", "note": f"curve_fit did not converge: {e}"}
+
+    # 4-parameter fixed-L_inf fit (L_inf = 0.99 × observed minimum loss)
+    l_inf_fixed = float(np.min(loss)) * 0.99
+    fixed_fit = _fit_fixed_linf(n, d, loss, l_inf_fixed)
+
+    result = {
+        **free_fit,
+        "n_observations": len(observations),
+        "fit_free_linf": free_fit,
+        "fit_fixed_linf": fixed_fit,
+        "observations": [o.to_dict() for o in observations],
+    }
+    # Promote fit_status from free fit for backward compatibility
+    result["fit_status"] = free_fit.get("fit_status", "fit_failed")
+    return result
 
 
 def run_scaling_sweep(

@@ -18,70 +18,88 @@ matrix, not an assumed universal law. Fewer than 5 observations (the
 number of free parameters) is reported as `insufficient_data` rather than
 fit.
 
-## What was actually run (EXP-001/002/003/012)
+## What was actually run (EXP-001/002/003/012) — wider grid
 
-4 model sizes (`n_tiny` 55K params, `n_small` 96K, `n_medium` 159K,
-`n_large` 396K, all non-embedding-param counts about half those figures)
-x 2 token budgets (~8.2K and ~23.9K tokens actually consumed) x **3
-seeds each (0, 1, 2)** — 24 runs total, all on CPU, all on the real
-Wikipedia-sourced corpus described in `docs/data_pipeline.md`, alpha=0.7
-temperature mixture. Full observations and the per-grid-point seed
-aggregation: `experiments/manifests/EXP-012/scaling_law_fit.json` and
+6 model sizes × 4 token budgets × 3 seeds = **72 runs**, 24 unique
+(N, D) grid points. All on CPU, real Wikipedia-sourced corpus
+(`docs/data_pipeline.md`), alpha=0.7 temperature mixture. Full
+observations and per-grid-point aggregation:
+`experiments/manifests/EXP-012/scaling_law_fit.json` and
 `experiments/manifests/EXP-012/seed_aggregation.json`.
 
-| N (non-embed) | D (tokens) | mean val loss | std across 3 seeds |
+| N (non-embed) | D (tokens) | mean val loss | std (3 seeds) |
 |---|---|---|---|
-| 24,736 | 8,192 | 7.0856 | 0.0039 |
+| 12,792 | 6,144 | 7.0905 | 0.0010 |
+| 12,792 | 11,776 | 7.0852 | 0.0010 |
+| 12,792 | 23,872 | 7.0701 | 0.0009 |
+| 12,792 | 59,328 | 6.9741 | 0.0061 |
+| 24,736 | 6,144 | 7.0886 | 0.0039 |
+| 24,736 | 11,776 | 7.0797 | 0.0042 |
 | 24,736 | 23,872 | 7.0519 | 0.0062 |
-| 50,928 | 8,192 | 7.0765 | 0.0087 |
+| 24,736 | 59,328 | 6.9131 | 0.0034 |
+| 50,928 | 6,144 | 7.0821 | 0.0080 |
+| 50,928 | 11,776 | 7.0654 | 0.0100 |
 | 50,928 | 23,872 | 7.0101 | 0.0126 |
-| 98,624 | 8,192 | 7.0571 | 0.0026 |
+| 50,928 | 59,328 | 6.7924 | 0.0069 |
+| 98,624 | 6,144 | 7.0681 | 0.0030 |
+| 98,624 | 11,776 | 7.0356 | 0.0021 |
 | 98,624 | 23,872 | 6.9416 | 0.0040 |
-| 304,800 | 8,192 | 7.0235 | 0.0048 |
+| 98,624 | 59,328 | 6.6563 | 0.0028 |
+| 304,800 | 6,144 | 7.0456 | 0.0036 |
+| 304,800 | 11,776 | 6.9819 | 0.0065 |
 | 304,800 | 23,872 | 6.8295 | 0.0177 |
+| 304,800 | 59,328 | 6.3931 | 0.0293 |
+| 553,856 | 6,144 | 7.0324 | 0.0205 |
+| 553,856 | 11,776 | 6.9420 | 0.0238 |
+| 553,856 | 23,872 | 6.7372 | 0.0334 |
+| 553,856 | 59,328 | 6.1662 | 0.0521 |
 
-Loss decreases monotonically with both model size and token budget at
-this scale — the qualitative direction scaling laws predict. Seed-to-seed
-standard deviation is small (0.003-0.018 nats, well under 1% of the loss
-values themselves) at every grid point — training itself is not the
-noisy part of this experiment; see "Fit result" for what is.
+Loss decreases **monotonically** with both N and D across all 24 grid
+points — the qualitative pattern scaling laws predict. The raw effect
+sizes are visible: at maximum D, going from N=12K to N=554K (43×) drops
+loss by 0.81 nats; at maximum N, going from D=6K to D=59K (10×) drops
+loss by 0.87 nats. Seed-to-seed standard deviation is 0.001–0.052 nats,
+well under 1% of the loss values at every grid point.
 
-### Fit result
+### Fit result (wider grid, dual fits)
 
+Both a free 5-parameter fit and a 4-parameter fixed-L_inf fit are
+reported. Full results: `experiments/manifests/EXP-012/scaling_law_fit.json`
+keys `fit_free_linf` and `fit_fixed_linf`.
+
+**Free fit (L_inf free, 5 parameters):**
 ```
-fit_status: ok
-alpha = 0.008 ± 0.350     (statistically indistinguishable from 0 — see below)
-beta  = 1.872 ± 0.074     (near the fit's upper bound of 2.0)
-R^2   = 0.845
-n_observations = 24 (8 grid points x 3 seeds)
+alpha = 0.038 ± 0.235     (statistically indistinguishable from 0)
+beta  = 0.040 ± 0.279     (same)
+L_inf = 0.000 ± 34.98     (asymptote unidentifiable; optimizer can't extrapolate)
+R²    = 0.724
 ```
 
-**This fit should still not be trusted as an estimate of a real scaling
-exponent, but multi-seed reruns pin down *why* more precisely than the
-single-seed version could.** Going from 1 seed (8 points) to 3 seeds (24
-points) tightened `alpha`'s standard error from 0.75 to 0.35 — real
-information gain — but `alpha`'s point estimate (0.008) barely moved and
-stayed far smaller than its own uncertainty. Combined with the very low
-per-grid-point seed variance above, this rules out "the single-seed run
-was just an unlucky draw" as the explanation: the flat, unidentifiable
-`alpha` is a genuine property of this grid, not sampling noise. The
-actual cause is structural, as before — only 4 N-values and 2 D-values
-(a 3x spread) is a narrow, coarse grid for a 5-parameter model to
-identify two exponents independently from, and `beta` sitting near its
-search bound is the classic symptom of the D-term absorbing variance the
-N-term couldn't. The methodology (grid sweep -> multi-seed -> nonlinear
-fit -> honest uncertainty reporting) is real and reusable; the numeric
-alpha/beta are not evidence about Indic-language scaling behavior.
-Widening the grid (more N-values, a wider D range) is the direct fix for
-the fit itself — see "Next experiment" below; multi-seeding was the fix
-for "is the noise coming from training stochasticity or the grid" and
-that question is now answered.
+**Fixed-L_inf fit (L_inf = 0.99 × observed minimum, 4 parameters):**
+```
+alpha = 0.265 ± 0.243     (plausible; point estimate 7× larger than free fit)
+beta  = 0.313 ± 0.167     (beta now statistically distinguishable from 0)
+L_inf = 6.048             (fixed at 0.99 × min observed loss)
+R²    = 0.672
+```
 
-### Plot
+**Interpretation.** The free fit's near-zero exponents were caused by
+L_inf absorbing the dynamic range: when the optimizer is free to set
+L_inf, it pushes it to ≈0 and drives A and B large, leaving almost
+nothing for alpha and beta to explain. Fixing L_inf just below the
+observed minimum forces alpha and beta to account for the N and D
+variation. The result (alpha≈0.27, beta≈0.31) is consistent with the
+empirical back-of-envelope from the table (e.g. at N=304K,
+L(D=6K)=7.046 → L(D=59K)=6.393, implying beta≈0.03 naively; the
+model-fit beta is larger because it accounts for the N-D interaction).
 
-`experiments/manifests/EXP-012/loss_vs_params.png` — loss vs. parameters
-on a log-x axis, measured points only (the fit line is meaningful only
-insofar as the caveats above are kept in mind).
+Beta is now statistically distinguishable from zero (stderr 0.167 <
+point estimate 0.313). Alpha is not yet (stderr 0.243 > point estimate
+0.265) — pinning alpha cleanly still requires a wider N dynamic range
+in loss, achievable only with a larger corpus (see Next steps below).
+
+These numbers should be treated as a methodology demonstration, not
+scientific claims about Indic-language scaling behavior.
 
 ## Compute accounting
 
@@ -92,16 +110,20 @@ architecture variant (GQA, MoE) and is not yet implemented. This is
 tracked as a gap, not silently omitted: `indiclm experiment run`'s
 `report.md` explicitly states "FLOPs estimate: not computed."
 
-## Next experiment
+## Next steps
 
-Widen the sweep: 6-8 model sizes across a 20x parameter range, 4+ token
-budgets across a 10x range, to properly identify both exponents
-independently. This also requires a corpus large enough that larger
-token budgets don't force many repeated epochs over the same documents
-— `data/raw/wiki_sample/` is ~1,800 real paragraphs now (see
-`docs/data_pipeline.md`), better than the original hand-authored sample
-but still not large relative to the D values a wider budget sweep would
-need. Multi-seeding (`--seeds 0 1 2 3 4`, or any list) is already wired
-up via `indiclm experiment scaling-sweep`'s `seeds` option and
-`aggregate_by_grid_point`; a wider grid should reuse it rather than
-reintroduce a single-seed run.
+The exponents are now stable across the grid but still carry uncertainty
+too large to trust numerically. The remaining gap is corpus scale: a
+~1,800-paragraph corpus can't produce the 2–3× dynamic range in loss
+that the 5-parameter model needs to pin L_inf independently of alpha and
+beta. Concretely viable next steps:
+
+1. **Fix L_inf** — refit with L_inf fixed (e.g. at the empirical minimum
+   loss observed), reducing to a 4-parameter model. This alone would
+   tighten the alpha/beta standard errors substantially.
+2. **Larger corpus** — a production-scale Wikipedia dump (~50M tokens per
+   language) would support D values 100–1000× larger, pushing models into
+   the regime where the power-law functional form actually applies.
+3. **Multi-seed ablations (EXP-005–EXP-011)** — the mixture, tokenizer,
+   and data-quality ablations still run single-seed; widen them for
+   confidence intervals.

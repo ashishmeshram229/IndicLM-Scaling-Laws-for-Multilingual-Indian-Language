@@ -1,10 +1,10 @@
 {
   "experiment_id": "EXP-003",
-  "git_commit": "unknown (not a git repository or git unavailable)",
-  "config_hash": "beaaf03d25a3e70c",
+  "git_commit": "b7fa0f9da9fca38ddbd554a57b6c9ff1d4e41670",
+  "config_hash": "fc4ea2afe2469de8",
   "config": {
     "model_size": "n_medium",
-    "token_budget": 24000,
+    "token_budget": 60000,
     "source_sweep": "EXP-012",
     "seeds": [
       0,
@@ -16,30 +16,30 @@
   "tokenizer_version": "bpe_v1",
   "seed": 0,
   "hardware": {
-    "device_type": "cpu",
+    "device_type": "mps",
     "num_gpus": 0,
     "gpu_names": [],
     "gpu_memory_gb": [],
-    "cpu_count": 2,
-    "total_ram_gb": 7.84,
+    "cpu_count": 10,
+    "total_ram_gb": 16.0,
     "recommended_profile": "cpu"
   },
   "software_versions": {
-    "python": "3.11.15",
-    "platform": "Linux-6.18.44-fc-v22-x86_64-with-glibc2.39",
-    "torch": "2.13.0+cu130"
+    "python": "3.13.5",
+    "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
+    "torch": "2.9.1"
   },
-  "created_at": 1788190251.9599442,
-  "training_tokens": 23872,
+  "created_at": 1788234847.875956,
+  "training_tokens": 59328,
   "final_train_loss": null,
-  "final_val_loss": 6.941552333333334,
+  "final_val_loss": 6.656322,
   "evaluation_metrics": {
-    "final_val_loss_mean": 6.941552333333334,
-    "final_val_loss_std": 0.0039870104506178625,
+    "final_val_loss_mean": 6.656322,
+    "final_val_loss_std": 0.0027825887227546082,
     "final_val_loss_per_seed": {
-      "0": 6.941626,
-      "1": 6.937529,
-      "2": 6.945502
+      "0": 6.653302,
+      "1": 6.656882,
+      "2": 6.658782
     },
     "n_seeds": 3
   },

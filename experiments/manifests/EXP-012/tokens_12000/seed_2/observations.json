@@ -1,0 +1,56 @@
+[
+  {
+    "run_id": "n_xs_d12000_seed2",
+    "n_params": 41592,
+    "n_params_non_embedding": 12792,
+    "d_tokens": 11776,
+    "final_val_loss": 7.085069,
+    "mean_tokens_per_sec": 132872.75,
+    "seed": 2
+  },
+  {
+    "run_id": "n_tiny_d12000_seed2",
+    "n_params": 63136,
+    "n_params_non_embedding": 24736,
+    "d_tokens": 11776,
+    "final_val_loss": 7.075209,
+    "mean_tokens_per_sec": 126170.58,
+    "seed": 2
+  },
+  {
+    "run_id": "n_small_d12000_seed2",
+    "n_params": 108528,
+    "n_params_non_embedding": 50928,
+    "d_tokens": 11776,
+    "final_val_loss": 7.074768,
+    "mean_tokens_per_sec": 98560.32,
+    "seed": 2
+  },
+  {
+    "run_id": "n_medium_d12000_seed2",
+    "n_params": 175424,
+    "n_params_non_embedding": 98624,
+    "d_tokens": 11776,
+    "final_val_loss": 7.036987,
+    "mean_tokens_per_sec": 95459.58,
+    "seed": 2
+  },
+  {
+    "run_id": "n_large_d12000_seed2",
+    "n_params": 420000,
+    "n_params_non_embedding": 304800,
+    "d_tokens": 11776,
+    "final_val_loss": 6.984612,
+    "mean_tokens_per_sec": 57880.67,
+    "seed": 2
+  },
+  {
+    "run_id": "n_xl_d12000_seed2",
+    "n_params": 707456,
+    "n_params_non_embedding": 553856,
+    "d_tokens": 11776,
+    "final_val_loss": 6.965295,
+    "mean_tokens_per_sec": 43423.4,
+    "seed": 2
+  }
+]
