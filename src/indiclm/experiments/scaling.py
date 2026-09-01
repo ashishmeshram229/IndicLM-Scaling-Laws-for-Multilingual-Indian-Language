@@ -73,7 +73,7 @@ def _fit_fixed_linf(
     """4-parameter refit with L_inf fixed to l_inf. Returns a sub-dict."""
     try:
         popt, pcov = curve_fit(
-            _make_scaling_law_fixed_linf(l_inf), (n, d), loss,  # type: ignore[arg-type]
+            _make_scaling_law_fixed_linf(l_inf), (n, d), loss,
             p0=[0.0, 0.3, 0.0, 0.3],
             bounds=([-10.0, 1e-3, -10.0, 1e-3], [30.0, 2.0, 30.0, 2.0]),
             maxfev=20000,
