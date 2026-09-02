@@ -82,17 +82,45 @@ class MinHashNearDeduplicator:
         return docs
 
 
+@dataclass
 class SemanticDeduplicator:
-    """[planned] Embedding-based near-duplicate detection.
+    """TF-IDF cosine-similarity near-duplicate detection.
 
-    Not implemented: requires bundling or downloading a sentence-embedding
-    model, which this offline milestone does not do. The interface
-    (`process(docs) -> docs`, setting a `semantic_duplicate` flag) mirrors
-    `MinHashNearDeduplicator` so it can be added later without changing
-    pipeline wiring in `pipeline.py`.
+    Computes a TF-IDF matrix over all non-duplicate documents, then marks
+    any document whose cosine similarity to a previously-seen document
+    exceeds `threshold` as a near-duplicate (first-seen wins).
+
+    Uses scikit-learn's TfidfVectorizer — no external embedding model needed.
+    The interface mirrors `MinHashNearDeduplicator` so it can be swapped in
+    without changing pipeline wiring.
     """
 
+    threshold: float = 0.85
+    max_features: int = 50_000
+
     def process(self, docs: list[Document]) -> list[Document]:
-        raise NotImplementedError(
-            "Semantic deduplication requires an embedding model; not bundled in this milestone."
-        )
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+
+        candidates = [doc for doc in docs if not doc.is_duplicate and not doc.is_near_duplicate]
+        if len(candidates) < 2:
+            return docs
+
+        texts = [doc.text for doc in candidates]
+        vectorizer = TfidfVectorizer(max_features=self.max_features, sublinear_tf=True)
+        tfidf = vectorizer.fit_transform(texts)
+
+        seen_indices: list[int] = []
+        for i in range(len(candidates)):
+            if candidates[i].is_near_duplicate:
+                continue
+            if seen_indices:
+                sims = cosine_similarity(tfidf[i], tfidf[seen_indices]).flatten()
+                if float(sims.max()) >= self.threshold:
+                    best = seen_indices[int(sims.argmax())]
+                    candidates[i].is_near_duplicate = True
+                    candidates[i].dedup_cluster = candidates[best].document_id
+                    continue
+            seen_indices.append(i)
+
+        return docs

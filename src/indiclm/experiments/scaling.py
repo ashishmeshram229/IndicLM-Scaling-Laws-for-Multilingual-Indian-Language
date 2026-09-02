@@ -99,6 +99,35 @@ def _fit_fixed_linf(
         return {"fit_status": "fit_failed", "note": f"curve_fit did not converge: {e}"}
 
 
+def _fit_two_param(
+    n: np.ndarray, d: np.ndarray, loss: np.ndarray
+) -> dict[str, Any]:
+    """2-parameter Chinchilla-style fit: L ≈ C / (N·D)^gamma.
+
+    Log-linearises to log(L) = log(C) - gamma * log(N·D), then uses
+    ordinary least squares. Cheaper than curve_fit and interpretable as a
+    single scaling exponent over the compute budget N·D.
+    """
+    try:
+        log_nd = np.log(n * d)
+        log_loss = np.log(np.clip(loss, 1e-9, None))
+        coeffs = np.polyfit(log_nd, log_loss, 1)
+        gamma, log_c = -float(coeffs[0]), float(coeffs[1])
+        predicted = np.exp(log_c) / (n * d) ** gamma
+        ss_res = float(np.sum((loss - predicted) ** 2))
+        ss_tot = float(np.sum((loss - loss.mean()) ** 2))
+        r_squared = 1.0 - ss_res / ss_tot if ss_tot > 0 else float("nan")
+        return {
+            "fit_status": "ok",
+            "C": float(np.exp(log_c)),
+            "gamma": gamma,
+            "r_squared": r_squared,
+            "note": "L ≈ C / (N·D)^gamma — 2-parameter Chinchilla-style fit",
+        }
+    except Exception as e:
+        return {"fit_status": "fit_failed", "note": str(e)}
+
+
 def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
     """Fits L(N,D) via nonlinear least squares. Requires at least 5
     observations (5 free parameters) to be identifiable; with fewer, we
@@ -165,11 +194,15 @@ def fit_scaling_law(observations: list[ScalingObservation]) -> dict[str, Any]:
     l_inf_fixed = float(np.min(loss)) * 0.99
     fixed_fit = _fit_fixed_linf(n, d, loss, l_inf_fixed)
 
+    # 2-parameter Chinchilla-style fit: L ≈ C / (N·D)^gamma
+    two_param_fit = _fit_two_param(n, d, loss)
+
     result = {
         **free_fit,
         "n_observations": len(observations),
         "fit_free_linf": free_fit,
         "fit_fixed_linf": fixed_fit,
+        "fit_two_param": two_param_fit,
         "observations": [o.to_dict() for o in observations],
     }
     # Promote fit_status from free fit for backward compatibility

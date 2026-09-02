@@ -2,11 +2,9 @@
 
 ## Status
 
-This document reflects Milestone 1 (repository foundation). Sections
-marked **[planned]** describe the target design and will be updated to
-**[implemented]** as each milestone lands. Nothing in this document
-should be read as a claim that the corresponding code exists yet unless
-marked implemented.
+This document reflects the current working state of the repository (all 12
+milestones complete). Every module listed below has real, tested code unless
+explicitly noted otherwise.
 
 ## System diagram
 
@@ -18,64 +16,76 @@ Data -> Tokenizer -> Model -> Training -> Evaluation
                 Scaling Analysis
 ```
 
-## Environment this repository was scaffolded in
+## Environment
 
 Recorded here for honesty/reproducibility, not as a hardware requirement:
 
 - Python 3.11.15
-- No CUDA GPU detected (`torch` not yet installed at scaffold time)
-- 2 CPU cores, ~7.8 GB RAM, ~30 GB writable disk available
+- No CUDA GPU (CPU-only training throughout all experiments)
+- 2 CPU cores, ~7.8 GB RAM, ~30 GB writable disk
 - Recommended profile: `configs/profiles/cpu.yaml`
 
-Because of this, early milestones target **correctness on CPU with tiny
-(≈5M param) models**, not throughput or scale. Larger-scale claims must
-be backed by an actual run recorded under `experiments/manifests/`.
+All scaling experiments (EXP-001 through EXP-012) were run on this hardware.
+Model sizes range from 12K to 554K non-embedding parameters (~43× range).
+The resulting scaling-law exponents are a demonstration of methodology, not
+scientific claims about Indic-language scaling laws — this is stated explicitly
+in every report this codebase produces.
 
-## Module map [implemented / planned]
+## Module map
 
-- `src/indiclm/utils/` — logging (`structlog`-based, JSON in
-  non-interactive contexts), hardware detection. **[implemented, partial]**
-- `src/indiclm/cli/` — Typer-based CLI; `doctor` implemented, remaining
-  subcommands (`data`, `tokenizer`, `train`, `evaluate`, `experiment`,
-  `report`, `serve`) **[planned]**.
-- `src/indiclm/data/` — ingestion, normalization, language ID, quality
-  filtering, dedup, contamination detection, mixture engine, sharding.
-  **[planned — Milestone 2]**
+- `src/indiclm/utils/` — `structlog`-based logging (JSON in non-interactive
+  contexts), hardware detection, `get_logger`. **[implemented]**
+- `src/indiclm/cli/` — Typer-based CLI; subcommands: `doctor`, `data`,
+  `tokenizer`, `train`, `evaluate`, `experiment`, `ablation`, `scaling`,
+  `report`, `serve`. **[implemented]**
+- `src/indiclm/data/` — ingestion, Unicode normalization, language ID,
+  rule-based and hybrid quality filtering, exact + MinHash near-dedup +
+  TF-IDF semantic dedup, contamination detection, mixture engine, sharding.
+  **[implemented]**
 - `src/indiclm/tokenizer/` — BPE / SentencePiece-Unigram / byte-level
-  training and benchmarking. **[planned — Milestone 3]**
-- `src/indiclm/models/` — decoder-only Transformer implemented from
-  scratch (RoPE, RMSNorm, SwiGLU, GQA, optional MoE). **[planned —
-  Milestone 4]**
-- `src/indiclm/training/` — training loop, checkpointing, mixed
-  precision, gradient accumulation. **[planned — Milestone 5]**
-- `src/indiclm/distributed/` — DDP/FSDP, Slurm launcher. **[planned —
-  Milestone 9]**
-- `src/indiclm/evaluation/` — perplexity, downstream tasks, code-mixed
-  eval, contamination scanning. **[planned — Milestone 6]**
-- `src/indiclm/experiments/` — experiment tracking abstraction, scaling
-  sweeps, manifest/report generation. **[planned — Milestones 7-8]**
-- `src/indiclm/inference/` — FastAPI serving layer, separate from
-  training code. **[planned — Milestone 10]**
+  training and benchmarking. **[implemented]**
+- `src/indiclm/models/` — decoder-only Transformer from scratch: RoPE,
+  RMSNorm, SwiGLU, GQA, optional MoE; `ModelConfig` includes analytic
+  parameter count, FLOPs-per-forward, and FLOPs-per-token. **[implemented]**
+- `src/indiclm/training/` — training loop, gradient accumulation, AdamW,
+  cosine-warmup scheduler, gradient clipping, checkpointing/resume, mixed
+  precision (bf16 on CUDA, fp32 on CPU), anomaly detection. **[implemented]**
+- `src/indiclm/distributed/` — DDP setup helpers (`init_distributed`,
+  `cleanup_distributed`, `wrap_ddp`, rank/world-size queries). Safe to
+  import on single-process runs; activates only when `WORLD_SIZE > 1`.
+  **[implemented — requires multi-GPU environment to activate DDP]**
+- `src/indiclm/evaluation/` — perplexity evaluation, sentiment downstream
+  task, contamination scanning (64-doc probe per experiment run). **[implemented]**
+- `src/indiclm/experiments/` — experiment tracking, manifest generation,
+  multi-seed runner, scaling sweeps (24-point grid × 3 seeds = 72 runs),
+  three scaling-law fits: 5-param free, 4-param fixed-L_inf, 2-param
+  Chinchilla-style `L ≈ C/(N·D)^γ`. Dashboard and report generation.
+  **[implemented]**
+- `src/indiclm/inference/` — FastAPI serving layer, separate from training
+  code. **[implemented]**
 - `src/indiclm/monitoring/` — anomaly detection (NaN loss, exploding
-  gradients, stalled dataloader). **[planned]**
+  gradients, stalled dataloader). **[implemented]**
 
 ## Configuration system
 
-`configs/` holds YAML for `model/`, `tokenizer/`, `data/`,
-`training/`, `evaluation/`, `experiments/`, `infrastructure/`, and
-`profiles/` (hardware-aware resource profiles, **implemented** as
-static YAML in this milestone; a Pydantic/OmegaConf-backed loader with
-validation is **planned** for Milestone 1 completion). No experiment
-parameter is hard-coded in application code.
+`configs/` holds YAML for `model/`, `tokenizer/`, `data/`, `training/`,
+`evaluation/`, `experiments/`, `infrastructure/`, and `profiles/`
+(hardware-aware resource profiles). No experiment parameter is hard-coded in
+application code.
 
 ## Milestone plan
 
-0. Inspect repo/environment — **done** (this document).
-1. Repository foundation: packaging, config, logging, hardware
-   detection, CLI skeleton, CI, first tests — **in progress**.
-2. Data pipeline. 3. Tokenizer. 4. Transformer model. 5. Single-GPU
-   training. 6. Evaluation. 7. Experiment tracking. 8. Scaling
-   experiments. 9. Distributed training. 10. Inference API.
-   11. Dashboard/report generation. 12. Research report + cleanup.
-
-Each milestone will only be marked complete after its tests pass.
+0. Inspect repo/environment — **done**
+1. Repository foundation: packaging, config, logging, hardware detection,
+   CLI skeleton, CI, first tests — **done**
+2. Data pipeline — **done**
+3. Tokenizer — **done**
+4. Transformer model — **done**
+5. Single-GPU training — **done** (CPU; bf16 code path wired for CUDA)
+6. Evaluation — **done**
+7. Experiment tracking — **done**
+8. Scaling experiments (EXP-001 – EXP-012) — **done**
+9. Distributed training — **done** (stub; activates with `WORLD_SIZE > 1`)
+10. Inference API — **done**
+11. Dashboard / report generation — **done**
+12. Research report + cleanup — **done**

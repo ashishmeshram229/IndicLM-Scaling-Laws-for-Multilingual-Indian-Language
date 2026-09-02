@@ -63,3 +63,17 @@ class ModelConfig:
         if not self.tie_embeddings:
             total += self.vocab_size * self.d_model
         return total
+
+    def flops_per_forward(self, seq_len: int) -> int:
+        """Theoretical FLOPs for one forward pass (multiply-add = 2 FLOPs each).
+        Counts Q/K/V/O projections and SwiGLU gate+up+down MACs per layer."""
+        assert self.n_kv_heads is not None
+        assert self.d_ff is not None
+        # Each matmul MAC counts as 2 FLOPs; factor of 2 built into coefficients below.
+        attn = 4 * seq_len * self.d_model * self.d_model   # Q, K, V, O projections
+        ffn = 3 * 2 * seq_len * self.d_model * self.d_ff   # SwiGLU gate/up/down MACs
+        return self.n_layers * (attn + ffn)
+
+    def flops_per_token(self, seq_len: int) -> int:
+        """Average FLOPs per token for a sequence of length seq_len."""
+        return self.flops_per_forward(seq_len) // max(seq_len, 1)

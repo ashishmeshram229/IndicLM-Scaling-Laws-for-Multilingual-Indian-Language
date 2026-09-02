@@ -48,41 +48,65 @@ LANGUAGES = {
     "pan": "pa",
 }
 
-# First shard per language is enough for a bootstrap-scale sample; see
-# the dataset's file listing for the full shard count per language.
-SHARD_BY_LANG = {
-    "en": "20231101.en/train-00000-of-00041.parquet",
-    "hi": "20231101.hi/train-00000-of-00002.parquet",
-    "mr": "20231101.mr/train-00000-of-00001.parquet",
-    "bn": "20231101.bn/train-00000-of-00002.parquet",
-    "ta": "20231101.ta/train-00000-of-00002.parquet",
-    "te": "20231101.te/train-00000-of-00002.parquet",
-    "kn": "20231101.kn/train-00000-of-00001.parquet",
-    "ml": "20231101.ml/train-00000-of-00001.parquet",
-    "gu": "20231101.gu/train-00000-of-00001.parquet",
-    "pa": "20231101.pa/train-00000-of-00001.parquet",
+# Shard lists per language. Larger languages (en) have multiple shards;
+# we cap at the first 5 English shards to stay below ~100MB download.
+# Single-shard languages are fetched in full.
+SHARDS_BY_LANG: dict[str, list[str]] = {
+    "en": [f"20231101.en/train-{i:05d}-of-00041.parquet" for i in range(5)],
+    "hi": [
+        "20231101.hi/train-00000-of-00002.parquet",
+        "20231101.hi/train-00001-of-00002.parquet",
+    ],
+    "mr": ["20231101.mr/train-00000-of-00001.parquet"],
+    "bn": [
+        "20231101.bn/train-00000-of-00002.parquet",
+        "20231101.bn/train-00001-of-00002.parquet",
+    ],
+    "ta": [
+        "20231101.ta/train-00000-of-00002.parquet",
+        "20231101.ta/train-00001-of-00002.parquet",
+    ],
+    "te": [
+        "20231101.te/train-00000-of-00002.parquet",
+        "20231101.te/train-00001-of-00002.parquet",
+    ],
+    "kn": ["20231101.kn/train-00000-of-00001.parquet"],
+    "ml": ["20231101.ml/train-00000-of-00001.parquet"],
+    "gu": ["20231101.gu/train-00000-of-00001.parquet"],
+    "pa": ["20231101.pa/train-00000-of-00001.parquet"],
 }
 
-ARTICLES_PER_LANG = 40
+ARTICLES_PER_LANG = 500
 MIN_PARAGRAPH_CHARS = 80
-MAX_PARAGRAPHS_PER_ARTICLE = 5
+MAX_PARAGRAPHS_PER_ARTICLE = 8
 MIN_ARTICLE_CHARS = 500
 
 
 def fetch_language(con: duckdb.DuckDBPyConnection, lang_tag: str, wiki_code: str) -> list[str]:
-    url = f"{BASE_URL}/{SHARD_BY_LANG[wiki_code]}"
-    query = f"""
-        SELECT title, text FROM read_parquet('{url}')
-        WHERE length(text) >= {MIN_ARTICLE_CHARS}
-        LIMIT {ARTICLES_PER_LANG}
-    """
-    rows = con.execute(query).fetchall()
-    lines: list[str] = []
-    for _title, text in rows:
-        paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
-        kept = [p for p in paragraphs if len(p) >= MIN_PARAGRAPH_CHARS][:MAX_PARAGRAPHS_PER_ARTICLE]
-        lines.extend(kept)
-    return lines
+    shards = SHARDS_BY_LANG[wiki_code]
+    all_lines: list[str] = []
+    articles_fetched = 0
+    for shard in shards:
+        remaining = ARTICLES_PER_LANG - articles_fetched
+        if remaining <= 0:
+            break
+        url = f"{BASE_URL}/{shard}"
+        query = f"""
+            SELECT title, text FROM read_parquet('{url}')
+            WHERE length(text) >= {MIN_ARTICLE_CHARS}
+            LIMIT {remaining}
+        """
+        try:
+            rows = con.execute(query).fetchall()
+        except Exception as e:
+            print(f"  WARNING: failed to fetch {shard}: {e}", file=sys.stderr)
+            continue
+        for _title, text in rows:
+            paragraphs = [p.strip() for p in text.split("\n") if p.strip()]
+            kept = [p for p in paragraphs if len(p) >= MIN_PARAGRAPH_CHARS][:MAX_PARAGRAPHS_PER_ARTICLE]
+            all_lines.extend(kept)
+            articles_fetched += 1
+    return all_lines
 
 
 def main() -> None:
