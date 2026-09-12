@@ -106,9 +106,9 @@ def evaluate_downstream(
 def _print_downstream_report(report: object, out_path: Path | None) -> None:
     console.print(
         f"[green]Downstream eval complete.[/green] task={report.task} "  # type: ignore[attr-defined]
-        f"overall_accuracy={report.overall_accuracy} "  # type: ignore[attr-defined]
-        f"macro_avg_accuracy={report.macro_avg_accuracy} "  # type: ignore[attr-defined]
-        f"(chance={report.chance_accuracy}, n={report.n_examples})"  # type: ignore[attr-defined]
+        f"overall_accuracy={report.overall_accuracy} "
+        f"macro_avg_accuracy={report.macro_avg_accuracy} "
+        f"(chance={report.chance_accuracy}, n={report.n_examples})"
     )
     for lang, result in sorted(report.per_language.items()):  # type: ignore[attr-defined]
         console.print(f"  {lang}: {result.accuracy} ({result.n_correct}/{result.n_examples})")
