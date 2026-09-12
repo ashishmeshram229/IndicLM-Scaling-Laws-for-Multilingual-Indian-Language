@@ -40,10 +40,10 @@ def init_distributed(backend: str = "nccl") -> None:
         return
     if not dist.is_available():
         return
-    world_size = int(os.environ.get("WORLD_SIZE", 1))
+    world_size = int(os.environ.get("WORLD_SIZE", "1"))
     if world_size <= 1:
         return
-    rank = int(os.environ.get("RANK", 0))
+    rank = int(os.environ.get("RANK", "0"))
     effective_backend = backend if torch.cuda.is_available() else "gloo"
     dist.init_process_group(
         backend=effective_backend,

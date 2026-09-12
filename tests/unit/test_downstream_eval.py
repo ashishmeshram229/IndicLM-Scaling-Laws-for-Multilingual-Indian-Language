@@ -1,4 +1,4 @@
-"""Unit tests for zero-shot sentiment classification eval.
+"""Unit tests for zero-shot downstream classification evals.
 
 Builds a tiny tokenizer + untrained model from scratch (never touches
 data/eval/ or a real checkpoint) so these pass in CI without the
@@ -14,8 +14,14 @@ import torch
 from indiclm.data.pipeline import DataPipelineConfig, run_pipeline
 from indiclm.evaluation.downstream import (
     LABELS,
+    NLI_LABELS,
+    TOPIC_LABELS,
+    evaluate_downstream_nli,
     evaluate_downstream_sentiment,
+    evaluate_downstream_topic,
+    load_nli_examples,
     load_sentiment_examples,
+    load_topic_examples,
 )
 from indiclm.models.config import ModelConfig
 from indiclm.models.transformer import DecoderOnlyTransformer
@@ -31,7 +37,7 @@ _ENG_LINES = [
 
 def _build_tiny_checkpoint(tmp_path: Path) -> tuple[Path, Path]:
     """Mirrors test_end_to_end_pipeline.py's tokenizer/model setup, sized
-    just large enough that "positive"/" negative" tokenize without error."""
+    just large enough that label words tokenize without error."""
     raw_dir = tmp_path / "raw" / "wiki_sample"
     raw_dir.mkdir(parents=True)
     (raw_dir / "eng.txt").write_text("\n".join(_ENG_LINES), encoding="utf-8")
@@ -59,7 +65,12 @@ def _build_tiny_checkpoint(tmp_path: Path) -> tuple[Path, Path]:
     return checkpoint_path, tokenizer_path
 
 
-def _write_eval_set(eval_dir: Path) -> None:
+# ---------------------------------------------------------------------------
+# Sentiment
+# ---------------------------------------------------------------------------
+
+
+def _write_sentiment_eval(eval_dir: Path) -> None:
     eval_dir.mkdir(parents=True)
     (eval_dir / "eng.jsonl").write_text(
         '{"text": "I loved this movie, it was wonderful.", "label": "positive"}\n'
@@ -69,7 +80,7 @@ def _write_eval_set(eval_dir: Path) -> None:
 
 
 def test_load_sentiment_examples(tmp_path: Path) -> None:
-    _write_eval_set(tmp_path / "eval")
+    _write_sentiment_eval(tmp_path / "eval")
     by_language = load_sentiment_examples(tmp_path / "eval")
     assert set(by_language) == {"eng"}
     assert len(by_language["eng"]) == 2
@@ -78,7 +89,7 @@ def test_load_sentiment_examples(tmp_path: Path) -> None:
 
 def test_evaluate_downstream_sentiment_runs_end_to_end(tmp_path: Path) -> None:
     checkpoint_path, tokenizer_path = _build_tiny_checkpoint(tmp_path)
-    _write_eval_set(tmp_path / "eval")
+    _write_sentiment_eval(tmp_path / "eval")
 
     report = evaluate_downstream_sentiment(checkpoint_path, tokenizer_path, eval_dir=tmp_path / "eval")
 
@@ -88,8 +99,6 @@ def test_evaluate_downstream_sentiment_runs_end_to_end(tmp_path: Path) -> None:
     assert report.chance_accuracy == round(1.0 / len(LABELS), 4)
     assert "eng" in report.per_language
     assert report.per_language["eng"].n_examples == 2
-    # Every prediction must be one of the two label words, never something
-    # else (e.g. an empty string if scoring degenerated).
     for pred in report.per_language["eng"].predictions:
         assert pred["predicted"] in LABELS
 
@@ -100,6 +109,110 @@ def test_evaluate_downstream_sentiment_raises_on_empty_eval_dir(tmp_path: Path) 
     empty_dir.mkdir()
     try:
         evaluate_downstream_sentiment(checkpoint_path, tokenizer_path, eval_dir=empty_dir)
+        raise AssertionError("expected ValueError for an eval dir with no examples")
+    except ValueError:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# NLI
+# ---------------------------------------------------------------------------
+
+
+def _write_nli_eval(eval_dir: Path) -> None:
+    eval_dir.mkdir(parents=True)
+    (eval_dir / "eng.jsonl").write_text(
+        '{"premise": "The train arrived at 8 AM.", "hypothesis": "A train came in the morning.", "label": "yes"}\n'
+        '{"premise": "The library is closed on Sundays.", "hypothesis": "The library is open on Sundays.", "label": "no"}\n'
+        '{"premise": "The child is reading a book.", "hypothesis": "The child enjoys reading.", "label": "maybe"}\n',
+        encoding="utf-8",
+    )
+
+
+def test_load_nli_examples(tmp_path: Path) -> None:
+    _write_nli_eval(tmp_path / "nli")
+    by_language = load_nli_examples(tmp_path / "nli")
+    assert set(by_language) == {"eng"}
+    assert len(by_language["eng"]) == 3
+    assert {ex.label for ex in by_language["eng"]} == {"yes", "no", "maybe"}
+    assert by_language["eng"][0].premise != ""
+    assert by_language["eng"][0].hypothesis != ""
+
+
+def test_evaluate_downstream_nli_runs_end_to_end(tmp_path: Path) -> None:
+    checkpoint_path, tokenizer_path = _build_tiny_checkpoint(tmp_path)
+    _write_nli_eval(tmp_path / "nli")
+
+    report = evaluate_downstream_nli(checkpoint_path, tokenizer_path, eval_dir=tmp_path / "nli")
+
+    assert report.task == "nli"
+    assert report.n_examples == 3
+    assert 0.0 <= report.overall_accuracy <= 1.0
+    assert report.chance_accuracy == round(1.0 / len(NLI_LABELS), 4)
+    assert "eng" in report.per_language
+    for pred in report.per_language["eng"].predictions:
+        assert pred["predicted"] in NLI_LABELS
+        assert set(pred["scores"].keys()) == set(NLI_LABELS)
+
+
+def test_evaluate_downstream_nli_raises_on_empty_eval_dir(tmp_path: Path) -> None:
+    checkpoint_path, tokenizer_path = _build_tiny_checkpoint(tmp_path)
+    empty_dir = tmp_path / "empty_nli"
+    empty_dir.mkdir()
+    try:
+        evaluate_downstream_nli(checkpoint_path, tokenizer_path, eval_dir=empty_dir)
+        raise AssertionError("expected ValueError for an eval dir with no examples")
+    except ValueError:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# Topic classification
+# ---------------------------------------------------------------------------
+
+
+def _write_topic_eval(eval_dir: Path) -> None:
+    eval_dir.mkdir(parents=True)
+    (eval_dir / "eng.jsonl").write_text(
+        '{"text": "The parliament passed the education reform bill.", "label": "politics"}\n'
+        '{"text": "The cricket team won the championship.", "label": "sports"}\n'
+        '{"text": "Scientists developed a new vaccine using mRNA.", "label": "science"}\n'
+        '{"text": "The festival celebrated traditional folk dances.", "label": "culture"}\n'
+        '{"text": "The company launched a new smartphone.", "label": "technology"}\n',
+        encoding="utf-8",
+    )
+
+
+def test_load_topic_examples(tmp_path: Path) -> None:
+    _write_topic_eval(tmp_path / "topic")
+    by_language = load_topic_examples(tmp_path / "topic")
+    assert set(by_language) == {"eng"}
+    assert len(by_language["eng"]) == 5
+    assert {ex.label for ex in by_language["eng"]} == set(TOPIC_LABELS)
+
+
+def test_evaluate_downstream_topic_runs_end_to_end(tmp_path: Path) -> None:
+    checkpoint_path, tokenizer_path = _build_tiny_checkpoint(tmp_path)
+    _write_topic_eval(tmp_path / "topic")
+
+    report = evaluate_downstream_topic(checkpoint_path, tokenizer_path, eval_dir=tmp_path / "topic")
+
+    assert report.task == "topic_classification"
+    assert report.n_examples == 5
+    assert 0.0 <= report.overall_accuracy <= 1.0
+    assert report.chance_accuracy == round(1.0 / len(TOPIC_LABELS), 4)
+    assert "eng" in report.per_language
+    for pred in report.per_language["eng"].predictions:
+        assert pred["predicted"] in TOPIC_LABELS
+        assert set(pred["scores"].keys()) == set(TOPIC_LABELS)
+
+
+def test_evaluate_downstream_topic_raises_on_empty_eval_dir(tmp_path: Path) -> None:
+    checkpoint_path, tokenizer_path = _build_tiny_checkpoint(tmp_path)
+    empty_dir = tmp_path / "empty_topic"
+    empty_dir.mkdir()
+    try:
+        evaluate_downstream_topic(checkpoint_path, tokenizer_path, eval_dir=empty_dir)
         raise AssertionError("expected ValueError for an eval dir with no examples")
     except ValueError:
         pass

@@ -1,10 +1,10 @@
 {
   "experiment_id": "EXP-001",
-  "git_commit": "b7fa0f9da9fca38ddbd554a57b6c9ff1d4e41670",
-  "config_hash": "5242ce8b8ff92bcb",
+  "git_commit": "ab5b07f6def1dab73be51e7ac4fcd552e898d8f7",
+  "config_hash": "0c2628c43d919b69",
   "config": {
     "model_size": "n_tiny",
-    "token_budget": 60000,
+    "token_budget": 1000000,
     "source_sweep": "EXP-012",
     "seeds": [
       0,
@@ -29,17 +29,17 @@
     "platform": "macOS-26.5-arm64-arm-64bit-Mach-O",
     "torch": "2.9.1"
   },
-  "created_at": 1788234847.847994,
-  "training_tokens": 59328,
+  "created_at": 1788431681.7716858,
+  "training_tokens": 999808,
   "final_train_loss": null,
-  "final_val_loss": 6.913074333333333,
+  "final_val_loss": 4.730352333333333,
   "evaluation_metrics": {
-    "final_val_loss_mean": 6.913074333333333,
-    "final_val_loss_std": 0.003380661818835286,
+    "final_val_loss_mean": 4.730352333333333,
+    "final_val_loss_std": 0.021571812564857237,
     "final_val_loss_per_seed": {
-      "0": 6.911721,
-      "1": 6.916922,
-      "2": 6.91058
+      "0": 4.720517,
+      "1": 4.715451,
+      "2": 4.755089
     },
     "n_seeds": 3
   },

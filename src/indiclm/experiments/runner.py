@@ -16,6 +16,11 @@ from torch.utils.data import DataLoader, random_split
 
 from indiclm.data.contamination import scan_contamination
 from indiclm.data.schema import Document
+from indiclm.evaluation.downstream import (
+    evaluate_downstream_nli,
+    evaluate_downstream_sentiment,
+    evaluate_downstream_topic,
+)
 from indiclm.evaluation.perplexity import evaluate_checkpoint
 from indiclm.experiments.manifest import build_manifest, write_manifest
 from indiclm.experiments.report import render_report
@@ -148,14 +153,38 @@ def run_experiment(
     )
 
     final_ckpt = out_dir / "checkpoints" / "final.pt"
+    tokenizer_path = Path(data_cfg["tokenizer_path"])
     eval_report = evaluate_checkpoint(
         checkpoint_path=final_ckpt,
         shards_dir=Path(data_cfg["shards_dir"]),
-        tokenizer_path=Path(data_cfg["tokenizer_path"]),
+        tokenizer_path=tokenizer_path,
         seq_len=data_cfg["seq_len"],
         batch_size=batch_size,
     )
     (out_dir / "evaluation.json").write_text(json.dumps(eval_report.to_dict(), indent=2))
+
+    downstream_evaluations: dict[str, Any] = {}
+    for task_name, eval_fn, task_eval_dir in [
+        ("sentiment", evaluate_downstream_sentiment, Path("data/eval/sentiment")),
+        ("nli", evaluate_downstream_nli, Path("data/eval/nli")),
+        ("topic", evaluate_downstream_topic, Path("data/eval/topic")),
+    ]:
+        if task_eval_dir.exists():
+            try:
+                report = eval_fn(final_ckpt, tokenizer_path, task_eval_dir)
+                (out_dir / f"{task_name}_evaluation.json").write_text(
+                    json.dumps(report.to_dict(), indent=2)
+                )
+                downstream_evaluations[task_name] = {
+                    "overall_accuracy": report.overall_accuracy,
+                    "macro_avg_accuracy": report.macro_avg_accuracy,
+                    "chance_accuracy": report.chance_accuracy,
+                    "n_examples": report.n_examples,
+                }
+                log.info(f"downstream_{task_name}", overall_accuracy=report.overall_accuracy)
+            except Exception as exc:  # noqa: BLE001
+                log.warning(f"downstream_{task_name}_failed", error=str(exc))
+                downstream_evaluations[task_name] = {"error": str(exc)}
 
     manifest = build_manifest(
         experiment_id=experiment_id,
@@ -168,6 +197,7 @@ def run_experiment(
     manifest.final_train_loss = result.final_train_loss
     manifest.final_val_loss = result.final_val_loss
     manifest.evaluation_metrics = eval_report.to_dict()
+    manifest.downstream_evaluations = downstream_evaluations
     manifest.checkpoint_path = str(final_ckpt)
     write_manifest(manifest, out_dir)
 

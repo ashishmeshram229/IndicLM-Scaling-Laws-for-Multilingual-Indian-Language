@@ -1,0 +1,56 @@
+[
+  {
+    "run_id": "n_xs_d1000000_seed1",
+    "n_params": 41592,
+    "n_params_non_embedding": 12792,
+    "d_tokens": 999808,
+    "final_val_loss": 4.875748,
+    "mean_tokens_per_sec": 138709.58,
+    "seed": 1
+  },
+  {
+    "run_id": "n_tiny_d1000000_seed1",
+    "n_params": 63136,
+    "n_params_non_embedding": 24736,
+    "d_tokens": 999808,
+    "final_val_loss": 4.715451,
+    "mean_tokens_per_sec": 143815.32,
+    "seed": 1
+  },
+  {
+    "run_id": "n_small_d1000000_seed1",
+    "n_params": 108528,
+    "n_params_non_embedding": 50928,
+    "d_tokens": 999808,
+    "final_val_loss": 4.552625,
+    "mean_tokens_per_sec": 108472.15,
+    "seed": 1
+  },
+  {
+    "run_id": "n_medium_d1000000_seed1",
+    "n_params": 175424,
+    "n_params_non_embedding": 98624,
+    "d_tokens": 999808,
+    "final_val_loss": 4.405393,
+    "mean_tokens_per_sec": 105159.75,
+    "seed": 1
+  },
+  {
+    "run_id": "n_large_d1000000_seed1",
+    "n_params": 420000,
+    "n_params_non_embedding": 304800,
+    "d_tokens": 999808,
+    "final_val_loss": 4.084005,
+    "mean_tokens_per_sec": 63789.98,
+    "seed": 1
+  },
+  {
+    "run_id": "n_xl_d1000000_seed1",
+    "n_params": 707456,
+    "n_params_non_embedding": 553856,
+    "d_tokens": 999808,
+    "final_val_loss": 3.885639,
+    "mean_tokens_per_sec": 47416.47,
+    "seed": 1
+  }
+]

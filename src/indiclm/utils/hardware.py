@@ -26,7 +26,7 @@ class HardwareInfo:
 def detect_hardware() -> HardwareInfo:
     import os
 
-    import psutil  # type: ignore[import-untyped]
+    import psutil
 
     cpu_count = os.cpu_count() or 1
     total_ram_gb = psutil.virtual_memory().total / (1024**3)

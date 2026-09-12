@@ -12,7 +12,11 @@ import yaml
 from rich.console import Console
 from torch.utils.data import DataLoader, random_split
 
-from indiclm.evaluation.downstream import evaluate_downstream_sentiment
+from indiclm.evaluation.downstream import (
+    evaluate_downstream_nli,
+    evaluate_downstream_sentiment,
+    evaluate_downstream_topic,
+)
 from indiclm.evaluation.perplexity import evaluate_checkpoint
 from indiclm.models.config import ModelConfig
 from indiclm.training.dataset import PackedTokenDataset
@@ -97,3 +101,46 @@ def evaluate_downstream(
         Path(out_path).parent.mkdir(parents=True, exist_ok=True)
         Path(out_path).write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")
         console.print(f"Report written to {out_path}")
+
+
+def _print_downstream_report(report: object, out_path: Path | None) -> None:
+    console.print(
+        f"[green]Downstream eval complete.[/green] task={report.task} "  # type: ignore[attr-defined]
+        f"overall_accuracy={report.overall_accuracy} "  # type: ignore[attr-defined]
+        f"macro_avg_accuracy={report.macro_avg_accuracy} "  # type: ignore[attr-defined]
+        f"(chance={report.chance_accuracy}, n={report.n_examples})"  # type: ignore[attr-defined]
+    )
+    for lang, result in sorted(report.per_language.items()):  # type: ignore[attr-defined]
+        console.print(f"  {lang}: {result.accuracy} ({result.n_correct}/{result.n_examples})")
+    if out_path is not None:
+        import json
+
+        Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+        Path(out_path).write_text(json.dumps(report.to_dict(), indent=2), encoding="utf-8")  # type: ignore[attr-defined]
+        console.print(f"Report written to {out_path}")
+
+
+@app.command("evaluate-nli")
+def evaluate_nli(
+    checkpoint: Path = typer.Option(...),
+    tokenizer_path: Path = typer.Option(Path("data/tokenizer_v1/indiclm_tokenizer.model")),
+    eval_dir: Path = typer.Option(Path("data/eval/nli")),
+    out_path: Path = typer.Option(None, help="Optional path to write the full report as JSON."),
+) -> None:
+    """Zero-shot NLI eval: scores yes/maybe/no for premise+hypothesis pairs."""
+    configure_logging()
+    report = evaluate_downstream_nli(checkpoint, tokenizer_path, eval_dir)
+    _print_downstream_report(report, out_path)
+
+
+@app.command("evaluate-topic")
+def evaluate_topic(
+    checkpoint: Path = typer.Option(...),
+    tokenizer_path: Path = typer.Option(Path("data/tokenizer_v1/indiclm_tokenizer.model")),
+    eval_dir: Path = typer.Option(Path("data/eval/topic")),
+    out_path: Path = typer.Option(None, help="Optional path to write the full report as JSON."),
+) -> None:
+    """Zero-shot topic classification eval: scores politics/sports/technology/culture/science."""
+    configure_logging()
+    report = evaluate_downstream_topic(checkpoint, tokenizer_path, eval_dir)
+    _print_downstream_report(report, out_path)

@@ -16,7 +16,10 @@ from indiclm.experiments.manifest import build_manifest, write_manifest
 from indiclm.experiments.scaling import (
     ScalingObservation,
     aggregate_by_grid_point,
+    backfill_per_language_losses,
+    fit_per_language_scaling_laws,
     fit_scaling_law,
+    plot_per_language_scaling,
     plot_scaling_curves,
     run_scaling_sweep,
 )
@@ -67,11 +70,15 @@ def scaling_sweep(
     # range, so beta and alpha can be identified independently.
     micro_batch_size, grad_accum = 4, 2
     tokens_per_step = micro_batch_size * grad_accum * seq_len
-    target_token_budgets = [6000, 12000, 24000, 60000]
+    # 4 budgets spanning ~167x (6K–1M), up from the previous 10x range (6K–60K),
+    # so alpha and beta can be identified independently. Pool size (total_tokens
+    # in data_cfg) is set to 1M to prevent the model from cycling through a
+    # smaller pool dozens of times at the highest budget.
+    target_token_budgets = [6000, 60000, 250000, 1000000]
 
     data_cfg = {
         "shards_dir": str(shards_dir), "tokenizer_path": str(tokenizer_path),
-        "seq_len": seq_len, "total_tokens": 20000, "alpha": 0.7,
+        "seq_len": seq_len, "total_tokens": 1_000_000, "alpha": 0.7,
     }
 
     all_observations: list[ScalingObservation] = []
@@ -163,3 +170,77 @@ def scaling_sweep(
                           f"L_inf fixed={fl['L_infinity_fixed']:.4f},  R²={fl['r_squared']:.4f}")
     console.print(f"Seeds used: {seeds}")
     console.print(f"Plot: {out_dir / 'loss_vs_params.png'}")
+
+
+@app.command("per-language-analysis")
+def per_language_analysis(
+    exp_dir: Path = typer.Option(
+        Path("experiments/manifests/EXP-012"),
+        help="Root of the scaling sweep output (contains tokens_*/seed_*/ subdirs).",
+    ),
+    shards_dir: Path = typer.Option(Path("data/processed")),
+    tokenizer_path: Path = typer.Option(Path("data/tokenizer_v1/indiclm_tokenizer.model")),
+    seq_len: int = typer.Option(64),
+) -> None:
+    """Back-fill per-language losses from existing EXP-012 checkpoints, fit
+    a Chinchilla-style scaling law per language, and write results to
+    scaling_law_fit_per_language.json + loss_vs_compute_per_language.png."""
+    from indiclm.utils.logging import configure_logging
+    configure_logging()
+
+    # Collect all observations.json files under exp_dir
+    all_observations: list[ScalingObservation] = []
+    run_dirs: list[Path] = []
+    for obs_file in sorted(exp_dir.glob("tokens_*/seed_*/observations.json")):
+        raw = json.loads(obs_file.read_text())
+        seed_dir = obs_file.parent
+        for row in raw:
+            obs = ScalingObservation(
+                run_id=row["run_id"],
+                n_params=row["n_params"],
+                n_params_non_embedding=row["n_params_non_embedding"],
+                d_tokens=row["d_tokens"],
+                final_val_loss=row["final_val_loss"],
+                mean_tokens_per_sec=row.get("mean_tokens_per_sec", 0.0),
+                seed=row.get("seed", 0),
+                per_language_loss=row.get("per_language_loss", {}),
+            )
+            all_observations.append(obs)
+            run_dirs.append(seed_dir / obs.run_id)
+
+    if not all_observations:
+        console.print("[red]No observations found under[/red]", exp_dir)
+        raise typer.Exit(1)
+
+    need_backfill = sum(1 for o in all_observations if not o.per_language_loss)
+    console.print(
+        f"Loaded {len(all_observations)} observations "
+        f"({need_backfill} need per-language backfill)."
+    )
+
+    if need_backfill:
+        console.print("Running per-language evaluation on existing checkpoints …")
+        backfill_per_language_losses(
+            all_observations, run_dirs, shards_dir, tokenizer_path, seq_len
+        )
+        filled = sum(1 for o in all_observations if o.per_language_loss)
+        console.print(f"  Done — {filled}/{len(all_observations)} observations have per-language data.")
+
+    per_lang_fit = fit_per_language_scaling_laws(all_observations)
+    out_json = exp_dir / "scaling_law_fit_per_language.json"
+    out_json.write_text(json.dumps(per_lang_fit, indent=2))
+    console.print(f"Per-language fit saved to {out_json}")
+
+    out_plot = exp_dir / "loss_vs_compute_per_language.png"
+    plot_per_language_scaling(all_observations, per_lang_fit, out_plot)
+    console.print(f"Plot saved to {out_plot}")
+
+    console.print("\n[bold]Per-language Chinchilla fit (γ = scaling exponent):[/bold]")
+    for lang, fit in sorted(per_lang_fit["per_language"].items()):
+        if fit.get("fit_status") == "ok":
+            console.print(
+                f"  {lang:4s}  γ={fit['gamma']:.4f}  R²={fit['r_squared']:.4f}  "
+                f"n={fit['n_observations']}"
+            )
+        else:
+            console.print(f"  {lang:4s}  {fit.get('fit_status')} — {fit.get('note', '')}")

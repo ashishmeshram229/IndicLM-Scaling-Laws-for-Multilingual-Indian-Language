@@ -1,0 +1,140 @@
+{
+  "per_language": {
+    "ben": {
+      "fit_status": "ok",
+      "C": 27.079368003930593,
+      "gamma": 0.06603943926127541,
+      "r_squared": 0.6926108571277351,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 4.009802,
+      "loss_max": 7.099145,
+      "loss_mean": 6.336086648148149
+    },
+    "eng": {
+      "fit_status": "ok",
+      "C": 29.556564254864693,
+      "gamma": 0.07055116229762481,
+      "r_squared": 0.6997769004227882,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.879006,
+      "loss_max": 7.093174,
+      "loss_mean": 6.267456851851851
+    },
+    "guj": {
+      "fit_status": "ok",
+      "C": 30.068937925956988,
+      "gamma": 0.07124169447650072,
+      "r_squared": 0.6784760225581592,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.871104,
+      "loss_max": 7.096154,
+      "loss_mean": 6.282944824074075
+    },
+    "hin": {
+      "fit_status": "ok",
+      "C": 26.4611170667763,
+      "gamma": 0.06520632299521427,
+      "r_squared": 0.7234591747774315,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 4.035272,
+      "loss_max": 7.096085,
+      "loss_mean": 6.302687148148148
+    },
+    "kan": {
+      "fit_status": "ok",
+      "C": 31.281276863340604,
+      "gamma": 0.07333575732419312,
+      "r_squared": 0.698945534335214,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.811985,
+      "loss_max": 7.091274,
+      "loss_mean": 6.242697546296296
+    },
+    "mal": {
+      "fit_status": "ok",
+      "C": 30.96985400433344,
+      "gamma": 0.072690778822007,
+      "r_squared": 0.6826582437226371,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.810494,
+      "loss_max": 7.10545,
+      "loss_mean": 6.26940512037037
+    },
+    "mar": {
+      "fit_status": "ok",
+      "C": 28.402903401550507,
+      "gamma": 0.06878424051457663,
+      "r_squared": 0.7242822191454887,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.937712,
+      "loss_max": 7.094928,
+      "loss_mean": 6.257178
+    },
+    "pan": {
+      "fit_status": "ok",
+      "C": 27.918276924447913,
+      "gamma": 0.06733674805267045,
+      "r_squared": 0.6555565705182723,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.94601,
+      "loss_max": 7.10686,
+      "loss_mean": 6.353600759259258
+    },
+    "tam": {
+      "fit_status": "ok",
+      "C": 36.57336151301387,
+      "gamma": 0.08078535600156789,
+      "r_squared": 0.660959207866674,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.494892,
+      "loss_max": 7.098077,
+      "loss_mean": 6.210294268518518
+    },
+    "tel": {
+      "fit_status": "ok",
+      "C": 30.265261498274263,
+      "gamma": 0.07157252533543838,
+      "r_squared": 0.6843601693511603,
+      "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit",
+      "n_observations": 108,
+      "loss_min": 3.878717,
+      "loss_max": 7.11585,
+      "loss_mean": 6.277963342592592
+    }
+  },
+  "all_languages": [
+    "ben",
+    "eng",
+    "guj",
+    "hin",
+    "kan",
+    "mal",
+    "mar",
+    "pan",
+    "tam",
+    "tel"
+  ],
+  "languages_fit": [
+    "ben",
+    "eng",
+    "guj",
+    "hin",
+    "kan",
+    "mal",
+    "mar",
+    "pan",
+    "tam",
+    "tel"
+  ],
+  "languages_skipped": [],
+  "n_observations_total": 120
+}

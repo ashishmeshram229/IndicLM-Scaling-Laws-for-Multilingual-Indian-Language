@@ -84,7 +84,13 @@ def _fmt(x: Any, digits: int = 3) -> str:
 # --------------------------------------------------------------------------
 
 
-def _bar_chart(labels: list[str], values: list[float], width: int = 640, bar_h: int = 22) -> str:
+def _bar_chart(
+    labels: list[str],
+    values: list[float],
+    width: int = 640,
+    bar_h: int = 22,
+    chance_line: float | None = None,
+) -> str:
     if not values:
         return "<p class='muted'>No data.</p>"
     max_v = max(values) or 1.0
@@ -101,6 +107,13 @@ def _bar_chart(labels: list[str], values: list[float], width: int = 640, bar_h: 
             f'class="bar-label">{_esc(label)}</text>'
             f'<rect x="{label_w}" y="{y}" width="{w:.1f}" height="{bar_h}" rx="3" fill="{color}"/>'
             f'<text x="{label_w + w + 6}" y="{y + bar_h * 0.7}" class="bar-value">{_fmt(v)}</text>'
+        )
+    if chance_line is not None and max_v > 0:
+        cx = label_w + (chance_line / max_v) * plot_w
+        bars.append(
+            f'<line x1="{cx:.1f}" y1="0" x2="{cx:.1f}" y2="{height}" '
+            f'stroke="#E03131" stroke-width="1.5" stroke-dasharray="4 3"/>'
+            f'<text x="{cx + 4:.1f}" y="10" class="axis-label" fill="#E03131">chance</text>'
         )
     return (
         f'<svg viewBox="0 0 {width} {height}" width="100%" role="img" '
@@ -223,6 +236,9 @@ class _ExperimentView:
     macro_avg_perplexity: float | None
     loss_curve: list[float]
     manifest: dict[str, Any] | None
+    sentiment_accuracy: float | None = None
+    nli_accuracy: float | None = None
+    topic_accuracy: float | None = None
 
 
 def _collect_experiment(exp_id: str, description: str, root: Path) -> _ExperimentView:
@@ -246,14 +262,49 @@ def _collect_experiment(exp_id: str, description: str, root: Path) -> _Experimen
         if isinstance(em, dict):
             overall_ppl = em.get("overall_perplexity")
 
+    def _downstream_acc(task_name: str) -> float | None:
+        # 1. manifest.downstream_evaluations (runner.py, new format)
+        de = manifest.get("downstream_evaluations", {})
+        if isinstance(de, dict) and task_name in de:
+            entry = de[task_name]
+            if isinstance(entry, dict) and "overall_accuracy" in entry:
+                return float(entry["overall_accuracy"])
+        # 2. individual {task}_evaluation.json
+        report = _load_json(exp_dir / f"{task_name}_evaluation.json")
+        if report is not None and "overall_accuracy" in report:
+            return float(report["overall_accuracy"])
+        # 3. legacy downstream_evaluation.json (sentiment only, CLI-written)
+        if task_name == "sentiment":
+            report = _load_json(exp_dir / "downstream_evaluation.json")
+            if report is not None and "overall_accuracy" in report:
+                return float(report["overall_accuracy"])
+        return None
+
     status = "run" if (final_val_loss is not None or manifest.get("evaluation_metrics")) else "partial"
     return _ExperimentView(
-        exp_id, description, status, final_val_loss, overall_ppl, macro_ppl, loss_curve, manifest
+        exp_id=exp_id,
+        description=description,
+        status=status,
+        final_val_loss=final_val_loss,
+        overall_perplexity=overall_ppl,
+        macro_avg_perplexity=macro_ppl,
+        loss_curve=loss_curve,
+        manifest=manifest,
+        sentiment_accuracy=_downstream_acc("sentiment"),
+        nli_accuracy=_downstream_acc("nli"),
+        topic_accuracy=_downstream_acc("topic"),
     )
 
 
 def _experiments_section(root: Path) -> str:
     views = [_collect_experiment(exp_id, desc, root) for exp_id, desc in REGISTRY]
+
+    def _acc_cell(acc: float | None, chance: float) -> str:
+        if acc is None:
+            return "<td class='muted'>—</td>"
+        marker = " ≈chance" if abs(acc - chance) < 0.01 else ""
+        cls = " class='muted'" if marker else ""
+        return f"<td{cls}>{_fmt(acc, 3)}{marker}</td>"
 
     rows = []
     for v in views:
@@ -264,11 +315,15 @@ def _experiments_section(root: Path) -> str:
             f'<td><span class="status {status_class}">{v.status.replace("_", " ")}</span></td>'
             f"<td>{_fmt(v.final_val_loss)}</td><td>{_fmt(v.overall_perplexity, 1)}</td>"
             f"<td>{_fmt(v.macro_avg_perplexity, 1)}</td>"
-            "</tr>"
+            + _acc_cell(v.sentiment_accuracy, 0.5)
+            + _acc_cell(v.nli_accuracy, round(1 / 3, 4))
+            + _acc_cell(v.topic_accuracy, 0.2)
+            + "</tr>"
         )
     table = (
         "<table><thead><tr><th>ID</th><th>Description</th><th>Status</th>"
-        "<th>Final val loss</th><th>Overall PPL</th><th>Macro-avg PPL</th></tr></thead>"
+        "<th>Final val loss</th><th>Overall PPL</th><th>Macro-avg PPL</th>"
+        "<th>Sentiment acc</th><th>NLI acc</th><th>Topic acc</th></tr></thead>"
         f"<tbody>{''.join(rows)}</tbody></table>"
     )
 
@@ -318,57 +373,158 @@ def _ablation_section(root: Path) -> str:
 
 
 def _downstream_section(root: Path) -> str:
-    """Reads every `<exp_id>/downstream_evaluation.json` under `root`
-    (written by `indiclm evaluate-downstream --out-path ...`) and compares
-    zero-shot sentiment accuracy across whichever experiments have one —
-    directly answering whether mixture/tokenizer/data-quality choices
-    move downstream task quality, not just perplexity."""
-    rows = []
-    chance = None
-    overall_accuracies = []
-    for path in sorted(root.glob("*/downstream_evaluation.json")):
-        report = _load_json(path)
-        if report is None:
+    """Multi-task downstream accuracy comparison across all experiments.
+
+    Reads from manifest.downstream_evaluations (written by runner.py),
+    falling back to individual {task}_evaluation.json files and the legacy
+    downstream_evaluation.json for backward compat with older experiment runs.
+    """
+    _TASKS = [
+        ("sentiment", "Sentiment", 0.5),
+        ("nli", "NLI", round(1 / 3, 4)),
+        ("topic", "Topic", 0.2),
+    ]
+
+    def _read_task(exp_dir: Path, task_name: str) -> dict[str, Any] | None:
+        manifest = _load_json(exp_dir / "manifest.json")
+        if manifest:
+            de = manifest.get("downstream_evaluations", {})
+            if isinstance(de, dict) and task_name in de:
+                entry = de[task_name]
+                if isinstance(entry, dict) and "overall_accuracy" in entry:
+                    return entry
+        report = _load_json(exp_dir / f"{task_name}_evaluation.json")
+        if report and "overall_accuracy" in report:
+            return report
+        if task_name == "sentiment":
+            report = _load_json(exp_dir / "downstream_evaluation.json")
+            if report and "overall_accuracy" in report:
+                return report
+        return None
+
+    # Gather data keyed by exp_id → task_name → report dict
+    exp_task_data: dict[str, dict[str, dict[str, Any]]] = {}
+    for exp_id, _ in REGISTRY:
+        exp_dir = root / exp_id
+        if not exp_dir.exists():
             continue
-        exp_id = path.parent.name
-        chance = report.get("chance_accuracy", chance)
-        overall_accuracies.append(report.get("overall_accuracy"))
-        rows.append(
-            f"<tr><td><code>{_esc(exp_id)}</code></td>"
-            f"<td>{_fmt(report.get('overall_accuracy'), 4)}</td>"
-            f"<td>{_fmt(report.get('macro_avg_accuracy'), 4)}</td>"
-            f"<td>{report.get('n_examples')}</td></tr>"
-        )
-    if not rows:
+        task_reports = {
+            task_name: _read_task(exp_dir, task_name)
+            for task_name, _, _ in _TASKS
+        }
+        if any(v is not None for v in task_reports.values()):
+            exp_task_data[exp_id] = {k: v for k, v in task_reports.items() if v is not None}
+
+    if not exp_task_data:
         return (
             "<section><h2>Downstream evaluation</h2>"
-            "<p class='muted'>Run `indiclm evaluate-downstream --checkpoint ... "
-            "--out-path experiments/manifests/&lt;exp_id&gt;/downstream_evaluation.json` "
-            "to populate this section.</p></section>"
+            "<p class='muted'>No downstream evaluation results found. "
+            "Downstream tasks (sentiment, NLI, topic) run automatically as part of "
+            "<code>indiclm experiment run</code>. Re-run an experiment or use "
+            "<code>indiclm evaluate-nli</code> / <code>evaluate-topic</code> manually.</p>"
+            "</section>"
         )
-    table = (
-        "<table><thead><tr><th>Experiment</th><th>Overall accuracy</th>"
-        "<th>Macro-avg accuracy</th><th>N examples</th></tr></thead>"
-        f"<tbody>{''.join(rows)}</tbody></table>"
+
+    # Summary comparison table: rows = experiments, cols = tasks
+    def _cell(report: dict[str, Any] | None, chance: float) -> str:
+        if report is None:
+            return "<td class='muted'>—</td>"
+        acc = report.get("overall_accuracy")
+        macro = report.get("macro_avg_accuracy")
+        if acc is None:
+            return "<td class='muted'>—</td>"
+        at_chance = abs(acc - chance) < 0.01
+        cls = " class='muted'" if at_chance else ""
+        label = f"{_fmt(acc, 3)} / {_fmt(macro, 3)}"
+        marker = " ≈ch" if at_chance else ""
+        return f"<td{cls}>{label}{marker}</td>"
+
+    header = (
+        "<thead><tr><th>Experiment</th>"
+        + "".join(
+            f"<th>{label} overall / macro<br/><span class='muted'>chance={_fmt(chance, 2)}</span></th>"
+            for _, label, chance in _TASKS
+        )
+        + "</tr></thead>"
     )
-    all_at_chance = chance is not None and all(a == chance for a in overall_accuracies)
+    rows = []
+    for exp_id, _ in REGISTRY:
+        if exp_id not in exp_task_data:
+            continue
+        tasks = exp_task_data[exp_id]
+        rows.append(
+            f"<tr><td><code>{_esc(exp_id)}</code></td>"
+            + "".join(_cell(tasks.get(t), c) for t, _, c in _TASKS)
+            + "</tr>"
+        )
+    table = f"<table>{header}<tbody>{''.join(rows)}</tbody></table>"
+
+    # Per-task macro-avg bar charts with chance reference line
+    charts_html = ""
+    for task_name, label, chance in _TASKS:
+        bar_labels, bar_values = [], []
+        for exp_id, _ in REGISTRY:
+            report = exp_task_data.get(exp_id, {}).get(task_name)
+            if report and report.get("macro_avg_accuracy") is not None:
+                bar_labels.append(exp_id)
+                bar_values.append(float(report["macro_avg_accuracy"]))
+        if bar_values:
+            charts_html += (
+                f"<h3>{label} — macro-avg accuracy across experiments "
+                f"<span class='muted'>(chance = {_fmt(chance, 2)}, dashed line)</span></h3>"
+                + _bar_chart(bar_labels, bar_values, chance_line=chance)
+            )
+
+    # Per-language breakdown: use the most-recent experiment with full data for each task
+    lang_tables_html = ""
+    for task_name, label, chance in _TASKS:
+        # Find the last experiment (REGISTRY order) that has a full per_language report
+        full_report = None
+        full_exp_id = None
+        for exp_id, _ in reversed(REGISTRY):
+            exp_dir = root / exp_id
+            # Try to read full report (needs per_language)
+            r = _load_json(exp_dir / f"{task_name}_evaluation.json")
+            if r is None and task_name == "sentiment":
+                r = _load_json(exp_dir / "downstream_evaluation.json")
+            if r and "per_language" in r:
+                full_report = r
+                full_exp_id = exp_id
+                break
+        if full_report is None:
+            continue
+        pl = full_report.get("per_language", {})
+        lang_rows = "".join(
+            f"<tr><td>{_esc(lang)}</td>"
+            f"<td>{_fmt(info.get('accuracy'), 3)}</td>"
+            f"<td>{info.get('n_correct')}/{info.get('n_examples')}</td></tr>"
+            for lang, info in sorted(pl.items())
+        )
+        lang_tables_html += (
+            f"<h3>{label} per-language breakdown "
+            f"<span class='muted'>(from {_esc(full_exp_id)})</span></h3>"
+            "<table><thead><tr><th>Language</th><th>Accuracy</th><th>Correct / total</th></tr></thead>"
+            f"<tbody>{lang_rows}</tbody></table>"
+        )
+
     note = (
-        f"<p class='muted'>Zero-shot sentiment classification (see "
-        f"<code>indiclm.evaluation.downstream</code> for the scoring method); chance = {_fmt(chance, 4)}. "
-        + (
-            "Every run here scores at chance — at this project's scale "
-            "(tens-to-hundreds of thousands of parameters, tens of thousands of training tokens), "
-            "no configuration shows measurable zero-shot task signal; all collapse to predicting "
-            "whichever label the tiny tokenizer/vocabulary makes marginally more probable, "
-            "regardless of the input. This is an honest negative result about scale, not a "
-            "claim that mixture/tokenizer/data-quality choices don't matter — see "
-            "docs/reproducibility.md."
-            if all_at_chance
-            else "Differences between rows reflect real per-configuration variation."
-        )
-        + "</p>"
+        "<p class='muted'>Zero-shot classification via length-normalised log-likelihood "
+        "(same method across all three tasks). At this project's parameter and token scale "
+        "scores near chance are an honest result — the model has not learned sufficient "
+        "task-relevant representations. Differences between experiments indicate which "
+        "data mixture / tokeniser choices produce the most useful representations. "
+        "See <code>docs/reproducibility.md</code>.</p>"
     )
-    return f"<section><h2>Downstream evaluation</h2>{table}{note}</section>"
+
+    return f"""
+    <section>
+      <h2>Downstream evaluation</h2>
+      {table}
+      {charts_html}
+      {lang_tables_html}
+      {note}
+    </section>
+    """
 
 
 def _scaling_section(root: Path) -> str:
@@ -417,12 +573,65 @@ def _scaling_section(root: Path) -> str:
         else ""
     )
 
+    # Per-language scaling section
+    pl_fit = _load_json(root / "EXP-012" / "scaling_law_fit_per_language.json")
+    pl_plot_path = root / "EXP-012" / "loss_vs_compute_per_language.png"
+    pl_section = ""
+    if pl_fit is not None:
+        pl_plot_html = ""
+        if pl_plot_path.exists():
+            import base64
+            b64 = base64.b64encode(pl_plot_path.read_bytes()).decode("ascii")
+            pl_plot_html = (
+                f'<img class="plot" src="data:image/png;base64,{b64}" '
+                f'alt="Per-language loss vs. compute"/>'
+            )
+
+        pl_rows = ""
+        for lang, lfit in sorted(pl_fit.get("per_language", {}).items()):
+            if lfit.get("fit_status") == "ok":
+                pl_rows += (
+                    f"<tr><td>{_esc(lang)}</td>"
+                    f"<td>{_fmt(lfit.get('gamma'), 4)}</td>"
+                    f"<td>{_fmt(lfit.get('r_squared'), 4)}</td>"
+                    f"<td>{lfit.get('n_observations')}</td>"
+                    f"<td>{_fmt(lfit.get('loss_min'))}</td>"
+                    f"<td>{_fmt(lfit.get('loss_max'))}</td></tr>"
+                )
+            else:
+                pl_rows += (
+                    f"<tr><td>{_esc(lang)}</td>"
+                    f'<td colspan="5" class="muted">{_esc(lfit.get("fit_status"))} — '
+                    f"{_esc(lfit.get('note', ''))}</td></tr>"
+                )
+        fit_langs = pl_fit.get("languages_fit", [])
+        pl_note = (
+            f"<p class='muted'>Chinchilla 2-param fit L ≈ C/(N·D)^γ per language "
+            f"({len(fit_langs)}/{len(pl_fit.get('all_languages', []))} languages converged). "
+            "γ is the scaling exponent: larger γ means loss falls faster with compute. "
+            "Run <code>indiclm experiment per-language-analysis</code> to regenerate.</p>"
+        )
+        pl_table = (
+            "<table><thead><tr><th>Language</th><th>γ (scaling exp.)</th>"
+            "<th>R²</th><th>N obs.</th><th>Loss min</th><th>Loss max</th></tr></thead>"
+            f"<tbody>{pl_rows}</tbody></table>"
+        )
+        pl_section = (
+            f"<h3>Per-language scaling laws</h3>{pl_plot_html}{pl_table}{pl_note}"
+        )
+    else:
+        pl_section = (
+            "<p class='muted'>Per-language scaling not yet computed — run "
+            "<code>indiclm experiment per-language-analysis</code>.</p>"
+        )
+
     return f"""
     <section>
       <h2>Scaling</h2>
       {plot_html}
       {fit_html}
       {obs_table}
+      {pl_section}
     </section>
     """
 

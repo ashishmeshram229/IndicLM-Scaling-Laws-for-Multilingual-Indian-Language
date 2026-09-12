@@ -54,8 +54,13 @@ in every report this codebase produces.
   `cleanup_distributed`, `wrap_ddp`, rank/world-size queries). Safe to
   import on single-process runs; activates only when `WORLD_SIZE > 1`.
   **[implemented — requires multi-GPU environment to activate DDP]**
-- `src/indiclm/evaluation/` — perplexity evaluation, sentiment downstream
-  task, contamination scanning (64-doc probe per experiment run). **[implemented]**
+- `src/indiclm/evaluation/` — perplexity evaluation; three zero-shot
+  downstream tasks (sentiment binary, NLI 3-way yes/maybe/no, topic
+  5-way politics/sports/technology/culture/science) all using
+  length-normalized log-likelihood scoring; contamination scanning
+  (64-doc probe per experiment run). All tasks run automatically after
+  each experiment and results are saved to `{task}_evaluation.json`
+  and summarised in `manifest.json`. **[implemented]**
 - `src/indiclm/experiments/` — experiment tracking, manifest generation,
   multi-seed runner, scaling sweeps (24-point grid × 3 seeds = 72 runs),
   three scaling-law fits: 5-param free, 4-param fixed-L_inf, 2-param

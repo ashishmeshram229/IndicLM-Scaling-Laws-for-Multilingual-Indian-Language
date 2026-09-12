@@ -62,6 +62,7 @@ class ExperimentManifest:
     final_train_loss: float | None = None
     final_val_loss: float | None = None
     evaluation_metrics: dict[str, Any] = field(default_factory=dict)
+    downstream_evaluations: dict[str, Any] = field(default_factory=dict)
     checkpoint_path: str | None = None
     notes: str = ""
 

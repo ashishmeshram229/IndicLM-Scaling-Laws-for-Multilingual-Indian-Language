@@ -58,6 +58,13 @@ class DecoderOnlyTransformer(nn.Module):
             self.lm_head.weight = self.token_embedding.weight
 
         self.apply(self._init_weights)
+        # Residual projections (o_proj, down_proj) accumulate across layers; scale
+        # their init std down by 1/sqrt(2*n_layers) so the residual stream variance
+        # stays O(1) at initialisation regardless of depth. GPT-2 / PaLM convention.
+        residual_std = 0.02 / (2 * config.n_layers) ** 0.5
+        for name, module in self.named_modules():
+            if isinstance(module, nn.Linear) and name.endswith(("o_proj", "down_proj")):
+                nn.init.normal_(module.weight, mean=0.0, std=residual_std)
 
     def _init_weights(self, module: nn.Module) -> None:
         if isinstance(module, nn.Linear):

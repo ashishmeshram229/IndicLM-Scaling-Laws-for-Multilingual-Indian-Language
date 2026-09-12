@@ -1,0 +1,6 @@
+{"premise": "The train arrived at the station at 8 AM.", "hypothesis": "A train came to the station in the morning.", "label": "yes"}
+{"premise": "All students sat for the examination.", "hypothesis": "Some students took the exam.", "label": "yes"}
+{"premise": "The library is closed on Sundays.", "hypothesis": "The library is open on Sundays.", "label": "no"}
+{"premise": "She has never visited London.", "hypothesis": "She has been to London many times.", "label": "no"}
+{"premise": "The child is reading a book.", "hypothesis": "The child enjoys reading.", "label": "maybe"}
+{"premise": "She is singing a song.", "hypothesis": "She is happy.", "label": "maybe"}

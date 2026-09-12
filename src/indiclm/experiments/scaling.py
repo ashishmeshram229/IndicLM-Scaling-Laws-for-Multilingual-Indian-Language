@@ -19,7 +19,7 @@ this module produces.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -45,9 +45,19 @@ class ScalingObservation:
     final_val_loss: float
     mean_tokens_per_sec: float
     seed: int = 0
+    per_language_loss: dict[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> dict:
-        return self.__dict__
+        return {
+            "run_id": self.run_id,
+            "n_params": self.n_params,
+            "n_params_non_embedding": self.n_params_non_embedding,
+            "d_tokens": self.d_tokens,
+            "final_val_loss": self.final_val_loss,
+            "mean_tokens_per_sec": self.mean_tokens_per_sec,
+            "seed": self.seed,
+            "per_language_loss": self.per_language_loss,
+        }
 
 
 def _scaling_law(
@@ -124,7 +134,7 @@ def _fit_two_param(
             "r_squared": r_squared,
             "note": "L ≈ C / (N·D)^gamma — 2-parameter Chinchilla-style fit",
         }
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return {"fit_status": "fit_failed", "note": str(e)}
 
 
@@ -264,6 +274,24 @@ def run_scaling_sweep(
         n_params = actual_model.num_parameters()
         n_params_non_embed = actual_model.num_parameters(non_embedding=True)
 
+        per_language_loss: dict[str, float] = {}
+        final_ckpt = run_dir / "checkpoints" / "final.pt"
+        if final_ckpt.exists():
+            try:
+                from indiclm.evaluation.perplexity import evaluate_checkpoint as _eval_ckpt
+                eval_rep = _eval_ckpt(
+                    checkpoint_path=final_ckpt,
+                    shards_dir=Path(data_cfg["shards_dir"]),
+                    tokenizer_path=Path(data_cfg["tokenizer_path"]),
+                    seq_len=data_cfg["seq_len"],
+                    batch_size=batch_size,
+                )
+                per_language_loss = {
+                    lang: lr.loss for lang, lr in eval_rep.per_language.items()
+                }
+            except Exception as exc:  # noqa: BLE001
+                log.warning("per_language_eval_failed", run_id=run_id, error=str(exc))
+
         obs = ScalingObservation(
             run_id=run_id,
             n_params=n_params,
@@ -272,6 +300,7 @@ def run_scaling_sweep(
             final_val_loss=result.final_val_loss or result.final_train_loss,
             mean_tokens_per_sec=result.mean_tokens_per_sec,
             seed=seed,
+            per_language_loss=per_language_loss,
         )
         observations.append(obs)
 
@@ -309,6 +338,160 @@ def aggregate_by_grid_point(observations: list[ScalingObservation]) -> list[dict
             }
         )
     return result
+
+
+def backfill_per_language_losses(
+    observations: list[ScalingObservation],
+    run_dirs: list[Path],
+    shards_dir: Path,
+    tokenizer_path: Path,
+    seq_len: int,
+    batch_size: int = 4,
+) -> list[ScalingObservation]:
+    """Evaluates perplexity per language for any observation that has an
+    empty `per_language_loss`, using the checkpoint in the matching run_dir.
+    Returns the same list with the field populated in-place."""
+    from indiclm.evaluation.perplexity import evaluate_checkpoint as _eval_ckpt
+
+    run_dir_by_id = {d.name: d for d in run_dirs}
+
+    for obs in observations:
+        if obs.per_language_loss:
+            continue
+        run_dir = run_dir_by_id.get(obs.run_id)
+        if run_dir is None:
+            log.warning("backfill_no_run_dir", run_id=obs.run_id)
+            continue
+        ckpt = run_dir / "checkpoints" / "final.pt"
+        if not ckpt.exists():
+            log.warning("backfill_no_checkpoint", run_id=obs.run_id, path=str(ckpt))
+            continue
+        try:
+            eval_rep = _eval_ckpt(
+                checkpoint_path=ckpt,
+                shards_dir=shards_dir,
+                tokenizer_path=tokenizer_path,
+                seq_len=seq_len,
+                batch_size=batch_size,
+            )
+            obs.per_language_loss = {lang: lr.loss for lang, lr in eval_rep.per_language.items()}
+            log.info("backfill_done", run_id=obs.run_id, languages=list(obs.per_language_loss))
+        except Exception as exc:  # noqa: BLE001
+            log.warning("backfill_eval_failed", run_id=obs.run_id, error=str(exc))
+
+    return observations
+
+
+def fit_per_language_scaling_laws(
+    observations: list[ScalingObservation],
+) -> dict[str, Any]:
+    """Fits a 2-param Chinchilla-style L ≈ C/(N·D)^gamma independently
+    per language. Languages with fewer than 3 observations (or no data)
+    are skipped with an explicit note. Returns a dict of:
+        language → fit_result (same schema as fit_two_param).
+    Also includes summary keys: all_languages, languages_fit, languages_skipped.
+    """
+    by_language: dict[str, tuple[list[float], list[float], list[float]]] = {}
+    for obs in observations:
+        for lang, loss in obs.per_language_loss.items():
+            if lang not in by_language:
+                by_language[lang] = ([], [], [])
+            by_language[lang][0].append(float(obs.n_params_non_embedding))
+            by_language[lang][1].append(float(obs.d_tokens))
+            by_language[lang][2].append(float(loss))
+
+    fits: dict[str, Any] = {}
+    languages_fit: list[str] = []
+    languages_skipped: list[str] = []
+
+    for lang in sorted(by_language):
+        ns, ds, losses = by_language[lang]
+        if len(ns) < 3:
+            fits[lang] = {
+                "fit_status": "insufficient_data",
+                "n_observations": len(ns),
+                "note": f"Only {len(ns)} observations; need ≥3 for 2-param fit.",
+            }
+            languages_skipped.append(lang)
+            continue
+        n_arr = np.array(ns, dtype=float)
+        d_arr = np.array(ds, dtype=float)
+        loss_arr = np.array(losses, dtype=float)
+        result = _fit_two_param(n_arr, d_arr, loss_arr)
+        result["n_observations"] = len(ns)
+        result["loss_min"] = float(loss_arr.min())
+        result["loss_max"] = float(loss_arr.max())
+        result["loss_mean"] = float(loss_arr.mean())
+        fits[lang] = result
+        if result["fit_status"] == "ok":
+            languages_fit.append(lang)
+        else:
+            languages_skipped.append(lang)
+
+    return {
+        "per_language": fits,
+        "all_languages": sorted(by_language),
+        "languages_fit": languages_fit,
+        "languages_skipped": languages_skipped,
+        "n_observations_total": len(observations),
+    }
+
+
+def plot_per_language_scaling(
+    observations: list[ScalingObservation],
+    per_language_fit: dict[str, Any],
+    out_path: Path,
+) -> None:
+    """Loss vs. compute (N·D) scatter coloured by language, with one
+    fitted line per language that converged."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    languages = sorted({
+        lang for obs in observations for lang in obs.per_language_loss
+    })
+    if not languages:
+        return
+
+    palette = [
+        "#4C6EF5", "#F76707", "#0CA678", "#E64980",
+        "#7048E8", "#F59F00", "#1098AD", "#E03131",
+        "#099268", "#862E9C",
+    ]
+    lang_color = {lang: palette[i % len(palette)] for i, lang in enumerate(languages)}
+
+    fig, ax = plt.subplots(figsize=(8, 5.5))
+
+    for lang in languages:
+        xs, ys = [], []
+        for obs in observations:
+            if lang in obs.per_language_loss:
+                xs.append(obs.n_params_non_embedding * obs.d_tokens)
+                ys.append(obs.per_language_loss[lang])
+        if not xs:
+            continue
+        color = lang_color[lang]
+        ax.scatter(xs, ys, color=color, alpha=0.55, s=22, zorder=3)
+
+        # Fitted line
+        fit = per_language_fit.get("per_language", {}).get(lang, {})
+        if fit.get("fit_status") == "ok":
+            x_grid = np.logspace(np.log10(min(xs)), np.log10(max(xs)), 80)
+            y_pred = fit["C"] / x_grid ** fit["gamma"]
+            ax.plot(x_grid, y_pred, color=color, linewidth=1.5, label=lang)
+        else:
+            ax.scatter([], [], color=color, label=lang)
+
+    ax.set_xscale("log")
+    ax.set_xlabel("Compute budget  N · D  (params × tokens)")
+    ax.set_ylabel("Validation loss")
+    ax.set_title("Per-language scaling: loss vs. compute budget")
+    ax.legend(fontsize=8, ncol=2, loc="upper right")
+    ax.grid(True, which="both", alpha=0.25)
+    fig.tight_layout()
+    fig.savefig(out_path, dpi=150)
+    plt.close(fig)
 
 
 def plot_scaling_curves(observations: list[ScalingObservation], fit: dict[str, Any], out_path: Path) -> None:

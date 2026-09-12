@@ -1,37 +1,43 @@
-"""Downstream task evaluation: zero-shot sentiment classification.
+"""Downstream task evaluation: zero-shot classification via label scoring.
 
 Perplexity (`indiclm.evaluation.perplexity`) measures how well a model
 predicts held-out text, but it can't answer the actual research question
 this project asks: does mixture ratio, tokenizer choice, or data quality
-change *usable model quality*, not just loss? This module adds one real
-downstream task so mixture/tokenizer/ablation experiments can be compared
+change *usable model quality*, not just loss? This module adds three real
+downstream tasks so mixture/tokenizer/ablation experiments can be compared
 on something other than perplexity.
 
 Method: label scoring via length-normalized log-likelihood, the standard
 zero-shot classification approach for a causal LM with no classification
 head (used by GPT-2/GPT-3-style zero-shot evaluations). For each example,
-the prompt is `"{text}\\nSentiment:"` and the model scores each candidate
-label as a continuation; the label with the higher *average per-token*
-log-probability wins (length-normalized so "positive" and "negative"
-having different tokenized lengths under a given tokenizer doesn't bias
-the comparison).
+the prompt is formatted and the model scores each candidate label as a
+continuation; the label with the higher *average per-token* log-probability
+wins (length-normalized so labels of different tokenized lengths under a
+given tokenizer don't bias the comparison).
 
-Label words are fixed English strings ("positive"/"negative") across all
-languages rather than per-language translations. This is a deliberate
-simplification, not an oversight: at this project's vocabulary scale
-(1-2K token BPE/Unigram tokenizers trained on a few hundred documents),
-translated label words would frequently fall back to byte/UNK
-fragments, which would make the scoring artifact-driven rather than
-task-driven. Using one fixed anchor pair isolates the thing being
-measured (does the model represent sentiment in context) from tokenizer
-coverage of a specific label string.
+Label words are fixed English strings across all languages rather than
+per-language translations. This is a deliberate simplification: at this
+project's vocabulary scale (1-2K token BPE/Unigram tokenizers trained on a
+few hundred documents), translated label words frequently fall back to
+byte/UNK fragments, making scoring artifact-driven rather than
+task-driven. Using fixed English anchors isolates what is being measured
+(does the model represent the concept in context) from tokenizer coverage
+of a specific label string.
+
+Tasks
+-----
+- sentiment_classification  (binary:  positive / negative)
+- nli                       (ternary: yes / maybe / no)
+- topic_classification      (5-way:   politics / sports / technology / culture / science)
 """
 
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import sentencepiece as spm
 import torch
@@ -41,8 +47,22 @@ from indiclm.models.config import ModelConfig
 from indiclm.models.transformer import DecoderOnlyTransformer
 from indiclm.training.checkpoint import load_checkpoint
 
+# --- Sentiment ---------------------------------------------------------------
 LABELS = ("positive", "negative")
 PROMPT_TEMPLATE = "{text}\nSentiment:"
+
+# --- NLI ---------------------------------------------------------------------
+NLI_LABELS = ("yes", "maybe", "no")
+NLI_PROMPT_TEMPLATE = "{premise}\nHypothesis: {hypothesis}\nEntailment:"
+
+# --- Topic -------------------------------------------------------------------
+TOPIC_LABELS = ("politics", "sports", "technology", "culture", "science")
+TOPIC_PROMPT_TEMPLATE = "{text}\nTopic:"
+
+
+# ---------------------------------------------------------------------------
+# Example dataclasses
+# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -52,12 +72,23 @@ class SentimentExample:
 
 
 @dataclass
+class NLIExample:
+    premise: str
+    hypothesis: str
+    label: str
+
+
+# ---------------------------------------------------------------------------
+# Result / report dataclasses
+# ---------------------------------------------------------------------------
+
+
+@dataclass
 class LanguageSentimentResult:
     language: str
     n_examples: int
     n_correct: int
     accuracy: float
-    # per-example predictions, for error analysis / the report's "failure cases" section
     predictions: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
@@ -96,21 +127,26 @@ class DownstreamReport:
         }
 
 
-def load_sentiment_examples(eval_dir: Path) -> dict[str, list[SentimentExample]]:
-    """Loads `{language}.jsonl` files from `eval_dir` (see
-    `data/eval/sentiment/README.md` for provenance and format)."""
-    by_language: dict[str, list[SentimentExample]] = {}
-    for path in sorted(Path(eval_dir).glob("*.jsonl")):
-        examples = []
-        for line in path.read_text(encoding="utf-8").splitlines():
-            line = line.strip()
-            if not line:
-                continue
-            row = json.loads(line)
-            examples.append(SentimentExample(text=row["text"], label=row["label"]))
-        if examples:
-            by_language[path.stem] = examples
-    return by_language
+# ---------------------------------------------------------------------------
+# Shared model loading helper
+# ---------------------------------------------------------------------------
+
+
+def _load_model_and_tokenizer(
+    checkpoint_path: Path, tokenizer_path: Path, device: str
+) -> tuple[DecoderOnlyTransformer, spm.SentencePieceProcessor, ModelConfig]:
+    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
+    model_config = ModelConfig(**checkpoint["config"]["model_config"])
+    model = DecoderOnlyTransformer(model_config).to(device)
+    load_checkpoint(checkpoint_path, model, map_location=device)
+    model.eval()
+    tokenizer = spm.SentencePieceProcessor(model_file=str(tokenizer_path))
+    return model, tokenizer, model_config
+
+
+# ---------------------------------------------------------------------------
+# Core scoring: length-normalized log-likelihood of a label continuation
+# ---------------------------------------------------------------------------
 
 
 @torch.no_grad()
@@ -130,7 +166,7 @@ def _label_logprob(
         return float("-inf")
 
     ids = (prompt_ids + label_ids)[-max_len:]
-    n_label = min(len(label_ids), len(ids))  # in case truncation ate into the label
+    n_label = min(len(label_ids), len(ids))
     if n_label == 0:
         return float("-inf")
 
@@ -138,8 +174,6 @@ def _label_logprob(
     logits, _ = model(x, targets=None)  # (1, T, V)
     log_probs = F.log_softmax(logits[0], dim=-1)  # (T, V)
 
-    # Position i's logits predict token i+1, so the label's own tokens are
-    # predicted by the logits one position before each label token.
     label_start = len(ids) - n_label
     total = 0.0
     for offset in range(n_label):
@@ -152,10 +186,18 @@ def _label_logprob(
     return total / n_label
 
 
-def _evaluate_language(
+# ---------------------------------------------------------------------------
+# Generic per-language classification loop
+# ---------------------------------------------------------------------------
+
+
+def _evaluate_classification_language(
     model: DecoderOnlyTransformer,
     tokenizer: spm.SentencePieceProcessor,
-    examples: list[SentimentExample],
+    examples: list[Any],
+    labels: tuple[str, ...],
+    prompt_fn: Callable[[Any], str],
+    gold_fn: Callable[[Any], str],
     language: str,
     device: torch.device,
     max_len: int,
@@ -163,16 +205,21 @@ def _evaluate_language(
     predictions = []
     n_correct = 0
     for ex in examples:
-        prompt = PROMPT_TEMPLATE.format(text=ex.text)
+        prompt = prompt_fn(ex)
         scores = {
             label: _label_logprob(model, tokenizer, prompt, label, device, max_len)
-            for label in LABELS
+            for label in labels
         }
         predicted = max(scores, key=lambda label: scores[label])
-        correct = predicted == ex.label
+        correct = predicted == gold_fn(ex)
         n_correct += int(correct)
         predictions.append(
-            {"text": ex.text, "gold": ex.label, "predicted": predicted, "correct": correct, "scores": scores}
+            {
+                "gold": gold_fn(ex),
+                "predicted": predicted,
+                "correct": correct,
+                "scores": scores,
+            }
         )
     n = len(examples)
     return LanguageSentimentResult(
@@ -181,6 +228,117 @@ def _evaluate_language(
         n_correct=n_correct,
         accuracy=round(n_correct / n, 4) if n else 0.0,
         predictions=predictions,
+    )
+
+
+def _build_report(
+    task: str,
+    checkpoint_path: Path,
+    tokenizer_path: Path,
+    per_language: dict[str, LanguageSentimentResult],
+    labels: tuple[str, ...],
+) -> DownstreamReport:
+    n_total = sum(r.n_examples for r in per_language.values())
+    n_correct_total = sum(r.n_correct for r in per_language.values())
+    macro_avg = sum(r.accuracy for r in per_language.values()) / len(per_language)
+    return DownstreamReport(
+        task=task,
+        checkpoint=str(checkpoint_path),
+        tokenizer=str(tokenizer_path),
+        overall_accuracy=round(n_correct_total / n_total, 4) if n_total else 0.0,
+        macro_avg_accuracy=round(macro_avg, 4),
+        n_examples=n_total,
+        per_language=per_language,
+        label_words=labels,
+        chance_accuracy=round(1.0 / len(labels), 4),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Loaders
+# ---------------------------------------------------------------------------
+
+
+def load_sentiment_examples(eval_dir: Path) -> dict[str, list[SentimentExample]]:
+    """Loads `{language}.jsonl` files from `eval_dir` (see
+    `data/eval/sentiment/README.md` for provenance and format)."""
+    by_language: dict[str, list[SentimentExample]] = {}
+    for path in sorted(Path(eval_dir).glob("*.jsonl")):
+        examples = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            examples.append(SentimentExample(text=row["text"], label=row["label"]))
+        if examples:
+            by_language[path.stem] = examples
+    return by_language
+
+
+def load_nli_examples(eval_dir: Path) -> dict[str, list[NLIExample]]:
+    """Loads `{language}.jsonl` files from `eval_dir/nli/`. Each line must
+    have `premise`, `hypothesis`, and `label` (yes/maybe/no)."""
+    by_language: dict[str, list[NLIExample]] = {}
+    for path in sorted(Path(eval_dir).glob("*.jsonl")):
+        examples = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            examples.append(
+                NLIExample(
+                    premise=row["premise"],
+                    hypothesis=row["hypothesis"],
+                    label=row["label"],
+                )
+            )
+        if examples:
+            by_language[path.stem] = examples
+    return by_language
+
+
+def load_topic_examples(eval_dir: Path) -> dict[str, list[SentimentExample]]:
+    """Loads `{language}.jsonl` files from `eval_dir/topic/`. Each line must
+    have `text` and `label` (politics/sports/technology/culture/science)."""
+    by_language: dict[str, list[SentimentExample]] = {}
+    for path in sorted(Path(eval_dir).glob("*.jsonl")):
+        examples = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            row = json.loads(line)
+            examples.append(SentimentExample(text=row["text"], label=row["label"]))
+        if examples:
+            by_language[path.stem] = examples
+    return by_language
+
+
+# ---------------------------------------------------------------------------
+# Backward-compat sentiment wrapper (kept intact for existing callers)
+# ---------------------------------------------------------------------------
+
+
+def _evaluate_language(
+    model: DecoderOnlyTransformer,
+    tokenizer: spm.SentencePieceProcessor,
+    examples: list[SentimentExample],
+    language: str,
+    device: torch.device,
+    max_len: int,
+) -> LanguageSentimentResult:
+    return _evaluate_classification_language(
+        model=model,
+        tokenizer=tokenizer,
+        examples=examples,
+        labels=LABELS,
+        prompt_fn=lambda ex: PROMPT_TEMPLATE.format(text=ex.text),
+        gold_fn=lambda ex: ex.label,
+        language=language,
+        device=device,
+        max_len=max_len,
     )
 
 
@@ -194,16 +352,12 @@ def evaluate_downstream_sentiment(
     if not by_language:
         raise ValueError(
             f"No sentiment eval examples found under {eval_dir}. "
-            "Expected one {{language}}.jsonl file per language."
+            "Expected one {language}.jsonl file per language."
         )
 
-    checkpoint = torch.load(checkpoint_path, map_location=device, weights_only=False)
-    model_config = ModelConfig(**checkpoint["config"]["model_config"])
-    model = DecoderOnlyTransformer(model_config).to(device)
-    load_checkpoint(checkpoint_path, model, map_location=device)
-    model.eval()
-
-    tokenizer = spm.SentencePieceProcessor(model_file=str(tokenizer_path))
+    model, tokenizer, model_config = _load_model_and_tokenizer(
+        checkpoint_path, tokenizer_path, device
+    )
     torch_device = torch.device(device)
     max_len = model_config.max_seq_len
 
@@ -211,19 +365,94 @@ def evaluate_downstream_sentiment(
         lang: _evaluate_language(model, tokenizer, examples, lang, torch_device, max_len)
         for lang, examples in sorted(by_language.items())
     }
+    return _build_report("sentiment_classification", checkpoint_path, tokenizer_path, per_language, LABELS)
 
-    n_total = sum(r.n_examples for r in per_language.values())
-    n_correct_total = sum(r.n_correct for r in per_language.values())
-    macro_avg = sum(r.accuracy for r in per_language.values()) / len(per_language)
 
-    return DownstreamReport(
-        task="sentiment_classification",
-        checkpoint=str(checkpoint_path),
-        tokenizer=str(tokenizer_path),
-        overall_accuracy=round(n_correct_total / n_total, 4) if n_total else 0.0,
-        macro_avg_accuracy=round(macro_avg, 4),
-        n_examples=n_total,
-        per_language=per_language,
-        label_words=LABELS,
-        chance_accuracy=round(1.0 / len(LABELS), 4),
+# ---------------------------------------------------------------------------
+# NLI evaluation
+# ---------------------------------------------------------------------------
+
+
+def evaluate_downstream_nli(
+    checkpoint_path: Path,
+    tokenizer_path: Path,
+    eval_dir: Path = Path("data/eval/nli"),
+    device: str = "cpu",
+) -> DownstreamReport:
+    """Zero-shot NLI: score each of yes/maybe/no as a continuation of
+    '{premise}\\nHypothesis: {hypothesis}\\nEntailment:'."""
+    by_language = load_nli_examples(eval_dir)
+    if not by_language:
+        raise ValueError(
+            f"No NLI eval examples found under {eval_dir}. "
+            "Expected one {language}.jsonl file per language."
+        )
+
+    model, tokenizer, model_config = _load_model_and_tokenizer(
+        checkpoint_path, tokenizer_path, device
+    )
+    torch_device = torch.device(device)
+    max_len = model_config.max_seq_len
+
+    per_language = {
+        lang: _evaluate_classification_language(
+            model=model,
+            tokenizer=tokenizer,
+            examples=examples,
+            labels=NLI_LABELS,
+            prompt_fn=lambda ex: NLI_PROMPT_TEMPLATE.format(
+                premise=ex.premise, hypothesis=ex.hypothesis
+            ),
+            gold_fn=lambda ex: ex.label,
+            language=lang,
+            device=torch_device,
+            max_len=max_len,
+        )
+        for lang, examples in sorted(by_language.items())
+    }
+    return _build_report("nli", checkpoint_path, tokenizer_path, per_language, NLI_LABELS)
+
+
+# ---------------------------------------------------------------------------
+# Topic classification evaluation
+# ---------------------------------------------------------------------------
+
+
+def evaluate_downstream_topic(
+    checkpoint_path: Path,
+    tokenizer_path: Path,
+    eval_dir: Path = Path("data/eval/topic"),
+    device: str = "cpu",
+) -> DownstreamReport:
+    """Zero-shot topic classification: score each of politics/sports/technology/
+    culture/science as a continuation of '{text}\\nTopic:'."""
+    by_language = load_topic_examples(eval_dir)
+    if not by_language:
+        raise ValueError(
+            f"No topic eval examples found under {eval_dir}. "
+            "Expected one {language}.jsonl file per language."
+        )
+
+    model, tokenizer, model_config = _load_model_and_tokenizer(
+        checkpoint_path, tokenizer_path, device
+    )
+    torch_device = torch.device(device)
+    max_len = model_config.max_seq_len
+
+    per_language = {
+        lang: _evaluate_classification_language(
+            model=model,
+            tokenizer=tokenizer,
+            examples=examples,
+            labels=TOPIC_LABELS,
+            prompt_fn=lambda ex: TOPIC_PROMPT_TEMPLATE.format(text=ex.text),
+            gold_fn=lambda ex: ex.label,
+            language=lang,
+            device=torch_device,
+            max_len=max_len,
+        )
+        for lang, examples in sorted(by_language.items())
+    }
+    return _build_report(
+        "topic_classification", checkpoint_path, tokenizer_path, per_language, TOPIC_LABELS
     )
