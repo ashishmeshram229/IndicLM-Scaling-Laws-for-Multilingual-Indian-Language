@@ -124,3 +124,69 @@ class SemanticDeduplicator:
             seen_indices.append(i)
 
         return docs
+
+
+@dataclass
+class EmbeddingDeduplicator:
+    """GPU-accelerated semantic deduplication using multilingual-e5-small.
+
+    Encodes all candidate documents, then greedily removes any document whose
+    cosine similarity to a previously-kept document exceeds `threshold`.
+    Runs at ~7,000 texts/s on a V100 (len 64); adjust batch_size for memory.
+
+    Requires: pip install sentence-transformers
+    """
+
+    model_name: str = "intfloat/multilingual-e5-small"
+    threshold: float = 0.90
+    batch_size: int = 512
+    device: str = "cuda"
+
+    def process(self, docs: list[Document]) -> list[Document]:
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError as e:
+            raise ImportError("pip install sentence-transformers") from e
+
+        import torch
+
+        candidates = [d for d in docs if not d.is_duplicate and not d.is_near_duplicate]
+        if len(candidates) < 2:
+            return docs
+
+        model = SentenceTransformer(self.model_name, device=self.device)
+        # e5 models are trained with "passage: " prefix for asymmetric retrieval
+        texts = [f"passage: {d.text[:512]}" for d in candidates]
+
+        embeddings: torch.Tensor = model.encode(  # type: ignore[assignment]
+            texts,
+            batch_size=self.batch_size,
+            convert_to_tensor=True,
+            normalize_embeddings=True,
+            show_progress_bar=True,
+            device=self.device,
+        )  # [N, D], unit-normed so cosine sim == dot product
+
+        N, D = embeddings.shape
+        # Pre-allocate keeper buffer to avoid growing a Python list of tensors
+        keeper_buf = torch.empty(N, D, device=embeddings.device, dtype=embeddings.dtype)
+        keeper_idx: list[int] = []  # maps keeper_buf row → candidates index
+        kept_count = 0
+
+        for i in range(N):
+            if candidates[i].is_near_duplicate:
+                continue
+            if kept_count > 0:
+                # [kept_count] dot products — fully on GPU
+                sims = embeddings[i] @ keeper_buf[:kept_count].T  # [kept_count]
+                max_sim = float(sims.max())
+                if max_sim >= self.threshold:
+                    best = int(sims.argmax())
+                    candidates[i].is_near_duplicate = True
+                    candidates[i].dedup_cluster = candidates[keeper_idx[best]].document_id
+                    continue
+            keeper_buf[kept_count] = embeddings[i]
+            keeper_idx.append(i)
+            kept_count += 1
+
+        return docs

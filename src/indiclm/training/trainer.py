@@ -1,12 +1,6 @@
-"""The real training engine: gradient accumulation, AdamW, cosine decay
-with warmup, gradient clipping, checkpointing/resume, periodic evaluation,
-and structured per-step metrics logging (loss, lr, grad_norm, tokens_seen,
-tokens/sec, step_time, data_loading_time).
-
-BF16/FP16: this milestone runs CPU-only (see docs/architecture.md); mixed
-precision is wired via `torch.autocast` and only activates when `device`
-is "cuda" and `precision` requests it, so the code path is exercised
-honestly rather than claimed without hardware to validate it.
+"""Training engine: gradient accumulation, AdamW, cosine decay with warmup,
+gradient clipping, fp16 AMP (V100-safe, no bf16), DDP, checkpointing/resume,
+periodic evaluation, W&B logging, and structured per-step metrics.
 """
 
 from __future__ import annotations
@@ -20,6 +14,7 @@ from typing import Any
 import torch
 from torch.utils.data import DataLoader
 
+from indiclm.distributed import get_local_rank, is_main_process, wrap_ddp
 from indiclm.models.config import ModelConfig
 from indiclm.models.transformer import DecoderOnlyTransformer
 from indiclm.monitoring.anomaly import AnomalyDetector
@@ -44,9 +39,13 @@ class TrainingConfig:
     checkpoint_every: int = 100
     log_every: int = 10
     device: str = "cpu"
-    precision: str = "fp32"  # "fp32" | "bf16" (bf16 only takes effect on cuda)
+    # V100 is compute capability 7.0 — supports fp16/AMP but NOT bf16.
+    # "fp16" activates torch.amp.autocast + GradScaler on CUDA; "fp32" is CPU-safe.
+    precision: str = "fp32"  # "fp32" | "fp16"
     seed: int = 0
     resume_from: Path | None = None
+    wandb_project: str | None = None
+    wandb_run_name: str | None = None
 
 
 @dataclass
@@ -71,6 +70,11 @@ def _grad_norm(model: torch.nn.Module) -> float:
     return total**0.5
 
 
+def _unwrap(model: torch.nn.Module) -> torch.nn.Module:
+    """Return the underlying module, stripping DDP wrapper if present."""
+    return getattr(model, "module", model)
+
+
 def train(
     model_config: ModelConfig,
     train_config: TrainingConfig,
@@ -79,7 +83,14 @@ def train(
 ) -> TrainingResult:
     torch.manual_seed(train_config.seed)
     device = torch.device(train_config.device)
+
     model = DecoderOnlyTransformer(model_config).to(device)
+
+    # DDP: wrap if WORLD_SIZE > 1 (set by torchrun / SLURM srun --ntasks-per-node)
+    local_rank = get_local_rank()
+    device_ids = [local_rank] if device.type == "cuda" else None
+    model = wrap_ddp(model, device_ids=device_ids)
+
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=train_config.learning_rate, weight_decay=train_config.weight_decay
     )
@@ -88,10 +99,34 @@ def train(
     )
     detector = AnomalyDetector()
 
+    # fp16 AMP — GradScaler is a no-op when enabled=False (fp32 / CPU path)
+    use_fp16 = train_config.precision == "fp16" and device.type == "cuda"
+    scaler = torch.amp.GradScaler("cuda", enabled=use_fp16)
+    autocast_ctx = torch.amp.autocast(device.type, dtype=torch.float16, enabled=use_fp16)
+
+    # W&B (optional — only initialised on rank 0 to avoid duplicate runs)
+    _wandb = None
+    if train_config.wandb_project and is_main_process():
+        try:
+            import wandb as _wb
+            _wandb = _wb
+            _wb.init(
+                project=train_config.wandb_project,
+                name=train_config.wandb_run_name,
+                config={
+                    **{k: str(v) for k, v in model_config.__dict__.items()},
+                    **{k: str(v) for k, v in train_config.__dict__.items()},
+                },
+            )
+        except ImportError:
+            log.warning("wandb_not_installed", note="pip install wandb to enable W&B logging")
+
     step = 0
     tokens_seen = 0
     if train_config.resume_from is not None and Path(train_config.resume_from).exists():
-        state = load_checkpoint(train_config.resume_from, model, optimizer, scheduler)
+        state = load_checkpoint(
+            train_config.resume_from, _unwrap(model), optimizer, scheduler, scaler=scaler
+        )
         step = state["step"]
         tokens_seen = state["tokens_seen"]
         log.info("resumed_from_checkpoint", path=str(train_config.resume_from), step=step)
@@ -100,14 +135,9 @@ def train(
     output_dir.mkdir(parents=True, exist_ok=True)
     metrics_path = output_dir / "metrics.jsonl"
     checkpoints_dir = output_dir / "checkpoints"
-    # Held open for the whole training run (appended to on every logged
-    # step, closed explicitly at the end of this function) -- a `with`
-    # block doesn't fit this usage pattern, hence noqa rather than a
-    # restructure.
-    metrics_file = open(metrics_path, "a", encoding="utf-8")  # noqa: SIM115
 
-    use_bf16 = train_config.precision == "bf16" and device.type == "cuda"
-    autocast_ctx = torch.autocast(device_type=device.type, dtype=torch.bfloat16, enabled=use_bf16)
+    # Opened for the whole run (appended per logged step, closed at end)
+    metrics_file = open(metrics_path, "a", encoding="utf-8")  # noqa: SIM115
 
     history: list[dict[str, Any]] = []
     train_iter = iter(train_loader)
@@ -121,7 +151,7 @@ def train(
         accumulated_loss = 0.0
         data_time = 0.0
 
-        for micro_step in range(train_config.gradient_accumulation_steps):
+        for _ in range(train_config.gradient_accumulation_steps):
             t0 = time.time()
             try:
                 batch = next(train_iter)
@@ -135,14 +165,17 @@ def train(
             with autocast_ctx:
                 _, loss = model(inputs, targets)
                 loss = loss / train_config.gradient_accumulation_steps
-            loss.backward()
+            scaler.scale(loss).backward()
             accumulated_loss += loss.item()
             tokens_seen += inputs.numel()
 
+        # Unscale before clipping so clip operates on true gradient magnitudes
+        scaler.unscale_(optimizer)
         grad_norm = torch.nn.utils.clip_grad_norm_(
             model.parameters(), train_config.grad_clip
         ).item()
-        optimizer.step()
+        scaler.step(optimizer)
+        scaler.update()
         scheduler.step()
 
         last_train_loss = accumulated_loss
@@ -155,7 +188,7 @@ def train(
             step_time, 1e-9
         )
 
-        record = {
+        record: dict[str, Any] = {
             "step": step,
             "loss": round(accumulated_loss, 6),
             "learning_rate": scheduler.get_last_lr()[0],
@@ -165,23 +198,46 @@ def train(
             "step_time_sec": round(step_time, 4),
             "data_loading_time_sec": round(data_time, 4),
         }
+        if use_fp16:
+            record["loss_scale"] = scaler.get_scale()
 
-        if val_loader is not None and (step % train_config.eval_every == 0 or step == train_config.max_steps - 1):
+        if val_loader is not None and (
+            step % train_config.eval_every == 0 or step == train_config.max_steps - 1
+        ):
             record["val_loss"] = evaluate_loss(model, val_loader, device)
             model.train()
 
         history.append(record)
-        metrics_file.write(json.dumps(record) + "\n")
-        metrics_file.flush()
+
+        # Only rank 0 writes metrics/checkpoints to avoid duplicate I/O
+        if is_main_process():
+            metrics_file.write(json.dumps(record) + "\n")
+            metrics_file.flush()
 
         if step % train_config.log_every == 0:
             log.info("train_step", **record)
 
-        if train_config.checkpoint_every and step > 0 and step % train_config.checkpoint_every == 0:
+        if _wandb is not None and is_main_process():
+            _wandb.log(record, step=step)
+            if device.type == "cuda":
+                _wandb.log({"gpu_memory_gb": torch.cuda.memory_allocated() / 1e9}, step=step)
+
+        if (
+            is_main_process()
+            and train_config.checkpoint_every
+            and step > 0
+            and step % train_config.checkpoint_every == 0
+        ):
             ckpt_path = checkpoints_dir / f"step_{step}.pt"
             save_checkpoint(
-                ckpt_path, model, optimizer, scheduler, step, tokens_seen,
+                ckpt_path,
+                _unwrap(model),
+                optimizer,
+                scheduler,
+                step,
+                tokens_seen,
                 config_to_json({"model_config": model_config, "train_config": train_config}),
+                scaler=scaler,
             )
 
         step += 1
@@ -193,11 +249,18 @@ def train(
     if val_loader is not None:
         final_val_loss = evaluate_loss(model, val_loader, device)
 
-    final_ckpt = checkpoints_dir / "final.pt"
-    save_checkpoint(
-        final_ckpt, model, optimizer, scheduler, step, tokens_seen,
-        config_to_json({"model_config": model_config, "train_config": train_config}),
-    )
+    if is_main_process():
+        final_ckpt = checkpoints_dir / "final.pt"
+        save_checkpoint(
+            final_ckpt,
+            _unwrap(model),
+            optimizer,
+            scheduler,
+            step,
+            tokens_seen,
+            config_to_json({"model_config": model_config, "train_config": train_config}),
+            scaler=scaler,
+        )
 
     mean_tps = tokens_seen / max(total_time, 1e-9)
     result = TrainingResult(
@@ -209,8 +272,13 @@ def train(
         mean_tokens_per_sec=round(mean_tps, 2),
         history=history,
     )
-    (output_dir / "training_result.json").write_text(json.dumps(result.to_dict(), indent=2))
-    log.info("training_complete", **{k: v for k, v in result.to_dict().items() if k != "history"})
+    if is_main_process():
+        (output_dir / "training_result.json").write_text(json.dumps(result.to_dict(), indent=2))
+        log.info(
+            "training_complete", **{k: v for k, v in result.to_dict().items() if k != "history"}
+        )
+    if _wandb is not None:
+        _wandb.finish()
     return result
 
 

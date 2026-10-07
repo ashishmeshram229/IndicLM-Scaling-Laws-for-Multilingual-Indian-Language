@@ -1,14 +1,22 @@
 profile: cluster
 device: cuda
-mixed_precision: bf16
-strategy: fsdp
+# V100 = compute capability 7.0 — fp16/AMP only. bf16 requires Ampere (cc 8.0+).
+mixed_precision: fp16
+# DDP for single-node multi-GPU (up to 8× V100 on WSAI-04). FSDP requires
+# additional setup and is not validated on this cluster.
+strategy: ddp
 launcher: slurm
-max_model_params: null   # bounded by allocated nodes, not this file
-max_seq_len: 4096
-micro_batch_size: 16
-gradient_accumulation_steps: 1
-num_workers: 16
-notes: >
-  Design target only in this milestone. Do not report cluster throughput
-  or scale claims until an actual Slurm run has been executed and logged
-  in experiments/manifests/.
+partition: public
+qos: gpu1
+constraint: v100
+max_gpus_per_user: 1
+max_wall_time: "2-00:00:00"
+node_local_disk: /tmp        # ~394 GB on WSAI-04; stage hot data here
+nfs_storage: /storage_server/da25m016/indiclm
+max_model_params: null       # bounded by GPU memory, not this file
+max_seq_len: 2048
+micro_batch_size: 32
+gradient_accumulation_steps: 4   # effective batch = 128
+num_workers: 8
+cpus_per_task: 8
+mem_gb: 64

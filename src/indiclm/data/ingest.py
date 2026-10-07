@@ -1,11 +1,10 @@
 """Ingestion: read raw text sources into `Document` objects.
 
-The reference ingestion here reads plain-text files (one sentence/paragraph
-per line) under a source directory, which is what our small bootstrap
-corpus under `data/raw/` uses. Real deployments would add ingestors for
-WARC/Common Crawl, Parquet dumps, etc. — those slot in alongside this one
-without touching downstream pipeline stages, since everything downstream
-only depends on the `Document` schema.
+Two ingestors are provided:
+  - `ingest_text_directory` — plain .txt files (bootstrap / dev corpus)
+  - `ingest_wikipedia_parquet` — HuggingFace Wikipedia parquet dumps
+    (production corpus; reads the parquet files downloaded by
+    scripts/download_corpus.py, streams per-language with an optional cap)
 """
 
 from __future__ import annotations
@@ -51,3 +50,69 @@ def ingest_text_directory(
             yield Document(text=line, source=source, license=doc_license)
             n += 1
         log.info("ingested_file", path=str(path), source=source, license=doc_license, documents=n)
+
+
+WIKI_LICENSE = "CC BY-SA 3.0 / GFDL (wikimedia/wikipedia dump 20231101)"
+
+# Per-language document caps to keep memory bounded in pipeline.py.
+# English Wikipedia has 6.4M articles — loading all would require ~60GB RAM.
+# Other languages are small enough to process in full.
+_WIKI_DEFAULT_CAPS: dict[str, int] = {
+    "en": 500_000,
+}
+
+
+def ingest_wikipedia_parquet(
+    raw_wiki_dir: Path,
+    language: str,
+    max_docs: int | None = None,
+    min_text_length: int = 100,
+) -> Iterator[Document]:
+    """Yield Documents from a per-language Wikipedia parquet file.
+
+    Expects the layout written by scripts/download_corpus.py:
+        raw_wiki_dir/<lang>/wiki.parquet
+
+    The parquet file has columns: id, url, title, text.
+    Each Wikipedia article becomes one Document (not split by paragraph);
+    downstream quality / dedup stages handle further cleaning.
+
+    max_docs defaults to _WIKI_DEFAULT_CAPS[language] when set, otherwise
+    all documents are yielded. English is capped at 500K by default to
+    avoid OOM on the CPU pipeline node (110GB RAM limit).
+    """
+    import pyarrow.parquet as pq
+
+    parquet_path = Path(raw_wiki_dir) / language / "wiki.parquet"
+    if not parquet_path.exists():
+        raise FileNotFoundError(f"Parquet not found: {parquet_path}")
+
+    cap = max_docs if max_docs is not None else _WIKI_DEFAULT_CAPS.get(language)
+    source = f"wikipedia/{language}"
+    n = 0
+
+    pf = pq.ParquetFile(parquet_path)
+    for batch in pf.iter_batches(columns=["id", "text"], batch_size=10_000):
+        for row in zip(batch["id"].to_pylist(), batch["text"].to_pylist()):
+            wiki_id, text = row
+            text = text.strip() if text else ""
+            if len(text) < min_text_length:
+                continue
+            doc = Document(
+                text=text,
+                source=source,
+                license=WIKI_LICENSE,
+                document_id=f"wiki_{language}_{wiki_id}",
+            )
+            yield doc
+            n += 1
+            if cap is not None and n >= cap:
+                log.info(
+                    "wiki_cap_reached",
+                    language=language,
+                    cap=cap,
+                    note="increase max_docs to ingest more",
+                )
+                return
+
+    log.info("ingested_wikipedia_parquet", language=language, documents=n, path=str(parquet_path))

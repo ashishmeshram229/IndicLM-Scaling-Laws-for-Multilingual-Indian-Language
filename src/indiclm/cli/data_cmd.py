@@ -17,20 +17,52 @@ console = Console()
 
 @app.command()
 def prepare(
-    raw_dir: Path = typer.Option(Path("data/raw"), help="Directory of raw .txt sources."),
+    raw_dir: Path = typer.Option(Path("data/raw"), help="Directory of raw .txt sources (txt mode)."),
     output_dir: Path = typer.Option(Path("data/processed"), help="Where to write shards + stats."),
     dataset_version: str = typer.Option("v1"),
     min_quality_score: float = typer.Option(0.5),
     enable_quality_filter: bool = typer.Option(True),
     enable_exact_dedup: bool = typer.Option(True),
     enable_near_dedup: bool = typer.Option(True),
+    source_format: str = typer.Option(
+        "txt",
+        help="Source format: 'txt' (bootstrap) or 'wikipedia-parquet' (production).",
+    ),
+    raw_wiki_dir: Path | None = typer.Option(
+        None,
+        help="Path to raw_wiki/ directory from download_corpus.py (wikipedia-parquet mode).",
+    ),
+    languages: str = typer.Option(
+        "hi,mr,bn,ta,te,kn,ml,gu,pa,en",
+        help="Comma-separated language codes to process (wikipedia-parquet mode).",
+    ),
+    max_docs_per_language: int | None = typer.Option(
+        None,
+        help="Cap docs per language. Defaults: en=500K, others=unlimited. Set 0 for no cap.",
+    ),
 ) -> None:
     """Run the full pipeline: ingest -> langid -> quality -> dedup -> shard."""
     configure_logging()
+
+    if source_format == "wikipedia-parquet" and raw_wiki_dir is None:
+        console.print("[red]--raw-wiki-dir is required when --source-format=wikipedia-parquet[/red]")
+        raise typer.Exit(1)
+
+    # max_docs=0 means "no cap" (override the default English cap)
+    effective_max_docs = None if max_docs_per_language == 0 else max_docs_per_language
+
     cfg = DataPipelineConfig(
-        raw_dir=raw_dir, output_dir=output_dir, dataset_version=dataset_version,
-        min_quality_score=min_quality_score, enable_quality_filter=enable_quality_filter,
-        enable_exact_dedup=enable_exact_dedup, enable_near_dedup=enable_near_dedup,
+        raw_dir=raw_dir,
+        output_dir=output_dir,
+        dataset_version=dataset_version,
+        min_quality_score=min_quality_score,
+        enable_quality_filter=enable_quality_filter,
+        enable_exact_dedup=enable_exact_dedup,
+        enable_near_dedup=enable_near_dedup,
+        source_format=source_format,
+        raw_wiki_dir=raw_wiki_dir,
+        languages=[l.strip() for l in languages.split(",")],
+        max_docs_per_language=effective_max_docs,
     )
     stats = run_pipeline(cfg)
     console.print(f"[green]Pipeline complete.[/green] Stats written to {output_dir}/pipeline_stats.json")
