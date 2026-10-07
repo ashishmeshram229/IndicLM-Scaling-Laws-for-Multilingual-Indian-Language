@@ -195,7 +195,7 @@ def _require_model() -> tuple[DecoderOnlyTransformer, spm.SentencePieceProcessor
 
 
 def _encode_prompt(tokenizer: spm.SentencePieceProcessor, prompt: str, budget: int) -> list[int]:
-    ids: list[int] = tokenizer.encode(prompt, out_type=int)  # type: ignore[assignment]
+    ids: list[int] = tokenizer.encode(prompt, out_type=int)
     if len(ids) >= budget:
         ids = ids[-(budget - 1):]
     return ids
