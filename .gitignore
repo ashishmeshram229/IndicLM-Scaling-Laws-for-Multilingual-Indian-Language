@@ -15,9 +15,11 @@ htmlcov/
 # license-clean input) ARE committed — everything else is regenerated
 # from them by `indiclm data prepare` / `indiclm tokenizer train`, so
 # committing the regenerated output would just be redundant, derived state.
+data/raw_wiki/
 data/processed*/
 data/shards/
 data/tokenizer_v1/
+data/tokenizer_v2/
 data/tokenizer_unigram/
 *.bin
 *.safetensors
