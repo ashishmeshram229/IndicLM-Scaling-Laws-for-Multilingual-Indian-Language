@@ -69,9 +69,6 @@ else
         --output-dir "${OUTPUT_DIR}" \
         --dataset-version "${VERSION}" \
         --languages "hi,mr,bn,ta,te,kn,ml,gu,pa,en" \
-        --enable-exact-dedup true \
-        --enable-near-dedup true \
-        --enable-quality-filter true \
         --min-quality-score 0.5
 
     echo ""
