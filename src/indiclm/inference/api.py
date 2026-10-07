@@ -195,7 +195,7 @@ def _require_model() -> tuple[DecoderOnlyTransformer, spm.SentencePieceProcessor
 
 
 def _encode_prompt(tokenizer: spm.SentencePieceProcessor, prompt: str, budget: int) -> list[int]:
-    ids = tokenizer.encode(prompt, out_type=int)
+    ids: list[int] = tokenizer.encode(prompt, out_type=int)  # type: ignore[assignment]
     if len(ids) >= budget:
         ids = ids[-(budget - 1):]
     return ids
@@ -290,7 +290,7 @@ async def generate_stream(
                         logits[logits < v[:, [-1]]] = float("-inf")
                     next_token = torch.multinomial(torch.softmax(logits, dim=-1), 1)
                     x = torch.cat([x, next_token], dim=1)
-                    token_text = tokenizer.decode([next_token.item()])
+                    token_text = tokenizer.decode([int(next_token.item())])
                     yield f"data: {json.dumps({'token': token_text, 'token_id': next_token.item()})}\n\n"
                     await asyncio.sleep(0)  # yield control to the event loop
 

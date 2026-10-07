@@ -89,7 +89,7 @@ def train(
     # DDP: wrap if WORLD_SIZE > 1 (set by torchrun / SLURM srun --ntasks-per-node)
     local_rank = get_local_rank()
     device_ids = [local_rank] if device.type == "cuda" else None
-    model = wrap_ddp(model, device_ids=device_ids)
+    model = wrap_ddp(model, device_ids=device_ids)  # type: ignore[assignment]
 
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=train_config.learning_rate, weight_decay=train_config.weight_decay

@@ -102,7 +102,7 @@ warn_return_any = false
 # optional extra (see `tracking` in [project.optional-dependencies]) that
 # isn't installed by default, so it's expected to be unresolvable here.
 [[tool.mypy.overrides]]
-module = ["datasketch.*", "mlflow.*", "sklearn.*", "psutil", "sentence_transformers.*", "wandb.*", "prometheus_client.*"]
+module = ["datasketch.*", "mlflow.*", "sklearn.*", "psutil", "sentence_transformers.*", "wandb.*", "prometheus_client.*", "pyarrow.*", "sentencepiece.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

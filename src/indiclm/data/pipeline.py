@@ -67,7 +67,7 @@ class DataPipelineConfig:
     max_docs_per_language: int | None = None  # None = use per-language defaults
 
 
-def _process_docs(docs: list[Document], config: DataPipelineConfig) -> PipelineStats:
+def _process_docs(docs: list[Document], config: DataPipelineConfig) -> tuple[PipelineStats, list[Document]]:
     """Run filter → dedup → stats on an already-ingested doc list."""
     langid = RuleBasedLanguageIdentifier()
     quality_scorer = RuleBasedQualityScorer()

@@ -158,7 +158,7 @@ class EmbeddingDeduplicator:
         # e5 models are trained with "passage: " prefix for asymmetric retrieval
         texts = [f"passage: {d.text[:512]}" for d in candidates]
 
-        embeddings: torch.Tensor = model.encode(  # type: ignore[assignment]
+        embeddings: torch.Tensor = model.encode(
             texts,
             batch_size=self.batch_size,
             convert_to_tensor=True,
