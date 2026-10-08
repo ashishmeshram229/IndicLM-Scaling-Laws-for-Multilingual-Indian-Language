@@ -83,7 +83,7 @@ else
     echo ""
     echo "Training 32K BPE tokenizer on processed corpus..."
     indiclm tokenizer train \
-        --data-dir "${OUTPUT_DIR}" \
+        --input-dir "${OUTPUT_DIR}" \
         --output-dir "${TOKENIZER_DIR}" \
         --vocab-size 32000 \
         --model-type bpe
