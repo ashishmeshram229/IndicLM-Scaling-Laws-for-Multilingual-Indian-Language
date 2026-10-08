@@ -172,6 +172,101 @@ def scaling_sweep(
     console.print(f"Plot: {out_dir / 'loss_vs_params.png'}")
 
 
+@app.command("aggregate-scaling")
+def aggregate_scaling(
+    manifests_dir: Path = typer.Option(Path("experiments/manifests")),
+    output_dir: Path = typer.Option(Path("experiments/scaling_results")),
+    start_exp: int = typer.Option(13, help="First EXP number to include (inclusive)."),
+    end_exp: int = typer.Option(999, help="Last EXP number to include (inclusive)."),
+) -> None:
+    """Fit the scaling law from pre-run experiment manifests (no training).
+
+    Reads EXP-{start_exp} through EXP-{end_exp} manifests, reconstructs
+    ScalingObservations, fits L(N,D), and writes observations.json,
+    scaling_law_fit.json, seed_aggregation.json, and loss_vs_params.png to
+    output_dir. Intended as the aggregation step after the SLURM sweep."""
+    configure_logging()
+
+    observations: list[ScalingObservation] = []
+    skipped = 0
+    for exp_num in range(start_exp, end_exp + 1):
+        exp_id = f"EXP-{exp_num:03d}"
+        manifest_path = Path(manifests_dir) / exp_id / "manifest.json"
+        if not manifest_path.exists():
+            skipped += 1
+            continue
+        manifest = json.loads(manifest_path.read_text())
+        if manifest.get("final_val_loss") is None or manifest.get("training_tokens") is None:
+            skipped += 1
+            continue
+
+        model_cfg = manifest.get("config", {}).get("model", {})
+        d_model = model_cfg.get("d_model")
+        n_layers = model_cfg.get("n_layers")
+        n_heads = model_cfg.get("n_heads")
+        n_kv_heads = model_cfg.get("n_kv_heads") or n_heads
+        if not all([d_model, n_layers, n_heads]):
+            console.print(f"[yellow]Skipping {exp_id}: missing model config fields[/yellow]")
+            skipped += 1
+            continue
+
+        # Non-embedding parameter count (per-layer: attn + SwiGLU-FFN + 2 RMSNorm)
+        head_dim = d_model // n_heads
+        attn = 2 * d_model * d_model + 2 * d_model * (n_kv_heads * head_dim)
+        d_ff = ((int(8 * d_model / 3) + 31) // 32) * 32
+        ffn = 3 * d_model * d_ff
+        norm = 2 * d_model
+        n_non_emb = n_layers * (attn + ffn + norm) + d_model  # final layer norm
+
+        vocab_size = model_cfg.get("vocab_size", 32000)
+        n_total = vocab_size * d_model + n_non_emb
+
+        obs = ScalingObservation(
+            run_id=exp_id,
+            n_params=n_total,
+            n_params_non_embedding=n_non_emb,
+            d_tokens=int(manifest["training_tokens"]),
+            final_val_loss=float(manifest["final_val_loss"]),
+            mean_tokens_per_sec=0.0,
+            seed=int(manifest.get("seed", 0)),
+        )
+        observations.append(obs)
+
+    console.print(f"Loaded {len(observations)} observations ({skipped} skipped).")
+    if not observations:
+        console.print("[red]No observations found — check manifests_dir and EXP range.[/red]")
+        raise typer.Exit(1)
+
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    (output_dir / "observations.json").write_text(
+        json.dumps([o.to_dict() for o in observations], indent=2)
+    )
+
+    grid_agg = aggregate_by_grid_point(observations)
+    (output_dir / "seed_aggregation.json").write_text(json.dumps(grid_agg, indent=2))
+
+    fit = fit_scaling_law(observations)
+    fit["exp_range"] = f"EXP-{start_exp:03d}..EXP-{min(end_exp, start_exp + len(observations) - 1):03d}"
+    (output_dir / "scaling_law_fit.json").write_text(json.dumps(fit, indent=2))
+
+    try:
+        plot_scaling_curves(observations, fit, output_dir / "loss_vs_params.png")
+        console.print(f"Plot: {output_dir / 'loss_vs_params.png'}")
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[yellow]Plot failed (non-fatal): {exc}[/yellow]")
+
+    console.print(f"[green]Scaling aggregation complete.[/green] Fit: {fit.get('fit_status')}")
+    if fit.get("fit_status") == "ok":
+        console.print(
+            f"  alpha={fit['alpha']:.4f} ± {fit['alpha_stderr']:.4f}  "
+            f"beta={fit['beta']:.4f} ± {fit['beta_stderr']:.4f}  "
+            f"R²={fit['r_squared']:.4f}"
+        )
+    console.print(f"Results: {output_dir}")
+
+
 @app.command("per-language-analysis")
 def per_language_analysis(
     exp_dir: Path = typer.Option(

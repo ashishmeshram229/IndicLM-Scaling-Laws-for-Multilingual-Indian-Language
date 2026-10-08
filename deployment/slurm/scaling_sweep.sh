@@ -71,6 +71,7 @@ done
 
 # Step 3: Submit aggregation job once all training jobs complete
 ALL_TRAIN_DEPS=$(IFS=:; echo "${TRAIN_JIDS[*]}")
+END_EXP=$(( START_EXP + ${#TRAIN_JIDS[@]} - 1 ))
 echo ""
 echo "Submitting aggregation job (depends on all training jobs)..."
 
@@ -82,16 +83,18 @@ AGG_JID=$(sbatch --parsable \
     --time=02:00:00 \
     --dependency="afterok:${ALL_TRAIN_DEPS}" \
     --output="${LOGS}/aggregate-%j.out" \
+    --error="${LOGS}/aggregate-%j.err" \
     --wrap="
+        set -eo pipefail
         source ${PROJECT}/env/bin/activate
         cd ${PROJECT}
-        python -m indiclm.cli.main experiment scaling-sweep --fit-only \
+        mkdir -p ${PROJECT}/experiments/scaling_results
+        python -m indiclm.cli.main experiment aggregate-scaling \
             --manifests-dir ${PROJECT}/experiments/manifests \
-            --output-dir ${PROJECT}/experiments/scaling_results
-        python -m indiclm.cli.main report generate \
-            --manifests-dir ${PROJECT}/experiments/manifests \
-            --output ${PROJECT}/experiments/reports/scaling_report.md
-        echo 'Aggregation complete.'
+            --output-dir ${PROJECT}/experiments/scaling_results \
+            --start-exp ${START_EXP} \
+            --end-exp ${END_EXP}
+        echo 'Aggregation complete. Results: ${PROJECT}/experiments/scaling_results/'
     "
 )
 
