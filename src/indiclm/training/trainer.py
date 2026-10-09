@@ -120,6 +120,9 @@ def train(
             )
         except ImportError:
             log.warning("wandb_not_installed", note="pip install wandb to enable W&B logging")
+        except Exception as exc:  # noqa: BLE001
+            log.warning("wandb_init_failed", error=str(exc), note="continuing without W&B logging")
+            _wandb = None
 
     step = 0
     tokens_seen = 0
