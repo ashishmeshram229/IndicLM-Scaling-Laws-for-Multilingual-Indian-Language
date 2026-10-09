@@ -68,6 +68,7 @@ def _eval_language(
         total_tokens=EVAL_TOKEN_BUDGET_PER_LANGUAGE,
         alpha=1.0,
         languages=[language],
+        max_docs_per_lang=500,  # 3000-token eval budget needs ~8 docs; 500 is a safe cap
     )
     from torch.utils.data import DataLoader
 

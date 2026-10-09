@@ -146,20 +146,28 @@ def run_experiment(
     tracker.close()
 
     eval_dir = Path(data_cfg.get("eval_dir", "data/eval"))
-    _run_contamination_scan(
-        shards_dir=Path(data_cfg["shards_dir"]),
-        eval_dir=eval_dir,
-        out_path=out_dir / "contamination.json",
-    )
+    if data_cfg.get("run_contamination_scan", False):
+        _run_contamination_scan(
+            shards_dir=Path(data_cfg["shards_dir"]),
+            eval_dir=eval_dir,
+            out_path=out_dir / "contamination.json",
+        )
+    else:
+        (out_dir / "contamination.json").write_text(
+            '{"skipped": true, "reason": "disabled via config (set run_contamination_scan: true to enable)"}',
+            encoding="utf-8",
+        )
 
     final_ckpt = out_dir / "checkpoints" / "final.pt"
     tokenizer_path = Path(data_cfg["tokenizer_path"])
+    eval_device = train_cfg_dict.get("device", "cpu")
     eval_report = evaluate_checkpoint(
         checkpoint_path=final_ckpt,
         shards_dir=Path(data_cfg["shards_dir"]),
         tokenizer_path=tokenizer_path,
         seq_len=data_cfg["seq_len"],
         batch_size=batch_size,
+        device=eval_device,
     )
     (out_dir / "evaluation.json").write_text(json.dumps(eval_report.to_dict(), indent=2))
 

@@ -28,10 +28,25 @@ from indiclm.utils.logging import get_logger
 log = get_logger(__name__)
 
 
-def load_shard_texts(shards_dir: Path) -> dict[str, list[str]]:
+def load_shard_texts(
+    shards_dir: Path,
+    languages: list[str] | None = None,
+    max_docs_per_lang: int | None = None,
+) -> dict[str, list[str]]:
+    """Load text from per-language JSONL shards.
+
+    languages: if set, only load the listed language files (skips the rest
+        entirely rather than loading then filtering — critical for memory when
+        the corpus is large and only one language is needed).
+    max_docs_per_lang: if set, stop reading a shard after this many documents.
+        Use during evaluation to avoid loading millions of docs when only a
+        small eval budget (e.g. 3000 tokens) is actually consumed.
+    """
     texts: dict[str, list[str]] = {}
     for shard_path in sorted(glob.glob(str(Path(shards_dir) / "*.jsonl"))):
         lang = Path(shard_path).stem
+        if languages is not None and lang not in languages:
+            continue
         lang_texts = []
         with open(shard_path, encoding="utf-8") as f:
             for line in f:
@@ -41,6 +56,8 @@ def load_shard_texts(shards_dir: Path) -> dict[str, list[str]]:
                 text = json.loads(line).get("text", "")
                 if text:
                     lang_texts.append(text)
+                    if max_docs_per_lang is not None and len(lang_texts) >= max_docs_per_lang:
+                        break
         if lang_texts:
             texts[lang] = lang_texts
     return texts
@@ -77,12 +94,17 @@ class PackedTokenDataset(Dataset):
     seed: int = 0
     languages: list[str] | None = None  # None = use all languages present
     manual_weights: dict[str, float] | None = None  # overrides alpha with a static mixture
+    max_docs_per_lang: int | None = None  # limit docs read per language (use during eval)
     stats: PackedDatasetStats = field(init=False)
 
     def __post_init__(self) -> None:
         self.sp = spm.SentencePieceProcessor(model_file=str(self.tokenizer_path))
         self.eos_id = self.sp.eos_id()
-        texts_by_lang = load_shard_texts(self.shards_dir)
+        texts_by_lang = load_shard_texts(
+            self.shards_dir,
+            languages=self.languages,
+            max_docs_per_lang=self.max_docs_per_lang,
+        )
         if self.languages:
             texts_by_lang = {k: v for k, v in texts_by_lang.items() if k in self.languages}
         if not texts_by_lang:
