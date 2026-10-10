@@ -68,7 +68,7 @@ def load_checkpoint(
     if rng_state is not None:
         random.setstate(rng_state["python"])
         np.random.set_state(rng_state["numpy"])
-        torch.set_rng_state(rng_state["torch"])
+        torch.set_rng_state(rng_state["torch"].cpu())
 
     return {
         "step": payload["step"],
