@@ -33,11 +33,15 @@ echo "Seeds:         ${SEEDS}"
 echo "Starting EXP:  EXP-$(printf '%03d' ${START_EXP})"
 echo "=========================================="
 
-# Step 1: Submit data pipeline job
+# Step 1: Submit data pipeline job (or reuse an existing completed one)
 echo ""
-echo "Submitting data pipeline job..."
-DATA_JID=$(sbatch --parsable "${PROJECT}/deployment/slurm/data_pipeline.sbatch")
-echo "  data_pipeline → job ${DATA_JID}"
+if [ -n "${DATA_JID:-}" ]; then
+    echo "  data_pipeline → reusing job ${DATA_JID} (skipping resubmission)"
+else
+    echo "Submitting data pipeline job..."
+    DATA_JID=$(sbatch --parsable "${PROJECT}/deployment/slurm/data_pipeline.sbatch")
+    echo "  data_pipeline → job ${DATA_JID}"
+fi
 
 # Step 2: Submit training jobs, each depending on data pipeline completing
 exp_num=${START_EXP}
