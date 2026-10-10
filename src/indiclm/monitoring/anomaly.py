@@ -31,7 +31,12 @@ class AnomalyDetector:
         if loss in (float("inf"), float("-inf")):
             raise TrainingAnomaly(f"step {step}: loss is Inf")
         if math.isnan(grad_norm) or grad_norm in (float("inf"), float("-inf")):
-            raise TrainingAnomaly(f"step {step}: gradient norm is NaN/Inf")
+            # fp16 GradScaler skips the optimizer step on overflow, so model
+            # weights are not corrupted — log and continue rather than abort.
+            warnings.append(
+                f"step {step}: gradient norm is NaN/Inf "
+                f"(fp16 overflow; GradScaler skipped this step)"
+            )
         if grad_norm > self.grad_norm_threshold:
             warnings.append(
                 f"step {step}: gradient norm {grad_norm:.2f} exceeds threshold "

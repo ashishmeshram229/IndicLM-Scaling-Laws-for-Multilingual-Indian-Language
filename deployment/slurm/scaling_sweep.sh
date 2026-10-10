@@ -33,13 +33,18 @@ echo "Seeds:         ${SEEDS}"
 echo "Starting EXP:  EXP-$(printf '%03d' ${START_EXP})"
 echo "=========================================="
 
-# Step 1: Submit data pipeline job (or reuse an existing completed one)
+# Step 1: Submit data pipeline job (or skip if data is already processed)
+# Set SKIP_DATA_PIPELINE=1 when resubmitting failed grid points — the processed
+# shards are already on disk and do not need to be rebuilt.
 echo ""
-if [ -n "${DATA_JID:-}" ]; then
-    echo "  data_pipeline → reusing job ${DATA_JID} (skipping resubmission)"
+SKIP_DATA_PIPELINE="${SKIP_DATA_PIPELINE:-0}"
+if [ "${SKIP_DATA_PIPELINE}" = "1" ]; then
+    echo "  data_pipeline → skipped (SKIP_DATA_PIPELINE=1; using existing processed data)"
+    DATA_DEP_FLAG=""
 else
     echo "Submitting data pipeline job..."
     DATA_JID=$(sbatch --parsable "${PROJECT}/deployment/slurm/data_pipeline.sbatch")
+    DATA_DEP_FLAG="--dependency=afterok:${DATA_JID}"
     echo "  data_pipeline → job ${DATA_JID}"
 fi
 
@@ -62,7 +67,7 @@ for size in ${MODEL_SIZES}; do
                     --parsable \
                     --export=ALL \
                     --job-name="indiclm-${EXP_ID}-${size}-${budget}-s${seed}" \
-                    --dependency="afterok:${DATA_JID}" \
+                    ${DATA_DEP_FLAG} \
                     "${PROJECT}/deployment/slurm/train_gpu.sbatch"
             )
 
