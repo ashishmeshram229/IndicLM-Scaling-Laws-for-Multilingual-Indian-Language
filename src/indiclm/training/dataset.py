@@ -18,6 +18,7 @@ import random
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import numpy as np
 import sentencepiece as spm
 import torch
 from torch.utils.data import Dataset
@@ -112,11 +113,13 @@ class PackedTokenDataset(Dataset):
 
         rng = random.Random(self.seed)
 
-        # Available token counts (measured, not assumed) per language.
+        # Tokenize to numpy int32 arrays (4 bytes/token) rather than Python
+        # list[int] (28 bytes/token due to object overhead). For a 1B-token
+        # training run this difference is 28 GB vs 4 GB for the corpus alone.
         available_tokens: dict[str, int] = {}
-        tokenized: dict[str, list[list[int]]] = {}
+        tokenized: dict[str, list[np.ndarray]] = {}
         for lang, docs in texts_by_lang.items():
-            ids_list = [self.sp.encode(t, out_type=int) for t in docs]
+            ids_list = [np.array(self.sp.encode(t, out_type=int), dtype=np.int32) for t in docs]
             tokenized[lang] = ids_list
             available_tokens[lang] = sum(len(ids) for ids in ids_list)
 
@@ -130,30 +133,36 @@ class PackedTokenDataset(Dataset):
             weights = temperature_weights(available_tokens, self.alpha)
         budget = token_budget_allocation(weights, self.total_tokens)
 
-        all_ids: list[int] = []
+        eos_arr = np.array([self.eos_id], dtype=np.int32)
+        all_ids_parts: list[np.ndarray] = []
         tokens_per_language: dict[str, int] = {}
         epochs_per_language: dict[str, float] = {}
         for lang, lang_budget in budget.items():
             ids_list = tokenized[lang]
             pool = list(range(len(ids_list)))
-            stream: list[int] = []
-            while len(stream) < lang_budget:
+            parts: list[np.ndarray] = []
+            total = 0
+            while total < lang_budget:
                 rng.shuffle(pool)
                 for i in pool:
-                    stream.extend(ids_list[i])
-                    stream.append(self.eos_id)
-                    if len(stream) >= lang_budget:
+                    parts.append(ids_list[i])
+                    parts.append(eos_arr)
+                    total += len(ids_list[i]) + 1
+                    if total >= lang_budget:
                         break
-            stream = stream[:lang_budget]
-            all_ids.extend(stream)
-            tokens_per_language[lang] = len(stream)
+            stream = np.concatenate(parts)[:lang_budget]
+            all_ids_parts.append(stream)
+            tokens_per_language[lang] = int(len(stream))
             epochs_per_language[lang] = round(
-                len(stream) / max(available_tokens[lang], 1), 3
+                int(len(stream)) / max(available_tokens[lang], 1), 3
             )
 
         rng.shuffle_seed = self.seed  # type: ignore[attr-defined]
-        # Pack into fixed-length blocks (input, target) = (block[:-1], block[1:])
-        # via a sliding, non-overlapping window over the concatenated stream.
+        # Merge int32 streams then pack into (input, target) fixed-length blocks.
+        # Keep int32 through the reshape to avoid a peak-memory double-copy;
+        # torch.tensor converts to int64 (required by nn.Embedding) as the last step.
+        all_ids = np.concatenate(all_ids_parts)  # int32; 4 bytes/token
+        del all_ids_parts
         n_blocks = max(1, len(all_ids) // (self.seq_len + 1))
         usable = n_blocks * (self.seq_len + 1)
         padding = 0
@@ -161,10 +170,13 @@ class PackedTokenDataset(Dataset):
             # Corpus smaller than one block: pad with eos_id rather than
             # fail outright, and record the padding ratio honestly.
             padding = (self.seq_len + 1) - len(all_ids)
-            all_ids = all_ids + [self.eos_id] * padding
+            all_ids = np.concatenate([all_ids, np.full(padding, self.eos_id, dtype=np.int32)])
             n_blocks = 1
             usable = self.seq_len + 1
-        blocks = torch.tensor(all_ids[:usable], dtype=torch.long).view(n_blocks, self.seq_len + 1)
+        blocks = torch.tensor(
+            all_ids[:usable].reshape(n_blocks, self.seq_len + 1), dtype=torch.long
+        )
+        del all_ids
         self.inputs = blocks[:, :-1]
         self.targets = blocks[:, 1:]
 
