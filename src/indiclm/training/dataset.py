@@ -152,9 +152,9 @@ class PackedTokenDataset(Dataset):
                         break
             stream = np.concatenate(parts)[:lang_budget]
             all_ids_parts.append(stream)
-            tokens_per_language[lang] = int(len(stream))
+            tokens_per_language[lang] = len(stream)
             epochs_per_language[lang] = round(
-                int(len(stream)) / max(available_tokens[lang], 1), 3
+                len(stream) / max(available_tokens[lang], 1), 3
             )
 
         rng.shuffle_seed = self.seed  # type: ignore[attr-defined]
