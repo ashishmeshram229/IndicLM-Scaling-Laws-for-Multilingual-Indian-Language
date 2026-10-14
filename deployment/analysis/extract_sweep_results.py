@@ -226,6 +226,80 @@ def _round_d(d: int) -> int:
 
 
 # ---------------------------------------------------------------------------
+# L∞ sensitivity: refit with fixed irreducible-loss floor
+# ---------------------------------------------------------------------------
+
+def _law_4p(nd: tuple[np.ndarray, np.ndarray],
+            log_a: float, alpha: float,
+            log_b: float, beta: float,
+            linf_val: float) -> np.ndarray:
+    n, d = nd
+    return np.exp(log_a) / n ** alpha + np.exp(log_b) / d ** beta + linf_val
+
+
+def fit_fixed_linf(
+    runs: list[dict[str, Any]],
+    linf_values: list[float],
+) -> list[dict[str, Any]]:
+    """Refit L(N,D) = A/N^α + B/D^β + L∞ for each fixed L∞ in linf_values."""
+    valid = [r for r in runs if r["val_loss"] is not None
+             and r["n_non_emb"] and r["d_tokens"]]
+    if len(valid) < 5:
+        return []
+
+    N = np.array([r["n_non_emb"] for r in valid], dtype=float)
+    D = np.array([r["d_tokens"]  for r in valid], dtype=float)
+    L = np.array([r["val_loss"]  for r in valid], dtype=float)
+
+    results: list[dict[str, Any]] = []
+    for lv in linf_values:
+        if lv > 0 and np.any(L - lv <= 0):
+            results.append({"linf_fixed": lv, "status": "infeasible",
+                             "reason": "L − L∞ ≤ 0 for some observations"})
+            continue
+
+        # Capture lv in the closure via default-arg idiom
+        def _law(nd: tuple[np.ndarray, np.ndarray],
+                 log_a: float, alpha: float,
+                 log_b: float, beta: float,
+                 _lv: float = lv) -> np.ndarray:
+            return _law_4p(nd, log_a, alpha, log_b, beta, _lv)
+
+        try:
+            popt, pcov = curve_fit(
+                _law, (N, D), L,
+                p0=[0., .3, 0., .3],
+                bounds=([-10., 1e-3, -10., 1e-3], [30., 2., 30., 2.]),
+                maxfev=40000,
+            )
+        except RuntimeError as exc:
+            results.append({"linf_fixed": lv, "status": "fit_failed", "error": str(exc)})
+            continue
+
+        _la, alpha, _lb, beta = popt
+        perr = np.sqrt(np.diag(pcov))
+        pred = _law((N, D), *popt)
+        ss_res = float(np.sum((L - pred) ** 2))
+        ss_tot = float(np.sum((L - L.mean()) ** 2))
+        r2 = 1.0 - ss_res / ss_tot
+        b_ab = beta / (alpha + beta)
+
+        results.append({
+            "linf_fixed":    lv,
+            "status":        "ok",
+            "alpha":         float(alpha),
+            "alpha_stderr":  float(perr[1]),
+            "beta":          float(beta),
+            "beta_stderr":   float(perr[3]),
+            "r_squared":     r2,
+            "beta_gt_alpha": bool(beta > alpha),
+            "N_opt_exponent": b_ab,
+        })
+
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Seed-ordering audit
 # ---------------------------------------------------------------------------
 
@@ -278,6 +352,8 @@ def main() -> None:
     ap.add_argument("--corpus-tokens",  type=int, default=None,
                     help="Total unique training tokens (for epoch calculation). "
                          "If omitted, estimated from pipeline_stats.json.")
+    ap.add_argument("--linf-sensitivity", action="store_true",
+                    help="Refit with L∞ fixed at 0.0, 1.0, 1.5, 2.0 to check β>α robustness.")
     args = ap.parse_args()
 
     # -- load -----------------------------------------------------------------
@@ -400,13 +476,34 @@ def main() -> None:
     else:
         print(f"  Fit failed: {fit}")
 
+    # -- L∞ sensitivity -------------------------------------------------------
+    sensitivity: list[dict[str, Any]] = []
+    if args.linf_sensitivity:
+        sensitivity = fit_fixed_linf(runs, [0.0, 1.0, 1.5, 2.0])
+        print("\n── L∞ sensitivity  (does β>α hold regardless of floor assumption?) ──")
+        print(f"  {'L∞ fixed':>10}  {'α':>7}  {'β':>7}  {'R²':>7}  {'β>α':>5}  {'e_N=β/(α+β)':>12}")
+        print("  " + "-" * 58)
+        for s in sensitivity:
+            if s["status"] != "ok":
+                print(f"  {s['linf_fixed']:>10.1f}  {s['status']} ({s.get('reason', s.get('error', ''))})")
+                continue
+            flag = "YES" if s["beta_gt_alpha"] else "NO "
+            print(f"  {s['linf_fixed']:>10.1f}  {s['alpha']:>7.4f}  {s['beta']:>7.4f}"
+                  f"  {s['r_squared']:>7.4f}  {flag:>5}  {s['N_opt_exponent']:>12.4f}")
+        bgt = [s for s in sensitivity if s["status"] == "ok" and s["beta_gt_alpha"]]
+        print(f"\n  β>α holds in {len(bgt)}/{len([s for s in sensitivity if s['status']=='ok'])} "
+              f"tested L∞ values → "
+              + ("robust" if len(bgt) == len([s for s in sensitivity if s["status"] == "ok"])
+                 else "NOT universally robust"))
+
     # -- write ----------------------------------------------------------------
     output = {
-        "runs":         runs,
-        "cell_summary": cell_summary,
-        "seed_audit":   audit,
-        "fit":          fit,
-        "missing_exps": missing,
+        "runs":              runs,
+        "cell_summary":      cell_summary,
+        "seed_audit":        audit,
+        "fit":               fit,
+        "linf_sensitivity":  sensitivity,
+        "missing_exps":      missing,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(output, indent=2, default=str))
