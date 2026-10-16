@@ -1,0 +1,526 @@
+{
+  "fit_status": "ok",
+  "A": 18.37910474412364,
+  "alpha": 0.11300852432088533,
+  "alpha_stderr": 0.04786773430640038,
+  "B": 32188.746068143864,
+  "beta": 0.5325195655485179,
+  "beta_stderr": 0.07201429224590877,
+  "L_infinity": 2.1174870961352846e-15,
+  "L_infinity_stderr": 1.2807908147431817,
+  "r_squared": 0.983967206412666,
+  "n_observations": 48,
+  "fit_free_linf": {
+    "fit_status": "ok",
+    "A": 18.37910474412364,
+    "alpha": 0.11300852432088533,
+    "alpha_stderr": 0.04786773430640038,
+    "B": 32188.746068143864,
+    "beta": 0.5325195655485179,
+    "beta_stderr": 0.07201429224590877,
+    "L_infinity": 2.1174870961352846e-15,
+    "L_infinity_stderr": 1.2807908147431817,
+    "r_squared": 0.983967206412666
+  },
+  "fit_fixed_linf": {
+    "fit_status": "ok",
+    "L_infinity_fixed": 2.86237413,
+    "A": 1212.7127841376268,
+    "alpha": 0.48244489950940783,
+    "alpha_stderr": 0.0842275742715853,
+    "B": 62152310.87640811,
+    "beta": 0.9736961062297235,
+    "beta_stderr": 0.15944462493369657,
+    "r_squared": 0.9509157990918734
+  },
+  "fit_two_param": {
+    "fit_status": "ok",
+    "C": 150.61744667298157,
+    "gamma": 0.10062849382796049,
+    "r_squared": 0.8648266132985531,
+    "note": "L \u2248 C / (N\u00b7D)^gamma \u2014 2-parameter Chinchilla-style fit"
+  },
+  "observations": [
+    {
+      "run_id": "EXP-157",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 50122240,
+      "final_val_loss": 6.657798,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-158",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 50122240,
+      "final_val_loss": 6.647596,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-159",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 50122240,
+      "final_val_loss": 6.627734,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-160",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 200146944,
+      "final_val_loss": 5.23157,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-161",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 200146944,
+      "final_val_loss": 5.222646,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-162",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 200146944,
+      "final_val_loss": 5.228537,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-163",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 500093440,
+      "final_val_loss": 4.573946,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-164",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 500093440,
+      "final_val_loss": 4.579638,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-165",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 500093440,
+      "final_val_loss": 4.5703,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-166",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 1000006656,
+      "final_val_loss": 4.116626,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-167",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 1000006656,
+      "final_val_loss": 4.128306,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-168",
+      "n_params": 5019008,
+      "n_params_non_embedding": 923008,
+      "d_tokens": 1000006656,
+      "final_val_loss": 4.120723,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-169",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 50056704,
+      "final_val_loss": 5.642898,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-170",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 50056704,
+      "final_val_loss": 5.657851,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-171",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 50056704,
+      "final_val_loss": 5.655164,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-172",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 200081408,
+      "final_val_loss": 4.207411,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-173",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 200081408,
+      "final_val_loss": 4.224929,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-174",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 200081408,
+      "final_val_loss": 4.16289,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-175",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.706289,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-176",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.692366,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-177",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.702754,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-178",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 1000006656,
+      "final_val_loss": 3.498124,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-179",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 1000006656,
+      "final_val_loss": 3.486668,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-180",
+      "n_params": 18521344,
+      "n_params_non_embedding": 10329344,
+      "d_tokens": 1000006656,
+      "final_val_loss": 3.498496,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-181",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 50056704,
+      "final_val_loss": 4.933871,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-182",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 50056704,
+      "final_val_loss": 4.900661,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-183",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 50056704,
+      "final_val_loss": 4.874165,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-184",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 200081408,
+      "final_val_loss": 3.624018,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-185",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 200081408,
+      "final_val_loss": 3.601157,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-186",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 200081408,
+      "final_val_loss": 3.62199,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-187",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.279781,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-188",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 500105216,
+      "final_val_loss": 3.2747,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-189",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.285652,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-190",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 1000006656,
+      "final_val_loss": 3.089633,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-191",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 1000006656,
+      "final_val_loss": 3.09382,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-192",
+      "n_params": 65701376,
+      "n_params_non_embedding": 49317376,
+      "d_tokens": 1000006656,
+      "final_val_loss": 3.095395,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-193",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 50056704,
+      "final_val_loss": 4.599719,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-194",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 50056704,
+      "final_val_loss": 4.612139,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-195",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 50056704,
+      "final_val_loss": 4.593479,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-196",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 200081408,
+      "final_val_loss": 3.406034,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-197",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 200081408,
+      "final_val_loss": 3.391848,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-198",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 200081408,
+      "final_val_loss": 3.401973,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-199",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.090912,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-200",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 500039680,
+      "final_val_loss": 3.090621,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-201",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 500027904,
+      "final_val_loss": 3.083405,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-202",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 1000006656,
+      "final_val_loss": 2.894805,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 0,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-203",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 1000006656,
+      "final_val_loss": 2.897989,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 1,
+      "per_language_loss": {}
+    },
+    {
+      "run_id": "EXP-204",
+      "n_params": 147879168,
+      "n_params_non_embedding": 123303168,
+      "d_tokens": 1000006656,
+      "final_val_loss": 2.891287,
+      "mean_tokens_per_sec": 0.0,
+      "seed": 2,
+      "per_language_loss": {}
+    }
+  ],
+  "exp_range": "EXP-157..EXP-204"
+}

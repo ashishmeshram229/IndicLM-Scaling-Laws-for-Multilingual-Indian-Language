@@ -1,0 +1,98 @@
+{
+  "shards_dir": "/storage_server/da25m016/indiclm/data/processed",
+  "tokenizer": "/storage_server/da25m016/indiclm/data/tokenizer_v2/indiclm_tokenizer.model",
+  "train_split": 0.9,
+  "sample_per_lang": 5000,
+  "total_docs": 1229026,
+  "est_total_tokens": 967716305,
+  "est_total_tokens_train": 870944674,
+  "all_exact": false,
+  "per_language": {
+    "ben": {
+      "total_docs": 139279,
+      "sampled_docs": 5000,
+      "sampled_tokens": 3592554,
+      "avg_tokens_per_doc": 718.5,
+      "est_total_tokens": 100073465,
+      "exact": false
+    },
+    "eng": {
+      "total_docs": 505163,
+      "sampled_docs": 5000,
+      "sampled_tokens": 4675698,
+      "avg_tokens_per_doc": 935.1,
+      "est_total_tokens": 472397925,
+      "exact": false
+    },
+    "guj": {
+      "total_docs": 15157,
+      "sampled_docs": 5000,
+      "sampled_tokens": 5445430,
+      "avg_tokens_per_doc": 1089.1,
+      "est_total_tokens": 16507276,
+      "exact": false
+    },
+    "hin": {
+      "total_docs": 121707,
+      "sampled_docs": 5000,
+      "sampled_tokens": 2945749,
+      "avg_tokens_per_doc": 589.1,
+      "est_total_tokens": 71703654,
+      "exact": false
+    },
+    "kan": {
+      "total_docs": 28721,
+      "sampled_docs": 5000,
+      "sampled_tokens": 8399378,
+      "avg_tokens_per_doc": 1679.9,
+      "est_total_tokens": 48247707,
+      "exact": false
+    },
+    "mal": {
+      "total_docs": 83197,
+      "sampled_docs": 5000,
+      "sampled_tokens": 3387198,
+      "avg_tokens_per_doc": 677.4,
+      "est_total_tokens": 56360942,
+      "exact": false
+    },
+    "mar": {
+      "total_docs": 54135,
+      "sampled_docs": 5000,
+      "sampled_tokens": 2317170,
+      "avg_tokens_per_doc": 463.4,
+      "est_total_tokens": 25087999,
+      "exact": false
+    },
+    "pan": {
+      "total_docs": 46353,
+      "sampled_docs": 5000,
+      "sampled_tokens": 3209706,
+      "avg_tokens_per_doc": 641.9,
+      "est_total_tokens": 29755900,
+      "exact": false
+    },
+    "tam": {
+      "total_docs": 153188,
+      "sampled_docs": 5000,
+      "sampled_tokens": 2456143,
+      "avg_tokens_per_doc": 491.2,
+      "est_total_tokens": 75250326,
+      "exact": false
+    },
+    "tel": {
+      "total_docs": 82126,
+      "sampled_docs": 5000,
+      "sampled_tokens": 4403667,
+      "avg_tokens_per_doc": 880.7,
+      "est_total_tokens": 72331111,
+      "exact": false
+    }
+  },
+  "epoch_counts": {
+    "50000000": 0.0574,
+    "200000000": 0.2296,
+    "500000000": 0.5741,
+    "1000000000": 1.1482
+  }
+}
