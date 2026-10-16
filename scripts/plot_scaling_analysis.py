@@ -1,13 +1,15 @@
 """
 Comprehensive scaling-law analysis plots for IndicLM V100 sweep.
 
-Generates six figures in experiments/scaling_results_v100/:
+Generates eight figures in experiments/scaling_results_v100/:
   fig1_scaling_curves.png       — L vs N (left) and L vs D (right), log-log
   fig2_loss_heatmap.png         — (N, D) heatmap of mean val loss
   fig3_fit_quality.png          — predicted vs actual + residuals
   fig4_seed_stability.png       — error bars across all 16 (N, D) cells
   fig5_compute_frontier.png     — IsoFLOP curves + compute-optimal trajectory
   fig6_loss_surface.png         — contour plot of fitted L(N, D)
+  fig7_loss_per_token.png       — editorial: 4 model curves, loss vs tokens
+  fig8_budget_split.png         — compute-optimal budget split vs English rule
 """
 
 import json
@@ -426,3 +428,121 @@ print("Saved fig6_loss_surface.png")
 # ---------------------------------------------------------------------------
 print("\nAll figures written to", RESULTS_DIR)
 print(f"  Fit: L = {A:.2f}/N^{alpha:.4f} + {B:.0f}/D^{beta:.4f}  (R²={fit['r_squared']:.4f})")
+
+# ---------------------------------------------------------------------------
+# Figure 7: "Loss per token" — 4 model curves vs training tokens
+# Mirrors the top panel in the editorial graphic.
+# ---------------------------------------------------------------------------
+import matplotlib.patches as mpatches
+
+fig, ax = plt.subplots(figsize=(9, 6))
+
+model_labels_editorial = ["tiny model (1M)", "small model (18M)",
+                           "medium model (65M)", "large model (148M)"]
+model_colors = ["#a8c8e8", "#5a9fd4", "#2a6aad", "#0d3b7a"]
+
+D_x = D_vals   # [50M, 200M, 500M, 1B]
+
+for i, N in enumerate(N_vals):
+    means = [agg_grid[(N, D)][0] for D in D_vals]
+    errs  = [agg_grid[(N, D)][1] for D in D_vals]
+
+    ax.plot(D_x, means, "o-", color=model_colors[i], linewidth=2.0,
+            markersize=6, zorder=3, label=model_labels_editorial[i])
+    ax.fill_between(D_x,
+                    [m - e for m, e in zip(means, errs)],
+                    [m + e for m, e in zip(means, errs)],
+                    color=model_colors[i], alpha=0.15)
+
+    # label at right end
+    ax.text(D_x[-1] * 1.04, means[-1], model_labels_editorial[i],
+            va="center", fontsize=9, color=model_colors[i])
+
+# annotation arrow
+ax.annotate("more text,\nfewer mistakes",
+            xy=(500_000_000, agg_grid[(49_317_376, 500_000_000)][0]),
+            xytext=(120_000_000, 2.85),
+            fontsize=9, color="#c0392b", fontweight="bold",
+            arrowprops=dict(arrowstyle="->", color="#c0392b", lw=1.5))
+
+ax.set_xscale("log")
+ax.set_xlabel("Training text read (tokens)", fontsize=12)
+ax.set_ylabel("Loss per token  (lower = fewer mistakes)", fontsize=12)
+ax.set_title("Bigger models and more text both cut mistakes.\n"
+             "One formula matches all 48 models.  "
+             r"$L = A/N^{\alpha} + B/D^{\beta}$   R²=0.984",
+             fontsize=11)
+ax.set_xticks(D_vals)
+ax.set_xticklabels(["50M", "200M", "500M", "1B"], fontsize=10)
+ax.yaxis.set_major_formatter(mticker.ScalarFormatter())
+ax.grid(True, which="both", alpha=0.25)
+ax.set_xlim(D_vals[0] * 0.7, D_vals[-1] * 2.5)
+ax.set_ylim(2.5, 7.2)
+
+# hide individual legend (labels are inline)
+plt.tight_layout()
+fig.savefig(RESULTS_DIR / "fig7_loss_per_token.png", dpi=150, bbox_inches="tight")
+plt.close(fig)
+print("Saved fig7_loss_per_token.png")
+
+# ---------------------------------------------------------------------------
+# Figure 8: "Where should a fixed budget go?" — horizontal bar chart
+# Compute-optimal exponents: N*∝C^(β/(α+β)), D*∝C^(α/(α+β))
+# English (Chinchilla, α≈β≈0.5): 50/50.
+# Our Indic LM: 82.5% model / 17.5% data.
+# ---------------------------------------------------------------------------
+fig, axes = plt.subplots(2, 1, figsize=(9, 5.5),
+                          gridspec_kw={"hspace": 0.55})
+fig.suptitle("Where should a fixed compute budget go?",
+             fontsize=14, fontweight="bold", y=1.01)
+
+exp_N_pct = beta / (alpha + beta) * 100   # 82.5
+exp_D_pct = alpha / (alpha + beta) * 100  # 17.5
+eng_pct   = 50.0
+
+rows = [
+    ("English rule\n(Chinchilla, α≈β)", eng_pct,   100 - eng_pct,   None,   "#6c757d",  "#b0bec5"),
+    (f"Indian languages\n(our result)", exp_N_pct, exp_D_pct,
+     f"+{exp_N_pct-eng_pct:.0f} pp", "#2a6aad",  "#f0a070"),
+]
+
+for ax, (label, model_pct, data_pct, delta, col_m, col_d) in zip(axes, rows):
+    ax.barh([0], [model_pct], color=col_m, height=0.55, label="bigger model")
+    ax.barh([0], [data_pct],  left=[model_pct], color=col_d, height=0.55, label="more text")
+    ax.set_xlim(0, 100)
+    ax.set_yticks([])
+    ax.set_xticks([0, 25, 50, 75, 100])
+    ax.set_xticklabels(["0%", "25%", "50%", "75%", "100%"], fontsize=9)
+    ax.set_ylabel(label, fontsize=10, rotation=0, ha="right", va="center", labelpad=8)
+    ax.axvline(50, color="k", linewidth=1.0, linestyle="--", alpha=0.5)
+
+    # percentage labels inside bars
+    ax.text(model_pct / 2, 0, f"bigger model\n{model_pct:.0f}%",
+            ha="center", va="center", fontsize=9, color="white", fontweight="bold")
+    ax.text(model_pct + data_pct / 2, 0, f"more text\n{data_pct:.0f}%",
+            ha="center", va="center", fontsize=9,
+            color="white" if col_d == "#2a6aad" else "#333333", fontweight="bold")
+
+    if delta:
+        ax.annotate(f"→ {delta}",
+                    xy=(eng_pct, 0.27), fontsize=10,
+                    color="#c0392b", fontweight="bold")
+
+# shared legend
+handles = [mpatches.Patch(color="#2a6aad", label="bigger model"),
+           mpatches.Patch(color="#f0a070", label="more text")]
+fig.legend(handles=handles, loc="lower center", ncol=2, fontsize=10,
+           bbox_to_anchor=(0.5, -0.08))
+
+# bottom callout box
+callout = ("Indic languages: put much more into model size.\n"
+           "Data returns diminish 6× faster than model returns\n"
+           "across all 4 model sizes tested  (β=0.53 >> α=0.11).")
+fig.text(0.5, -0.20, callout, ha="center", va="top", fontsize=9,
+         bbox=dict(boxstyle="round,pad=0.5", fc="#fff3cd", ec="#e0a800", lw=1.5),
+         transform=fig.transFigure)
+
+plt.tight_layout()
+fig.savefig(RESULTS_DIR / "fig8_budget_split.png", dpi=150, bbox_inches="tight")
+plt.close(fig)
+print("Saved fig8_budget_split.png")
